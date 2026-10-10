@@ -54,8 +54,15 @@ public class Ground_spawner : MonoBehaviour
 
 		GameObject oldestPiece = activePieces.Peek();
 
+		// Pieza destruida desde fuera: la sacamos de la cola para que no bloquee la limpieza
+		if (oldestPiece == null)
+		{
+			activePieces.Dequeue();
+			return;
+		}
+
 		// Si el borde derecho de la pieza más vieja ya quedó detrás del jugador
-		if (oldestPiece != null && playerTransform.position.x - oldestPiece.transform.position.x > despawnDistance)
+		if (playerTransform.position.x - oldestPiece.transform.position.x > despawnDistance)
 		{
 			activePieces.Dequeue();
 			Destroy(oldestPiece);

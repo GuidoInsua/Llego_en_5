@@ -22,6 +22,7 @@ public class Player_controller : MonoBehaviour
 	private Animator animator;
 	private int animacionActual;
 	private bool isGrounded;
+	private bool jumpRequested;
 
 	void Awake()
 	{
@@ -34,20 +35,29 @@ public class Player_controller : MonoBehaviour
 		// 1. Detección de suelo
 		isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
 
-		// 2. Velocidad horizontal constante
-		rb.linearVelocity = new Vector2(runSpeed, rb.linearVelocity.y);
-
-		// 3. Salto con el Nuevo Input System (Espacio o tecla W / Flecha arriba)
+		// 2. Salto con el Nuevo Input System (Espacio o tecla W / Flecha arriba)
 		bool jumpPressed = Keyboard.current != null &&
 						  (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
 
 		if (jumpPressed && isGrounded)
 		{
-			rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+			jumpRequested = true;
 		}
 
-		// 4. Control de animaciones
+		// 3. Control de animaciones
 		ActualizarAnimaciones();
+	}
+
+	void FixedUpdate()
+	{
+		// Física: la velocidad se aplica en FixedUpdate según las reglas del proyecto
+		rb.linearVelocity = new Vector2(runSpeed, rb.linearVelocity.y);
+
+		if (jumpRequested)
+		{
+			rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+			jumpRequested = false;
+		}
 	}
 
 	private void ActualizarAnimaciones()
@@ -56,40 +66,32 @@ public class Player_controller : MonoBehaviour
 		{
 			if (rb.linearVelocity.y > 0.1f)
 			{
-				CambiarAnimacion(AnimJumpUp, 0f);
+				CambiarAnimacion(AnimJumpUp);
 			}
 			else
 			{
-				CambiarAnimacion(AnimFall, 0f);
+				CambiarAnimacion(AnimFall);
 			}
 		}
 		else
 		{
 			if (Mathf.Abs(rb.linearVelocity.x) > 0.1f)
 			{
-				CambiarAnimacion(AnimRun, 0f);
+				CambiarAnimacion(AnimRun);
 			}
 			else
 			{
-				CambiarAnimacion(AnimIdle, 0f);
+				CambiarAnimacion(AnimIdle);
 			}
 		}
 	}
 
-	public void CambiarAnimacion(int nuevoHash, float crossFade = 0f)
+	private void CambiarAnimacion(int nuevoHash)
 	{
 		if (animacionActual == nuevoHash) return;
 
 		animacionActual = nuevoHash;
-
-		if (crossFade > 0f)
-		{
-			animator.CrossFade(nuevoHash, crossFade);
-		}
-		else
-		{
-			animator.Play(nuevoHash);
-		}
+		animator.Play(nuevoHash);
 	}
 
 	void OnDrawGizmosSelected()
