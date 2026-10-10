@@ -1,0 +1,30 @@
+{
+	"enabledPlugins": {
+		"ponytail@ponytail": true
+	},
+	"permissions": {
+		"deny": [
+			"Read(./Temp/**)",
+			"Read(./Obj/**)",
+			"Read(./Build/**)",
+			"Read(./Builds/**)",
+			"Read(./UserSettings/**)",
+			"Read(./MemoryCaptures/**)",
+			"Read(./*.csproj)",
+			"Read(./*.sln)",
+			"Read(./*.unityproj)",
+			"Edit(./Temp/**)",
+			"Edit(./Obj/**)",
+			"Edit(./Build/**)",
+			"Edit(./Builds/**)",
+			"Edit(./UserSettings/**)",
+			"Edit(./MemoryCaptures/**)",
+			"Write(./Temp/**)",
+			"Write(./Obj/**)",
+			"Write(./Build/**)",
+			"Write(./Builds/**)",
+			"Write(./UserSettings/**)",
+			"Write(./MemoryCaptures/**)"
+		]
+	}
+}
