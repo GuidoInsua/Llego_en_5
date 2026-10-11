@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem; // <-- 1. Importar el nuevo Input System
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(AudioSource))]
 public class Player_controller : MonoBehaviour
@@ -15,7 +15,7 @@ public class Player_controller : MonoBehaviour
 
 	[Header("Detección de Suelo")]
 	[SerializeField] private Transform groundCheck;
-	[SerializeField] private float checkRadius = 0.2f;
+	[SerializeField] private Vector2 groundCheckSize = new Vector2(0.15f, 0.05f); // Más angosta que los pies para no detectar paredes
 	[SerializeField] private LayerMask groundLayer;
 
 	private static readonly int AnimIdle = Animator.StringToHash("Player_idle_anim");
@@ -44,7 +44,7 @@ public class Player_controller : MonoBehaviour
 	void Update()
 	{
 		// 1. Detección de suelo
-		isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+		isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
 
 		// 2. Salto con el Nuevo Input System (Espacio o tecla W / Flecha arriba)
 		bool jumpPressed = Keyboard.current != null &&
@@ -141,7 +141,7 @@ public class Player_controller : MonoBehaviour
 		if (groundCheck != null)
 		{
 			Gizmos.color = Color.green;
-			Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
+			Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
 		}
 	}
 }

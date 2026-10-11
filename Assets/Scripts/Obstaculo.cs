@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
 
-// Caja amarilla que se puede saltar. Al chocar con ella titila con transparencia y desaparece
+// Obstáculo (barril) que se puede saltar. Al chocar con él titila con transparencia y desaparece
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
 public class Obstaculo : MonoBehaviour
 {
 	[SerializeField] private float duracionRotura = 0.6f;
+	[SerializeField] private Sprite[] variantes; // Mismo barril en distintos colores: cada uno toma uno al azar
 
 	private Collider2D col;
 	private SpriteRenderer spriteRenderer;
@@ -15,6 +16,7 @@ public class Obstaculo : MonoBehaviour
 	{
 		col = GetComponent<Collider2D>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
+		if (variantes != null && variantes.Length > 0) spriteRenderer.sprite = variantes[Random.Range(0, variantes.Length)];
 	}
 
 	public void Romper()
