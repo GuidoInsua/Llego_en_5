@@ -6,8 +6,11 @@ Ver `README.md` para el concepto, los objetivos del proyecto y el recorrido del 
 
 Hoy existe en Unity:
 - Personaje que corre a velocidad constante y salta (`Player_controller`).
-- Suelo generado en tramos delante del jugador y borrado detrás (`Ground_spawner`).
-- Un test PlayMode del spawner.
+- Suelo generado en tramos delante del jugador y borrado detrás (`Ground_spawner`), que también siembra cajas con probabilidad.
+- Cajas (`Obstaculo`, prefab `Caja`): al chocar, el jugador baja su velocidad `duracionGolpe` s y la caja titila y desaparece.
+- Menú con Play y Exit (`Menu_manager`, escena `Menu`) y fondo parallax (`Parallax_layer`).
+- Música, ambiente y SFX de pasos. Cámara con Cinemachine.
+- Un test PlayMode del spawner (hoy falla, ver Tests).
 
 Todavía no existe: deslizarse, tropiezo, monedas, patada, subte y tienda, reloj, jefe, historieta y arte final.
 
@@ -23,7 +26,8 @@ Todavía no existe: deslizarse, tropiezo, monedas, patada, subte y tienda, reloj
 - `Assets/Scripts/`: código del juego. Assembly `Scripts` (`Scripts.asmdef`, referencia `Unity.InputSystem`).
 - `Assets/Tests/`: tests PlayMode. Assembly `Tests` (`Tests.asmdef`), referencia `Scripts` y solo compila con `UNITY_INCLUDE_TESTS`.
 - `Assets/Animations/`: clips y `Animators/Player.controller`.
-- `Assets/Prefabs/`, `Assets/Sprites/`, `Assets/Scenes/SampleScene.unity`.
+- `Assets/Prefabs/` (`Player`, `Ground`, `Caja`), `Assets/Sprites/`.
+- Escenas: `Assets/Scenes/Menu.unity` (arranque) y `Assets/Scenes/Level1.unity` (nivel, activa al trabajar). Ambas tienen que estar en Build Settings.
 
 Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tests`. Un script fuera de esos assemblies no lo ve el test.
 
@@ -59,14 +63,21 @@ No usamos el Animator como máquina de estados por parámetros. El código decid
 - Deslizarse y tropiezo todavía no tienen clip. Cuando existan, el estado se agrega en `ActualizarAnimaciones()` con su propio hash.
 
 ## Tests
-- Unity Test Runner → PlayMode → `Ground_spawnerTests` (`SpawnsAheadAndRemovesBehind`).
+- Unity Test Runner → PlayMode → `Ground_spawnerTests` (`SpawnsAheadAndRemovesBehind`). Hoy **falla**: espera 4 piezas (x=20..80) y queda también la de x=0. No hay tests EditMode.
 - Un test nuevo va en `Assets/Tests/` y accede a los scripts del juego por el assembly `Scripts`.
+- Desde la terminal con el Editor abierto: `unity command run_tests --mode PlayMode --async_tests true` y después `unity command test_status --result-only` (sin `--async_tests` devuelve `0/0` y no corre nada). `unity test` por batch solo anda con el Editor cerrado.
 
-## Permisos de Claude (`.claude/settings.json`, `permissions.deny`)
-- **Lectura bloqueada:** `Temp/`, `Obj/`, `Build/`, `Builds/`, `UserSettings/`, `MemoryCaptures/`, `*.csproj`, `*.sln`, `*.unityproj`.
-- **Escritura bloqueada:** `Temp/`, `Obj/`, `Build/`, `Builds/`, `UserSettings/`, `MemoryCaptures/`. Los archivos generados (`*.csproj`, `*.sln`, `*.unityproj`) no están bloqueados para escritura.
-- `Library/` y `Logs/` **no están bloqueados**.
-- Escenas, prefabs, assets y `.meta` no están bloqueados: Claude los necesita para resolver referencias por GUID.
+## Unity CLI (`unity`, ya en el PATH)
+- Con el Editor abierto, `unity status` muestra el puerto del pipeline (`com.unity.pipeline`). Se maneja con `unity command <comando>`; `unity command` sin argumentos lista los disponibles y `--query <texto> --detail full` muestra los parámetros.
+- Consola del Editor: `unity command console --result-only`. Estado: `editor_status`. Captura del juego: `capture_game_view` (PNG en base64).
+- `eval` ejecuta C# en vivo: la entrada tiene que ser una sentencia terminada en `;` (por ejemplo una llamada). Compilar bloquea el hilo principal; si pasa de 5 s la consola muestra `Main thread operation timed out`, que no es un error del juego.
+- Correr `unity ...` desde la raíz del proyecto, sin `cd ... &&` delante: con el prefijo la regla de permisos no coincide y pide confirmación.
+- Si el proyecto tiene errores de compilación el Editor entra en Safe Mode y el pipeline no responde (`unity pipeline list` lo confirma).
+
+## Permisos de Claude (`.claude/settings.json`)
+- Se quitó el bloque `permissions.deny` a propósito para darle a Claude más acceso con las skills de Unity: ya no hay rutas bloqueadas (`Temp/`, `Obj/`, `Build/`, `UserSettings/`, `*.csproj`, etc.). Igual no hay que editar a mano `Library/`, `Temp/` ni `UserSettings/`.
+- `permissions.allow` deja sin confirmación las lecturas del CLI (`unity status`, `doctor`, `logs`, `editors`, `command get_*`, `list_*`, `*_status`, `console`, `capture_*`, `run_tests`). `eval`, `build`, `delete_*` y `package_*` siguen pidiendo confirmación.
+- Escenas, prefabs, assets y `.meta` se pueden leer y editar: Claude los necesita para resolver referencias por GUID. Con el Editor abierto, preferir `unity command` a editar YAML a mano.
 
 ## Commits y Pull Requests
 - Mensajes de commit en castellano, sin líneas `Co-Authored-By` ni mención a Claude o IA.

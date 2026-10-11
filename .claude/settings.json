@@ -1,34 +1,30 @@
 {
-	"enabledPlugins": {
-		"ponytail@ponytail": true
-	},
-	"permissions": {
-		"deny": [
-			"Read(./Temp/**)",
-			"Read(./Obj/**)",
-			"Read(./Build/**)",
-			"Read(./Builds/**)",
-			"Read(./UserSettings/**)",
-			"Read(./MemoryCaptures/**)",
-			"Read(./*.csproj)",
-			"Read(./*.sln)",
-			"Read(./*.unityproj)",
-			"Edit(./Temp/**)",
-			"Edit(./Obj/**)",
-			"Edit(./Build/**)",
-			"Edit(./Builds/**)",
-			"Edit(./UserSettings/**)",
-			"Edit(./MemoryCaptures/**)",
-			"Write(./Temp/**)",
-			"Write(./Obj/**)",
-			"Write(./Build/**)",
-			"Write(./Builds/**)",
-			"Write(./UserSettings/**)",
-			"Write(./MemoryCaptures/**)"
-		]
-	},
 	"attribution": {
 		"commit": "",
 		"pr": ""
+	},
+	"enabledPlugins": {
+		"ponytail@ponytail": true,
+		"unity@anthropic-plugin-directory": true
+	},
+	"permissions": {
+		"allow": [
+			"Bash(unity --version)",
+			"Bash(unity status*)",
+			"Bash(unity doctor*)",
+			"Bash(unity logs*)",
+			"Bash(unity editors*)",
+			"Bash(unity pipeline list*)",
+			"Bash(unity command)",
+			"Bash(unity command --query *)",
+			"Bash(unity command get_*)",
+			"Bash(unity command list_*)",
+			"Bash(unity command *_status*)",
+			"Bash(unity command console*)",
+			"Bash(unity command capture_*)",
+			"Bash(unity command find_*)",
+			"Bash(unity command run_tests*)",
+			"Bash(unity command cancel_tests*)"
+		]
 	}
 }
