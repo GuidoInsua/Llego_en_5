@@ -47,7 +47,7 @@ public class Ground_spawnerTests
 
 	private static Transform[] GetPieces()
 	{
-		return Object.FindObjectsByType<Transform>(FindObjectsSortMode.None)
+		return Object.FindObjectsByType<Transform>()
 			.Where(t => t.name == "piece(Clone)")
 			.ToArray();
 	}

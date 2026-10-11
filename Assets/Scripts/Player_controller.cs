@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem; // <-- 1. Importar el nuevo Input System
 
@@ -7,6 +8,10 @@ public class Player_controller : MonoBehaviour
 	[Header("Movimiento")]
 	[SerializeField] private float runSpeed = 7f;
 	[SerializeField] private float jumpForce = 13f;
+
+	[Header("Golpe")]
+	[SerializeField] private float duracionGolpe = 1.5f;
+	[SerializeField] private float multiplicadorVelocidadGolpe = 0.5f;
 
 	[Header("Detección de Suelo")]
 	[SerializeField] private Transform groundCheck;
@@ -21,6 +26,8 @@ public class Player_controller : MonoBehaviour
 	private Rigidbody2D rb;
 	private Animator animator;
 	private AudioSource pasosAudio;
+	private SpriteRenderer spriteRenderer;
+	private Coroutine golpeCoroutine;
 	private int animacionActual;
 	private bool isGrounded;
 	private bool jumpRequested;
@@ -30,6 +37,7 @@ public class Player_controller : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		pasosAudio = GetComponent<AudioSource>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
 		pasosAudio.loop = true; // Los pasos suenan en loop mientras dura la carrera
 	}
 
@@ -54,13 +62,40 @@ public class Player_controller : MonoBehaviour
 	void FixedUpdate()
 	{
 		// Física: la velocidad se aplica en FixedUpdate según las reglas del proyecto
-		rb.linearVelocity = new Vector2(runSpeed, rb.linearVelocity.y);
+		rb.linearVelocity = new Vector2(golpeCoroutine != null ? runSpeed * multiplicadorVelocidadGolpe : runSpeed, rb.linearVelocity.y);
 
 		if (jumpRequested)
 		{
 			rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 			jumpRequested = false;
 		}
+	}
+
+	void OnCollisionEnter2D(Collision2D collision)
+	{
+		// Chocar con una caja: la rompe y nos frena un rato
+		if (collision.gameObject.TryGetComponent(out Obstaculo caja))
+		{
+			caja.Romper();
+
+			// Si chocamos otra caja antes de recuperarnos, reiniciamos el efecto
+			if (golpeCoroutine != null) StopCoroutine(golpeCoroutine);
+			golpeCoroutine = StartCoroutine(RecibirGolpe());
+		}
+	}
+
+	private IEnumerator RecibirGolpe()
+	{
+		// Titila mostrando y ocultando el sprite hasta que pase el golpe
+		float fin = Time.time + duracionGolpe;
+		while (Time.time < fin)
+		{
+			spriteRenderer.enabled = !spriteRenderer.enabled;
+			yield return new WaitForSeconds(0.1f);
+		}
+
+		spriteRenderer.enabled = true;
+		golpeCoroutine = null;
 	}
 
 	private void ActualizarAnimaciones()
