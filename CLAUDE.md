@@ -6,11 +6,10 @@ Ver `README.md` para el concepto, los objetivos del proyecto y el recorrido del 
 
 Hoy existe en Unity:
 - Personaje que corre a velocidad constante y salta (`Player_controller`).
-- Suelo generado en tramos delante del jugador y borrado detrás (`Ground_spawner`), que también siembra cajas con probabilidad.
-- Cajas (`Obstaculo`, prefab `Caja`): al chocar, el jugador baja su velocidad `duracionGolpe` s y la caja titila y desaparece.
+- Suelo generado en tramos delante del jugador y borrado detrás (`Ground_spawner`), que también siembra barriles con probabilidad. Cada tramo (prefab `Ground`, escala 0.4) es la calle `road&lamps` con postes y pared, sin collider en los postes.
+- Barriles (`Obstaculo`, prefab `Caja`): toman un color al azar de `variantes` y tienen una luz 2D sutil (`Brillo`). Al chocar (también al caer encima, es a propósito) el jugador baja su velocidad `duracionGolpe` s y el barril titila y desaparece.
 - Menú con Play y Exit (`Menu_manager`, escena `Menu`) y fondo parallax (`Parallax_layer`).
-- Música, ambiente y SFX de pasos. Cámara con Cinemachine.
-- Un test PlayMode del spawner (hoy falla, ver Tests).
+- Música, ambiente y SFX de pasos. Cámara con Cinemachine y Pixel Perfect Camera.
 
 Todavía no existe: deslizarse, tropiezo, monedas, patada, subte y tienda, reloj, jefe, historieta y arte final.
 
@@ -47,8 +46,16 @@ Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tes
 ## Movimiento y Física (cómo está hoy)
 - `Player_controller`: `Update()` lee el input y la detección de suelo; `FixedUpdate()` aplica la velocidad horizontal y el salto.
 - El salto se pide en `Update()` con `jumpRequested = true` y se aplica en `FixedUpdate()`, que luego lo limpia.
-- Suelo: `Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer)`. La caja (0.15 × 0.05) es más angosta que el collider del Player (0.2 de ancho) y el hijo `GroundCheck` queda apenas bajo la suela (y ≈ −0.18). `groundLayer` tiene que ser solo `Ground`; si incluyera la capa del Player, se detectaría a sí mismo.
-- `Ground_spawner`: crea piezas de `pieceWidth` (20) unidades y borra las que quedan `despawnDistance` (25) detrás del jugador. `pieceWidth` tiene que coincidir con la escala real del prefab `Ground` (no verificado).
+- Suelo: `Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer)`. En la escena la caja es de 0.12 × 0.1 (override sobre el prefab), más angosta que el collider del Player, y el hijo `GroundCheck` queda apenas bajo la suela (y = −0.144). `groundLayer` tiene que ser solo `Ground`; si incluyera la capa del Player, se detectaría a sí mismo.
+- `Ground_spawner`: crea tramos y borra los que quedan `despawnDistance` (25) detrás del jugador. En `Start` calcula `pieceWidth` (ancho del sprite hijo `Road` × escala, hoy 7.68) y `alturaSuelo` (borde superior del `BoxCollider2D` del prefab, hoy 0.529); el prefab `Ground` tiene que tener un hijo `Road` y el collider en la raíz.
+- Sin "bump" en las uniones: los tramos son hijos de un objeto `Suelo` (creado en `Start`, capa del prefab, `Rigidbody2D` estático + `CompositeCollider2D` en Outlines) y su `BoxCollider2D` está en modo Merge. Outlines es un contorno hueco: `GroundCheck` detecta el suelo porque cruza el borde superior; si quedara entero dentro del suelo, no lo detectaría.
+
+## Cámara y nitidez (pixel art)
+- Pixel Perfect Camera de URP en `Main Camera`: PPU 100, referencia 960×540 (2× exacto en 1920×1080), `GridSnapping` en `None` (el snapping hacía vibrar al jugador contra la cámara de Cinemachine). `CinemachineCamera` tiene la extensión `CinemachinePixelPerfect` y ortho 2.7.
+- `CinemachineBrain` en `LateUpdate` (el Rigidbody2D del jugador interpola) y damping del `CinemachinePositionComposer` en 0.
+- `Parallax_layer` se reposiciona en `RenderPipelineManager.beginCameraRendering`, no en `LateUpdate`: en `LateUpdate` podía correr antes que Cinemachine y temblaba. No volverlo a `LateUpdate`.
+- Sprites con filtro Point, sin mipmaps, PPU 100. Las hojas del jugador están cortadas en celdas fijas de 128×128 (con recorte ajustado, el cuerpo saltaba entre frames).
+- En el Editor, el VSync del Game view es aparte del de Quality Settings; sin él hay tearing.
 
 ## Animación (cómo la manejamos)
 No usamos el Animator como máquina de estados por parámetros. El código decide el estado y el Animator solo reproduce el clip pedido.
@@ -63,7 +70,7 @@ No usamos el Animator como máquina de estados por parámetros. El código decid
 - Deslizarse y tropiezo todavía no tienen clip. Cuando existan, el estado se agrega en `ActualizarAnimaciones()` con su propio hash.
 
 ## Tests
-- Unity Test Runner → PlayMode, 5 tests, todos pasan: `Ground_spawnerTests` (piezas y cajas), `ObstaculoTests` (rotura de la caja) y `Player_controllerTests` (velocidad constante y golpe). No hay tests EditMode.
+- Unity Test Runner → PlayMode, 6 tests, todos pasan: `Ground_spawnerTests` (piezas, cajas y suelo fusionado en un solo collider), `ObstaculoTests` (rotura de la caja) y `Player_controllerTests` (velocidad constante y golpe). No hay tests EditMode.
 - Un test nuevo va en `Assets/Tests/` y accede a los scripts del juego por el assembly `Scripts`. `Test_utils.SetField` asigna campos `[SerializeField] private` por reflexión.
 - `Destroy` se aplica al final del frame: en un test hay que esperar un frame más antes de comprobar que algo desapareció, y limpiar en `TearDown` con `DestroyImmediate`.
 - Los colliders creados por código necesitan `size` explícito, y con `AutoSyncTransforms` apagado hay que llamar `Physics2D.SyncTransforms()` después de mover un objeto.

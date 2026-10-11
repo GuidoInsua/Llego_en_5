@@ -11,12 +11,24 @@ public class Ground_spawnerTests
 	private GameObject playerObject;
 	private GameObject piecePrefab;
 	private GameObject cajaPrefab;
+	private Texture2D textura;
 	private Ground_spawner spawner;
 
 	[SetUp]
 	public void SetUp()
 	{
+		// Pieza como el prefab real: el spawner saca el ancho del sprite "Road" (2000 px a 100 PPU = 20)
+		// y la altura del borde superior del collider (0.5)
 		piecePrefab = new GameObject("piece");
+		piecePrefab.layer = 3;
+		BoxCollider2D col = piecePrefab.AddComponent<BoxCollider2D>();
+		col.size = new Vector2(20.1f, 1f); // Un poco más ancho que la pieza, como el real
+		col.compositeOperation = Collider2D.CompositeOperation.Merge;
+		GameObject road = new GameObject("Road");
+		road.transform.SetParent(piecePrefab.transform);
+		textura = new Texture2D(2000, 1);
+		road.AddComponent<SpriteRenderer>().sprite = Sprite.Create(textura, new Rect(0, 0, 2000, 1), new Vector2(0.5f, 0.5f), 100f);
+
 		playerObject = new GameObject("player");
 
 		spawnerObject = new GameObject("spawner");
@@ -31,9 +43,11 @@ public class Ground_spawnerTests
 		// Inmediato: si no, los restos del test anterior se cuentan en el siguiente
 		foreach (Transform t in Buscar("piece(Clone)")) Object.DestroyImmediate(t.gameObject);
 		foreach (Transform t in Buscar("caja(Clone)")) Object.DestroyImmediate(t.gameObject);
+		foreach (Transform t in Buscar("Suelo")) Object.DestroyImmediate(t.gameObject);
 		Object.DestroyImmediate(spawnerObject);
 		Object.DestroyImmediate(playerObject);
 		Object.DestroyImmediate(piecePrefab);
+		Object.DestroyImmediate(textura);
 		if (cajaPrefab != null) Object.DestroyImmediate(cajaPrefab);
 	}
 
@@ -68,6 +82,18 @@ public class Ground_spawnerTests
 		// Pieza nueva en x = 80, la caja cae dentro de +-5 y apoyada sobre el suelo (groundY -2 + alturaSuelo 0.5)
 		Assert.That(cajas[0].position.x, Is.InRange(75f, 85f));
 		Assert.AreEqual(-1.5f, cajas[0].position.y, 0.001f);
+	}
+
+	[UnityTest]
+	public IEnumerator PiezasSeFusionanEnUnSoloCollider()
+	{
+		yield return Esperar(2);
+		yield return new WaitForFixedUpdate();
+
+		// Sin uniones entre tramos: si se cortara en varios contornos vuelve el "bump" de la cápsula
+		CompositeCollider2D suelo = Buscar("Suelo")[0].GetComponent<CompositeCollider2D>();
+		Assert.AreEqual(1, suelo.pathCount, "las 4 piezas forman un solo contorno");
+		Assert.AreEqual(3, suelo.gameObject.layer, "el suelo toma la capa del prefab, que es la que detecta GroundCheck");
 	}
 
 	private static IEnumerator Esperar(int frames)

@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem; // <-- 1. Importar el nuevo Input System
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(AudioSource))]
 public class Player_controller : MonoBehaviour

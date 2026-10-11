@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Parallax_layer : MonoBehaviour
 {
@@ -20,8 +21,14 @@ public class Parallax_layer : MonoBehaviour
 		offsetY = transform.position.y - camara.position.y;
 	}
 
-	void LateUpdate()
+	void OnEnable() => RenderPipelineManager.beginCameraRendering += Reposicionar;
+	void OnDisable() => RenderPipelineManager.beginCameraRendering -= Reposicionar;
+
+	// Justo antes de dibujar y no en LateUpdate: si corría antes que Cinemachine, leía la cámara del frame anterior y la capa temblaba
+	private void Reposicionar(ScriptableRenderContext contexto, Camera cam)
 	{
+		if (cam.transform != camara) return;
+
 		float x = camara.position.x;
 
 		// Cuánto se corre el patrón de la tira respecto de la cámara

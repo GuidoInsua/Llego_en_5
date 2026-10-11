@@ -52,7 +52,7 @@ public class Player_controllerTests
 	{
 		caja = new GameObject("caja");
 		BoxCollider2D cajaCol = caja.AddComponent<BoxCollider2D>();
-		cajaCol.size = Vector2.one; // Tamaño explícito: sin sprite el collider no choca con el jugador (el test falló sin esto)
+		cajaCol.size = Vector2.one; // Tamaño explícito: sin sprite el collider no choca con el jugador
 		caja.AddComponent<SpriteRenderer>();
 		caja.AddComponent<Obstaculo>();
 		caja.transform.position = new Vector3(3f, 0f, 0f);
