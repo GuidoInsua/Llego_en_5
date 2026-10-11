@@ -63,8 +63,10 @@ No usamos el Animator como máquina de estados por parámetros. El código decid
 - Deslizarse y tropiezo todavía no tienen clip. Cuando existan, el estado se agrega en `ActualizarAnimaciones()` con su propio hash.
 
 ## Tests
-- Unity Test Runner → PlayMode → `Ground_spawnerTests` (`SpawnsAheadAndRemovesBehind`). Hoy **falla**: espera 4 piezas (x=20..80) y queda también la de x=0. No hay tests EditMode.
-- Un test nuevo va en `Assets/Tests/` y accede a los scripts del juego por el assembly `Scripts`.
+- Unity Test Runner → PlayMode, 5 tests, todos pasan: `Ground_spawnerTests` (piezas y cajas), `ObstaculoTests` (rotura de la caja) y `Player_controllerTests` (velocidad constante y golpe). No hay tests EditMode.
+- Un test nuevo va en `Assets/Tests/` y accede a los scripts del juego por el assembly `Scripts`. `Test_utils.SetField` asigna campos `[SerializeField] private` por reflexión.
+- `Destroy` se aplica al final del frame: en un test hay que esperar un frame más antes de comprobar que algo desapareció, y limpiar en `TearDown` con `DestroyImmediate`.
+- Los colliders creados por código necesitan `size` explícito, y con `AutoSyncTransforms` apagado hay que llamar `Physics2D.SyncTransforms()` después de mover un objeto.
 - Desde la terminal con el Editor abierto: `unity command run_tests --mode PlayMode --async_tests true` y después `unity command test_status --result-only` (sin `--async_tests` devuelve `0/0` y no corre nada). `unity test` por batch solo anda con el Editor cerrado.
 
 ## Unity CLI (`unity`, ya en el PATH)
