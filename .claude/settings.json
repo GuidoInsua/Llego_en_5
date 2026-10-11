@@ -26,5 +26,9 @@
 			"Write(./UserSettings/**)",
 			"Write(./MemoryCaptures/**)"
 		]
+	},
+	"attribution": {
+		"commit": "",
+		"pr": ""
 	}
 }
