@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem; // <-- 1. Importar el nuevo Input System
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(AudioSource))]
 public class Player_controller : MonoBehaviour
 {
 	[Header("Movimiento")]
@@ -20,6 +20,7 @@ public class Player_controller : MonoBehaviour
 
 	private Rigidbody2D rb;
 	private Animator animator;
+	private AudioSource pasosAudio;
 	private int animacionActual;
 	private bool isGrounded;
 	private bool jumpRequested;
@@ -28,6 +29,8 @@ public class Player_controller : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
+		pasosAudio = GetComponent<AudioSource>();
+		pasosAudio.loop = true; // Los pasos suenan en loop mientras dura la carrera
 	}
 
 	void Update()
@@ -92,6 +95,10 @@ public class Player_controller : MonoBehaviour
 
 		animacionActual = nuevoHash;
 		animator.Play(nuevoHash);
+
+		// Solo al cambiar de estado: los pasos suenan únicamente corriendo en el suelo
+		if (nuevoHash == AnimRun) pasosAudio.Play();
+		else pasosAudio.Stop();
 	}
 
 	void OnDrawGizmosSelected()

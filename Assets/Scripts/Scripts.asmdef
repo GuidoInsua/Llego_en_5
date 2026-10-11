@@ -1,6 +1,7 @@
 {
     "name": "Scripts",
     "references": [
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.UI"
     ]
 }
