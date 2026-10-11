@@ -42,12 +42,12 @@ Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tes
    - No uses wrappers para serializar diccionarios: Unity no serializa `Dictionary<TKey, TValue>` de forma nativa. Usa listas serializables de pares clave/valor, o un `ScriptableObject`.
 4. **Mecánicas del Juego (Runner 2D):**
    - El movimiento horizontal es constante o acelerado progresivamente.
-   - Detección de suelo mediante `Physics2D.OverlapCircle` (ya implementado) o `BoxCast`, no solo colisiones planas.
+   - Detección de suelo mediante `Physics2D.OverlapBox` (ya implementado) o `BoxCast`, no solo colisiones planas.
 
 ## Movimiento y Física (cómo está hoy)
 - `Player_controller`: `Update()` lee el input y la detección de suelo; `FixedUpdate()` aplica la velocidad horizontal y el salto.
 - El salto se pide en `Update()` con `jumpRequested = true` y se aplica en `FixedUpdate()`, que luego lo limpia.
-- Suelo: `Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer)`.
+- Suelo: `Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer)`. La caja (0.15 × 0.05) es más angosta que el collider del Player (0.2 de ancho) y el hijo `GroundCheck` queda apenas bajo la suela (y ≈ −0.18). `groundLayer` tiene que ser solo `Ground`; si incluyera la capa del Player, se detectaría a sí mismo.
 - `Ground_spawner`: crea piezas de `pieceWidth` (20) unidades y borra las que quedan `despawnDistance` (25) detrás del jugador. `pieceWidth` tiene que coincidir con la escala real del prefab `Ground` (no verificado).
 
 ## Animación (cómo la manejamos)

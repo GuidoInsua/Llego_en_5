@@ -1678,8 +1678,36 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1247954690900123440, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1247954690900123440, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.18
+      objectReference: {fileID: 0}
     - target: {fileID: 1750325751236031185, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
       propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2193854072041934417, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2509583146731999510, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2509583146731999510, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: checkRadius
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591507455383112665, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4264868795937260764, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4976291192908515846, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
@@ -1687,9 +1715,17 @@ PrefabInstance:
       value: 0.469
       objectReference: {fileID: 0}
     - target: {fileID: 4976291192908515846, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4976291192908515846, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
       propertyPath: m_Resource
       value: 
       objectReference: {fileID: 8300000, guid: 1edb0215e225b9a428081a223e0dc712, type: 3}
+    - target: {fileID: 5635969320217559008, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7042759009882682192, guid: d04d378a291006e4a99766bf1ce67a5a, type: 3}
       propertyPath: m_Name
       value: Player
