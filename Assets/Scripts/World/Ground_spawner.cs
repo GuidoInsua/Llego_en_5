@@ -26,8 +26,16 @@ public class Ground_spawner : MonoBehaviour
 
 	void Start()
 	{
+		// Se valida en Start y no en Awake porque el prefab se lee acá, y los tests asignan los campos después de crear el componente
+		Transform road = groundPrefab != null ? groundPrefab.transform.Find("Road") : null; // El collider es un poco más ancho (solape), por eso el ancho sale del sprite
+		if (playerTransform == null || road == null || road.GetComponent<SpriteRenderer>() == null || groundPrefab.GetComponent<BoxCollider2D>() == null)
+		{
+			Debug.LogError("Ground_spawner: falta playerTransform, o el prefab Ground sin hijo Road con SpriteRenderer o sin BoxCollider2D en la raíz.");
+			enabled = false;
+			return;
+		}
+
 		Vector3 escala = groundPrefab.transform.localScale;
-		Transform road = groundPrefab.transform.Find("Road"); // El collider es un poco más ancho (solape), por eso el ancho sale del sprite
 		pieceWidth = road.GetComponent<SpriteRenderer>().sprite.bounds.size.x * road.localScale.x * escala.x;
 		BoxCollider2D col = groundPrefab.GetComponent<BoxCollider2D>();
 		alturaSuelo = (col.offset.y + col.size.y * 0.5f) * escala.y;

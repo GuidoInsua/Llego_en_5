@@ -14,6 +14,15 @@ public class Parallax_layer : MonoBehaviour
 	private float ancho;
 	private float offsetY; // Altura de la capa respecto de la cámara, para que no se mueva al saltar
 
+	void Awake()
+	{
+		if (camara == null || GetComponent<SpriteRenderer>() == null)
+		{
+			Debug.LogError("Parallax_layer: falta asignar la cámara o el SpriteRenderer.");
+			enabled = false; // Desde Awake también evita OnEnable, que se suscribiría al render sin cámara
+		}
+	}
+
 	void Start()
 	{
 		// Ancho de la tira en unidades del mundo, para repetirla sin cortes
