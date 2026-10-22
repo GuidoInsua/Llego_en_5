@@ -13,14 +13,21 @@ public class Menu_manager : MonoBehaviour
 
 	void Awake()
 	{
+		if (startButton == null || quitButton == null)
+		{
+			Debug.LogError("Menu_manager: falta asignar startButton o quitButton.");
+			enabled = false;
+			return;
+		}
+
 		startButton.onClick.AddListener(IniciarJuego);
 		quitButton.onClick.AddListener(SalirDelJuego);
 	}
 
 	void OnDestroy()
 	{
-		startButton.onClick.RemoveListener(IniciarJuego);
-		quitButton.onClick.RemoveListener(SalirDelJuego);
+		if (startButton != null) startButton.onClick.RemoveListener(IniciarJuego);
+		if (quitButton != null) quitButton.onClick.RemoveListener(SalirDelJuego);
 	}
 
 	private void IniciarJuego()

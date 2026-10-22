@@ -1,0 +1,20 @@
+using UnityEngine;
+
+// Volúmenes elegidos en opciones (0 a 1), guardados en PlayerPrefs. Todo sonido nuevo tiene que respetarlos
+public static class Volumen_audio
+{
+	private const string ClaveMusica = "VolumenMusica";
+	private const string ClaveEfectos = "VolumenEfectos";
+
+	public static float Musica
+	{
+		get { return PlayerPrefs.GetFloat(ClaveMusica, 1f); }
+		set { PlayerPrefs.SetFloat(ClaveMusica, Mathf.Clamp01(value)); }
+	}
+
+	public static float Efectos
+	{
+		get { return PlayerPrefs.GetFloat(ClaveEfectos, 1f); }
+		set { PlayerPrefs.SetFloat(ClaveEfectos, Mathf.Clamp01(value)); }
+	}
+}

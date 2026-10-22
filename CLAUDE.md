@@ -9,7 +9,9 @@ Hoy existe en Unity:
 - Suelo generado en tramos delante del jugador y borrado detrás (`Ground_spawner`), que también siembra barriles con probabilidad. Cada tramo (prefab `Ground`, escala 0.4) es la calle `road&lamps` con postes y pared, sin collider en los postes.
 - Barriles (`Obstaculo`, prefab `Caja`): toman un color al azar de `variantes` y tienen una luz 2D sutil (`Brillo`). Al chocar (también al caer encima, es a propósito) el jugador baja su velocidad `duracionGolpe` s y el barril titila y desaparece.
 - Menú con Play y Exit (`Menu_manager`, escena `Menu`) y fondo parallax (`Parallax_layer`).
-- Música, ambiente y SFX de pasos. Cámara con Cinemachine y Pixel Perfect Camera.
+- Pausa con Escape en `Level1` (`Menu_pausa`: continuar, menú y salir) y selección inicial con teclado en los menús (`Seleccion_inicial`).
+- Música, ambiente y SFX de pasos. `Efectos_sonido` (objeto `Sonidos`) para efectos sueltos y `Volumen_audio` para el volumen guardado; todavía no hay pantalla de opciones que lo cambie. Cámara con Cinemachine y Pixel Perfect Camera.
+- El golpe hace titilar al jugador entre su material normal y `DestelloBlanco` (sprite entero blanco).
 
 Todavía no existe: deslizarse, tropiezo, monedas, patada, subte y tienda, reloj, jefe, historieta y arte final.
 
@@ -22,13 +24,35 @@ Todavía no existe: deslizarse, tropiezo, monedas, patada, subte y tienda, reloj
 - **Física:** Physics2D (`Rigidbody2D`, `Collider2D`)
 
 ## Estructura
-- `Assets/Scripts/`: código del juego. Assembly `Scripts` (`Scripts.asmdef`, referencia `Unity.InputSystem`).
+- `Assets/Scripts/`: código del juego, en subcarpetas por tema: `Player/`, `World/` (suelo, obstáculos, parallax), `UI/` (menús) y `Audio/`. Assembly `Scripts` (`Scripts.asmdef`, referencia `Unity.InputSystem` y `Unity.UI`).
 - `Assets/Tests/`: tests PlayMode. Assembly `Tests` (`Tests.asmdef`), referencia `Scripts` y solo compila con `UNITY_INCLUDE_TESTS`.
 - `Assets/Animations/`: clips y `Animators/Player.controller`.
-- `Assets/Prefabs/` (`Player`, `Ground`, `Caja`), `Assets/Sprites/`.
+- `Assets/Prefabs/` (`Player`, `Ground`, `Caja`), `Assets/Sprites/`, `Assets/Materials/` (`DestelloBlanco`).
+- Un script nuevo va en la carpeta de su tema; si no encaja en ninguna, se crea una carpeta nueva en `Scripts/` en vez de dejarlo suelto. Un archivo por clase, con el mismo nombre que la clase.
+- No mover ni renombrar archivos desde fuera de Unity sin su `.meta` (mover archivo y `.meta` juntos, o mover desde el Editor). Las escenas guardan los scripts por GUID, pero si se renombra una clase usada en un `OnClick` hay que reconectarlo en el Inspector.
 - Escenas: `Assets/Scenes/Menu.unity` (arranque) y `Assets/Scenes/Level1.unity` (nivel, activa al trabajar). Ambas tienen que estar en Build Settings.
 
 Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tests`. Un script fuera de esos assemblies no lo ve el test.
+
+## Nomenclatura
+Lo que ya usa el código, para mantenerlo consistente:
+
+| Qué | Regla | Ejemplo |
+|---|---|---|
+| Clases y archivos `.cs` | Palabras en castellano unidas con `_`, solo la primera con mayúscula. Una palabra sola, sin `_` | `Player_controller`, `Ground_spawner`, `Menu_pausa`, `Obstaculo` |
+| Clases de test | Clase probada + `Tests`; `Test_utils` es la ayuda compartida | `Player_controllerTests` |
+| Métodos | PascalCase y verbo. Los mensajes de Unity (`Awake`, `Update`) tal cual | `ActualizarAnimaciones()`, `Romper()` |
+| Campos privados y locales | camelCase | `golpeCoroutine`, `alturaSuelo` |
+| Campos de Inspector | `[SerializeField] private` + camelCase. Nunca `public` para verlos | `[SerializeField] private float jumpForce` |
+| `const` y `static readonly` | PascalCase | `Parpadeo`, `AnimRun`, `ClaveMusica` |
+| Booleanos | Que se lean como pregunta: prefijo `is`/`has` | `isGrounded`, `isPausado` |
+| Prefabs, escenas, materiales | PascalCase | `Caja`, `Level1`, `DestelloBlanco` |
+| Clips y states del Animator | `Player_<estado>_anim`, igual al nombre del state | `Player_jumpUp_anim` |
+| Tests | `NombreDeLoQueSeProbaEnPascalCase` | `RunsAtConstantSpeed` |
+
+- **Idioma:** los nombres nuevos van en castellano (clases, campos, métodos). Quedan en inglés los heredados (`runSpeed`, `jumpForce`, `groundCheck`, `Player_controller`) y lo que viene del motor o de una interfaz; no se renombran de golpe: se hace solo con motivo, porque hay referencias en escenas y prefabs.
+- Los campos del Inspector no se renombran sin `[FormerlySerializedAs]`: se pierde el valor guardado en la escena.
+- Los textos y comentarios van en castellano.
 
 ## Reglas de Arquitectura y Código
 1. **Encapsulamiento:** Nunca uses variables `public` para referencias del Inspector; usa `[SerializeField] private`.
@@ -42,6 +66,20 @@ Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tes
 4. **Mecánicas del Juego (Runner 2D):**
    - El movimiento horizontal es constante o acelerado progresivamente.
    - Detección de suelo mediante `Physics2D.OverlapBox` (ya implementado) o `BoxCast`, no solo colisiones planas.
+5. **Validar referencias al arrancar:** si falta algo obligatorio del Inspector, `Debug.LogError` y `enabled = false`, para no explotar en cada frame. Va en `Awake`; si el script lee un prefab o los tests asignan los campos después de crear el componente (`Ground_spawner`), va en `Start`. Los tests que necesiten un `Awake` válido crean el objeto inactivo, asignan los campos con `Test_utils.SetField` y después lo activan.
+6. **Estado de juego:**
+   - Daño: cuando haya más de un tipo de cosa que dañe o reciba daño, se hace con una interfaz (`IDamageable`) y no comparando tipos concretos. Hoy solo existe `Obstaculo`.
+   - Lo que aparece y desaparece seguido va con pool, reiniciando todo su estado al reusarlo. Hoy los tramos y barriles se instancian y destruyen; el pool se hace cuando el profiler lo pida o con las monedas.
+   - Números de balance (daño, velocidad, tiempos, probabilidades) son campos `[SerializeField]`, no valores escritos dentro del método.
+   - Sin `Debug.Log` de eventos normales; quedan `LogWarning` y `LogError`. No se agrega código que nadie llama "por si acaso".
+7. **Utilidades:** el azar suave (movimiento de enemigos) y los sorteos con pesos (qué obstáculo o moneda sale) se hacen una vez, como clase estática pura que recibe el valor al azar como parámetro (así se puede probar sin Unity). No escribir Perlin ni sorteos a mano en cada script.
+8. **Async:** corrutinas para esperas cortas y secuencias lineales; `Awaitable` si hay que devolver un valor o encadenar pasos. Evitar `Task` y `Task.Delay`: asignan memoria y no respetan `Time.timeScale`. El `Awaitable` se espera en el mismo lugar donde se llama, nunca dos veces ni guardado en una variable (viene de un pool). Un método `async` sigue corriendo si el objeto se destruye: pasar `destroyCancellationToken`. Nada de `async void`.
+
+## Sonido y pausa
+- Efectos sueltos: `Efectos_sonido.Reproducir(clip)` (objeto `Sonidos` de la escena); evita apilar el mismo clip en pocos milisegundos. No poner un `AudioSource` por efecto. Excepción: un sonido que tiene que cortarse con su objeto, como los pasos (el jugador aplica `Volumen_audio.Efectos` por su cuenta).
+- Todo sonido nuevo respeta el volumen elegido en opciones: `Volumen_audio.Efectos` / `Volumen_audio.Musica` (se guarda en `PlayerPrefs`).
+- Pausa: `Menu_pausa` pone `Time.timeScale = 0` y `AudioListener.pause = true`, y lo deja en 1 y `false` al continuar, cambiar de escena o destruirse. Todo script que lea input tiene que ignorarlo con `Time.timeScale == 0` (como el salto del jugador). Los tiempos que tienen que avanzar en pausa usan `Time.unscaledTime`.
+- Menús: cada menú lleva `Seleccion_inicial` con su primera opción, para manejarlo con flechas y Enter. Los botones llaman a métodos públicos de `Menu_manager` / `Menu_pausa` desde el `OnClick`.
 
 ## Movimiento y Física (cómo está hoy)
 - `Player_controller`: `Update()` lee el input y la detección de suelo; `FixedUpdate()` aplica la velocidad horizontal y el salto.
@@ -55,6 +93,8 @@ Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tes
 - `CinemachineBrain` en `LateUpdate` (el Rigidbody2D del jugador interpola) y damping del `CinemachinePositionComposer` en 0.
 - `Parallax_layer` se reposiciona en `RenderPipelineManager.beginCameraRendering`, no en `LateUpdate`: en `LateUpdate` podía correr antes que Cinemachine y temblaba. No volverlo a `LateUpdate`.
 - Sprites con filtro Point, sin mipmaps, PPU 100. Las hojas del jugador están cortadas en celdas fijas de 128×128 (con recorte ajustado, el cuerpo saltaba entre frames).
+- **El juego está diseñado para 16:9.** En otras proporciones la Pixel Perfect Camera está en `Crop Frame` = Windowbox (`m_CropFrame: 3`): barras negras y la vista queda igual que en 16:9. No subir el `orthographicSize` a mano para "adaptar": la Pixel Perfect Camera lo controla. Todo cambio tiene que seguir viéndose igual en 16:9.
+- UI: los `Canvas` usan `CanvasScaler` en *Scale With Screen Size*, referencia 1920×1080 y ajuste por alto (`Match` = 1). Una imagen de fondo que llene la pantalla lleva `AspectRatioFitter` en *Envelope Parent* para no deformarse.
 - En el Editor, el VSync del Game view es aparte del de Quality Settings; sin él hay tearing.
 
 ## Animación (cómo la manejamos)
@@ -67,6 +107,7 @@ No usamos el Animator como máquina de estados por parámetros. El código decid
 - `CambiarAnimacion(hash)` guarda el estado actual y llama `animator.Play(hash)` solo si cambió.
 - Los hashes salen de `Animator.StringToHash("<nombre>")`. El nombre tiene que ser exactamente el del state en `Player.controller`. Si no coincide, la animación puede fallar en silencio.
 - `Player.controller` no tiene transiciones automáticas (`m_Transitions` vacío en todos los states). Si se agregan transiciones, pueden pisar lo que pide el código; revisarlo antes.
+- El golpe no apaga el sprite: alterna `sharedMaterial` entre el material original y `materialDestello` (`DestelloBlanco`, shader `GUI/Text Shader`) y lo restaura al terminar.
 - Deslizarse y tropiezo todavía no tienen clip. Cuando existan, el estado se agrega en `ActualizarAnimaciones()` con su propio hash.
 
 ## Tests

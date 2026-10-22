@@ -19,6 +19,7 @@ public class Player_controllerTests
 		jugador = new GameObject("jugador");
 		jugador.AddComponent<SpriteRenderer>(); // El golpe titila el sprite
 		jugador.AddComponent<BoxCollider2D>().size = Vector2.one;
+		jugador.SetActive(false); // Inactivo hasta asignar los campos: Awake valida que estén
 		Player_controller controller = jugador.AddComponent<Player_controller>(); // Suma Rigidbody2D, Animator y AudioSource
 
 		GameObject groundCheck = new GameObject("groundCheck");
@@ -26,6 +27,8 @@ public class Player_controllerTests
 		Test_utils.SetField(controller, "groundCheck", groundCheck.transform);
 		Test_utils.SetField(controller, "runSpeed", RunSpeed);
 		Test_utils.SetField(controller, "duracionGolpe", 0.5f); // Corta para que el test no dure tanto
+		Test_utils.SetField(controller, "materialDestello", new Material(Shader.Find("Sprites/Default")));
+		jugador.SetActive(true);
 
 		rb = jugador.GetComponent<Rigidbody2D>();
 		rb.gravityScale = 0f; // Sin gravedad ni suelo: solo medimos el avance horizontal

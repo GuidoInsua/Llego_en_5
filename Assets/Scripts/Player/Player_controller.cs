@@ -13,6 +13,8 @@ public class Player_controller : MonoBehaviour
 	[SerializeField] private float duracionGolpe = 1.5f;
 	[SerializeField] private float multiplicadorVelocidadGolpe = 0.5f;
 
+	[SerializeField] private Material materialDestello; // Pinta el sprite entero de blanco (shader GUI/Text Shader)
+
 	[Header("Detección de Suelo")]
 	[SerializeField] private Transform groundCheck;
 	[SerializeField] private Vector2 groundCheckSize = new Vector2(0.15f, 0.05f); // Más angosta que los pies para no detectar paredes
@@ -28,6 +30,7 @@ public class Player_controller : MonoBehaviour
 	private Animator animator;
 	private AudioSource pasosAudio;
 	private SpriteRenderer spriteRenderer;
+	private Material materialNormal;
 	private Coroutine golpeCoroutine;
 	private int animacionActual;
 	private bool isGrounded;
@@ -39,7 +42,17 @@ public class Player_controller : MonoBehaviour
 		animator = GetComponent<Animator>();
 		pasosAudio = GetComponent<AudioSource>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
+
+		if (groundCheck == null || materialDestello == null || spriteRenderer == null)
+		{
+			Debug.LogError("Player_controller: falta asignar groundCheck, materialDestello o el SpriteRenderer.");
+			enabled = false;
+			return;
+		}
+
+		materialNormal = spriteRenderer.sharedMaterial;
 		pasosAudio.loop = true; // Los pasos suenan en loop mientras dura la carrera
+		pasosAudio.volume *= Volumen_audio.Efectos; // Los pasos no pasan por Efectos_sonido: aplican el volumen acá
 	}
 
 	void Update()
@@ -48,7 +61,8 @@ public class Player_controller : MonoBehaviour
 		isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
 
 		// 2. Salto con el Nuevo Input System (Espacio o tecla W / Flecha arriba)
-		bool jumpPressed = Keyboard.current != null &&
+		// En pausa (timeScale 0) el input se ignora
+		bool jumpPressed = Time.timeScale > 0f && Keyboard.current != null &&
 						  (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
 
 		if (jumpPressed && isGrounded)
@@ -87,15 +101,17 @@ public class Player_controller : MonoBehaviour
 
 	private IEnumerator RecibirGolpe()
 	{
-		// Titila mostrando y ocultando el sprite hasta que pase el golpe
+		// Titila alternando el sprite entre normal y blanco hasta que pase el golpe
 		float fin = Time.time + duracionGolpe;
+		bool isBlanco = false;
 		while (Time.time < fin)
 		{
-			spriteRenderer.enabled = !spriteRenderer.enabled;
+			isBlanco = !isBlanco;
+			spriteRenderer.sharedMaterial = isBlanco ? materialDestello : materialNormal;
 			yield return Parpadeo;
 		}
 
-		spriteRenderer.enabled = true;
+		spriteRenderer.sharedMaterial = materialNormal;
 		golpeCoroutine = null;
 	}
 
