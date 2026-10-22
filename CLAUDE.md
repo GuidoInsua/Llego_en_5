@@ -11,9 +11,10 @@ Hoy existe en Unity:
 - Menú con Play y Exit (`Menu_manager`, escena `Menu`) y fondo parallax (`Parallax_layer`).
 - Pausa con Escape en `Level1` (`Menu_pausa`: continuar, menú y salir) y selección inicial con teclado en los menús (`Seleccion_inicial`).
 - Música, ambiente y SFX de pasos. `Efectos_sonido` (objeto `Sonidos`) para efectos sueltos y `Volumen_audio` para el volumen guardado; todavía no hay pantalla de opciones que lo cambie. Cámara con Cinemachine y Pixel Perfect Camera.
-- El golpe hace titilar al jugador entre su material normal y `DestelloBlanco` (sprite entero blanco).
+- El golpe hace titilar al jugador entre su material normal y `DestelloBlanco` (todo el personaje blanco).
+- **Prueba de estilo sombra 3D:** escena `LevelSombra` con el prefab `PlayerSombra` (modelo `Ch33` de Mixamo en `Assets/Mixamo/`, de perfil, en negro y a tamaño real, 1,8 de alto). Sin pixel art: fondo azul liso (color de la cámara), suelo `SueloBloque` (cuadrado gris estirado) y obstáculos `CajaAmarilla` (cuadrado amarillo de 1×1), ambos sobre el sprite `Sprites/Cuadrado` (blanco, 1×1 unidad, pivote abajo al centro). Cámara ortográfica de tamaño 4,5 sin Pixel Perfect y con Cinemachine (jugador a la izquierda, zona muerta vertical para que no suba con cada salto). Es una escena de prueba: no tiene pausa, música ni está en Build Settings. `Level1` sigue con el pixel art.
 
-Todavía no existe: deslizarse, tropiezo, monedas, patada, subte y tienda, reloj, jefe, historieta y arte final.
+Todavía no existe: tropiezo, monedas, patada, subte y tienda, reloj, jefe, historieta y arte final.
 
 **Objetivo inmediato (README, corto plazo):** núcleo jugable en un tramo de prueba: correr, saltar, deslizarse y tropiezo.
 
@@ -27,10 +28,10 @@ Todavía no existe: deslizarse, tropiezo, monedas, patada, subte y tienda, reloj
 - `Assets/Scripts/`: código del juego, en subcarpetas por tema: `Player/`, `World/` (suelo, obstáculos, parallax), `UI/` (menús) y `Audio/`. Assembly `Scripts` (`Scripts.asmdef`, referencia `Unity.InputSystem` y `Unity.UI`).
 - `Assets/Tests/`: tests PlayMode. Assembly `Tests` (`Tests.asmdef`), referencia `Scripts` y solo compila con `UNITY_INCLUDE_TESTS`.
 - `Assets/Animations/`: clips y `Animators/Player.controller`.
-- `Assets/Prefabs/` (`Player`, `Ground`, `Caja`), `Assets/Sprites/`, `Assets/Materials/` (`DestelloBlanco`).
+- `Assets/Prefabs/` (`Player`, `Ground`, `Caja`), `Assets/Sprites/`, `Assets/Materials/` (`DestelloBlanco`, `Sombra`), `Assets/Mixamo/` (FBX de Mixamo).
 - Un script nuevo va en la carpeta de su tema; si no encaja en ninguna, se crea una carpeta nueva en `Scripts/` en vez de dejarlo suelto. Un archivo por clase, con el mismo nombre que la clase.
 - No mover ni renombrar archivos desde fuera de Unity sin su `.meta` (mover archivo y `.meta` juntos, o mover desde el Editor). Las escenas guardan los scripts por GUID, pero si se renombra una clase usada en un `OnClick` hay que reconectarlo en el Inspector.
-- Escenas: `Assets/Scenes/Menu.unity` (arranque) y `Assets/Scenes/Level1.unity` (nivel, activa al trabajar). Ambas tienen que estar en Build Settings.
+- Escenas: `Assets/Scenes/Menu.unity` (arranque), `Assets/Scenes/Level1.unity` (nivel de pixel art) y `Assets/Scenes/LevelSombra.unity` (nivel de prueba con el personaje 3D, activa al trabajar). `Menu` y `Level1` tienen que estar en Build Settings.
 
 Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tests`. Un script fuera de esos assemblies no lo ve el test.
 
@@ -85,6 +86,7 @@ Lo que ya usa el código, para mantenerlo consistente:
 - `Player_controller`: `Update()` lee el input y la detección de suelo; `FixedUpdate()` aplica la velocidad horizontal y el salto.
 - El salto se pide en `Update()` con `jumpRequested = true` y se aplica en `FixedUpdate()`, que luego lo limpia.
 - Suelo: `Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer)`. En la escena la caja es de 0.12 × 0.1 (override sobre el prefab), más angosta que el collider del Player, y el hijo `GroundCheck` queda apenas bajo la suela (y = −0.144). `groundLayer` tiene que ser solo `Ground`; si incluyera la capa del Player, se detectaría a sí mismo.
+- Deslizarse: Shift (izquierdo o derecho) estando en el suelo. `Update()` pide con `slideRequested`; `FixedUpdate()` baja la `CapsuleCollider2D` a `alturaDeslizando` (0,8) con los pies en el mismo lugar durante `duracionDeslizamiento` (1,2 s) y después la devuelve. Termina antes si deja de tocar el suelo. No se puede saltar mientras se desliza. Solo anda si hay `CapsuleCollider2D` y el Animator tiene el state `Player_slide_anim` (`puedeDeslizar`): el `Player` de sprites no lo tiene, así que ahí Shift no hace nada. Hoy no hay techos que lo bloqueen al pararse.
 - `Ground_spawner`: crea tramos y borra los que quedan `despawnDistance` (25) detrás del jugador. En `Start` calcula `pieceWidth` (ancho del sprite hijo `Road` × escala, hoy 7.68) y `alturaSuelo` (borde superior del `BoxCollider2D` del prefab, hoy 0.529); el prefab `Ground` tiene que tener un hijo `Road` y el collider en la raíz.
 - Sin "bump" en las uniones: los tramos son hijos de un objeto `Suelo` (creado en `Start`, capa del prefab, `Rigidbody2D` estático + `CompositeCollider2D` en Outlines) y su `BoxCollider2D` está en modo Merge. Outlines es un contorno hueco: `GroundCheck` detecta el suelo porque cruza el borde superior; si quedara entero dentro del suelo, no lo detectaría.
 
@@ -104,11 +106,15 @@ No usamos el Animator como máquina de estados por parámetros. El código decid
   - En el aire, bajando: `Player_fall_anim`.
   - En el suelo, con velocidad horizontal: `Player_run_anim`.
   - En el suelo, quieto: `Player_idle_anim`.
+  - Deslizándose (tiene prioridad sobre los demás): `Player_slide_anim`.
 - `CambiarAnimacion(hash)` guarda el estado actual y llama `animator.Play(hash)` solo si cambió.
 - Los hashes salen de `Animator.StringToHash("<nombre>")`. El nombre tiene que ser exactamente el del state en `Player.controller`. Si no coincide, la animación puede fallar en silencio.
 - `Player.controller` no tiene transiciones automáticas (`m_Transitions` vacío en todos los states). Si se agregan transiciones, pueden pisar lo que pide el código; revisarlo antes.
 - El golpe no apaga el sprite: alterna `sharedMaterial` entre el material original y `materialDestello` (`DestelloBlanco`, shader `GUI/Text Shader`) y lo restaura al terminar.
-- Deslizarse y tropiezo todavía no tienen clip. Cuando existan, el estado se agrega en `ActualizarAnimaciones()` con su propio hash.
+- **`PlayerSombra`** (modelo 3D de Mixamo): el `Animator` y el modelo van en el hijo `Modelo` (rotado 90° en Y para mirar a +X, escala 1, pies en y = −0.875, material negro `Sombra` sin luz, `sortingOrder` 10). La raíz tiene `Rigidbody2D`, `CapsuleCollider2D`, `AudioSource`, `GroundCheck` y `Player_controller`, con cápsula de 0,5×1,75, `gravityScale` 3, velocidad 7, salto 11 y `GroundCheck` en y = −0,88 (caja 0,3×0,1). El `Player` de sprites sigue con su escala chica (velocidad 5, salto 3). `Player_controller` busca el `Animator` y los `Renderer` en sus hijos, así que sirve para los dos jugadores. Controller: `Animators/PlayerSombra.controller`, con los states de abajo y `Player_slide_anim` (el código la pide al deslizarse).
+- Clips de Mixamo (Humanoid, el avatar sale de `Fast Run`; los demás FBX lo copian): `Player_run_anim` = Fast Run, `Player_jumpUp_anim` = Jumping Up, `Player_fall_anim` = Running Jump (provisorio), `Player_idle_anim` = Fast Run (provisorio), `Player_slide_anim` = Running Slide. Bajar de Mixamo siempre "In Place", FBX Binary, con el mismo personaje.
+- `Running Slide` y `Running Jump` no ofrecen "In Place" en Mixamo: traen el desplazamiento hacia adelante (~6 m) y un giro del cuerpo. Se arregló en el import de cada FBX (clip → Root Transform): Rotation y Position Y con *Bake Into Pose* + *Original*, Position XZ sin bake. Así el movimiento hacia adelante se descarta (lo da la física) y el cuerpo conserva la inclinación. Un clip nuevo que no sea in place se configura igual; si en cambio tiene el giro del cuerpo, se ve torcido en la vista de perfil.
+- Tropiezo todavía no tiene clip. Cuando exista, el estado se agrega en `ActualizarAnimaciones()` con su propio hash.
 
 ## Tests
 - **Política: tests a demanda.** En esta etapa no se arman ni se corren tests mientras lo nuevo funcione bien. Se escribe o corre un test solo cuando algo falla o no sale como se quiere. Claude no agrega tests por su cuenta al implementar cambios ni corre la suite de rutina; si el usuario los pide, sí.
