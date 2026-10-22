@@ -33,7 +33,7 @@ Los scripts de juego deben quedar dentro de `Scripts` y los tests dentro de `Tes
 ## Reglas de Arquitectura y Código
 1. **Encapsulamiento:** Nunca uses variables `public` para referencias del Inspector; usa `[SerializeField] private`.
 2. **Rendimiento:**
-   - Prohibido llamar a `GetComponent()`, `Find()`, o instanciar objetos dentro de `Update()`.
+   - Prohibido llamar a `GetComponent()`, `Find()`, o instanciar objetos dentro de `Update()` en cada frame. Excepción: `Ground_spawner` instancia un tramo cada ~2,7 s; no se usa pool hasta que el profiler lo pida.
    - Almacena referencias en `Awake()` o `Start()`.
    - Toda interacción con `Rigidbody2D` (fuerzas, velocidad) debe ejecutarse en `FixedUpdate()`.
 3. **Unity 6.6 Peculiaridades:**
@@ -70,6 +70,7 @@ No usamos el Animator como máquina de estados por parámetros. El código decid
 - Deslizarse y tropiezo todavía no tienen clip. Cuando existan, el estado se agrega en `ActualizarAnimaciones()` con su propio hash.
 
 ## Tests
+- **Política: tests a demanda.** En esta etapa no se arman ni se corren tests mientras lo nuevo funcione bien. Se escribe o corre un test solo cuando algo falla o no sale como se quiere. Claude no agrega tests por su cuenta al implementar cambios ni corre la suite de rutina; si el usuario los pide, sí.
 - Unity Test Runner → PlayMode, 6 tests, todos pasan: `Ground_spawnerTests` (piezas, cajas y suelo fusionado en un solo collider), `ObstaculoTests` (rotura de la caja) y `Player_controllerTests` (velocidad constante y golpe). No hay tests EditMode.
 - Un test nuevo va en `Assets/Tests/` y accede a los scripts del juego por el assembly `Scripts`. `Test_utils.SetField` asigna campos `[SerializeField] private` por reflexión.
 - `Destroy` se aplica al final del frame: en un test hay que esperar un frame más antes de comprobar que algo desapareció, y limpiar en `TearDown` con `DestroyImmediate`.

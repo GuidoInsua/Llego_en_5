@@ -18,7 +18,8 @@ public class Player_controller : MonoBehaviour
 	[SerializeField] private Vector2 groundCheckSize = new Vector2(0.15f, 0.05f); // Más angosta que los pies para no detectar paredes
 	[SerializeField] private LayerMask groundLayer;
 
-	private static readonly int AnimIdle = Animator.StringToHash("Player_idle_anim");
+	private static readonly WaitForSeconds Parpadeo = new WaitForSeconds(0.1f); // Se reutiliza: evita crear uno nuevo por cada titilada
+	private static readonly int AnimIdle= Animator.StringToHash("Player_idle_anim");
 	private static readonly int AnimRun = Animator.StringToHash("Player_run_anim");
 	private static readonly int AnimJumpUp = Animator.StringToHash("Player_jumpUp_anim");
 	private static readonly int AnimFall = Animator.StringToHash("Player_fall_anim");
@@ -91,7 +92,7 @@ public class Player_controller : MonoBehaviour
 		while (Time.time < fin)
 		{
 			spriteRenderer.enabled = !spriteRenderer.enabled;
-			yield return new WaitForSeconds(0.1f);
+			yield return Parpadeo;
 		}
 
 		spriteRenderer.enabled = true;

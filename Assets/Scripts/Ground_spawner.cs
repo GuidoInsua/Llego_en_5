@@ -19,7 +19,7 @@ public class Ground_spawner : MonoBehaviour
 	// Salen del prefab en Start: así no se desincronizan al retocar el suelo
 	private float pieceWidth;  // Ancho del sprite "Road" por la escala
 	private float alturaSuelo; // Borde superior del collider respecto a groundY
-	private float nextSpawnX = 0f;
+	private float nextSpawnX = 0f; // shortcut: float pierde precisión a decenas de miles de unidades (~4 h de juego), si hay modo infinito mover el mundo hacia 0
 	private Transform suelo;
 	private readonly Queue<GameObject> activePieces = new Queue<GameObject>();
 	private readonly Queue<GameObject> activeCajas = new Queue<GameObject>();

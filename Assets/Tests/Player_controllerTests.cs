@@ -66,7 +66,8 @@ public class Player_controllerTests
 		yield return new WaitForFixedUpdate();
 		Assert.AreEqual(VelocidadGolpe, rb.linearVelocity.x, 0.01f, "durante el golpe corre más lento");
 
-		yield return new WaitForSeconds(0.8f); // Pasa duracionGolpe (0.5 s)
+		limite = Time.time + 3f; // Espera a que pase duracionGolpe (0.5 s), no un tiempo fijo
+		while (!Mathf.Approximately(rb.linearVelocity.x, RunSpeed) && Time.time < limite) yield return new WaitForFixedUpdate();
 		Assert.AreEqual(RunSpeed, rb.linearVelocity.x, 0.01f, "después del golpe vuelve a la velocidad normal");
 	}
 }

@@ -8,6 +8,8 @@ public class Obstaculo : MonoBehaviour
 	[SerializeField] private float duracionRotura = 0.6f;
 	[SerializeField] private Sprite[] variantes; // Mismo barril en distintos colores: cada uno toma uno al azar
 
+	private static readonly WaitForSeconds Parpadeo = new WaitForSeconds(0.1f); // Se reutiliza: evita crear uno nuevo por cada titilada
+
 	private Collider2D col;
 	private SpriteRenderer spriteRenderer;
 	private bool rota;
@@ -39,7 +41,7 @@ public class Obstaculo : MonoBehaviour
 			transparente = !transparente;
 			float alpha = transparente ? 0.3f : 1f;
 			spriteRenderer.color = new Color(original.r, original.g, original.b, alpha);
-			yield return new WaitForSeconds(0.1f);
+			yield return Parpadeo;
 		}
 
 		Destroy(gameObject);

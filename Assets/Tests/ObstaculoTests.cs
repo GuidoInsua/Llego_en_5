@@ -18,7 +18,8 @@ public class ObstaculoTests
 		caja.Romper();
 		Assert.IsFalse(col.enabled, "el collider se apaga al romperse");
 
-		yield return new WaitForSeconds(0.8f);
+		float limite = Time.time + 3f; // Espera la condición, no un tiempo fijo
+		while (go != null && Time.time < limite) yield return null;
 		Assert.IsTrue(go == null, "la caja se destruye al terminar de titilar");
 	}
 }
