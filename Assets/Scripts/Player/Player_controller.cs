@@ -7,6 +7,8 @@ public class Player_controller : MonoBehaviour
 {
 	[Header("Movimiento")]
 	[SerializeField] private float runSpeed = 7f;
+	[Tooltip("Velocidad a la que el clip de correr se ve bien a velocidad normal: con más o menos velocidad el clip se acelera o frena en proporción.")]
+	[SerializeField] private float velocidadClipCorrer = 7f;
 	[SerializeField] private float jumpForce = 13f;
 
 	[Header("Aire")]
@@ -43,6 +45,10 @@ public class Player_controller : MonoBehaviour
 	[SerializeField] private Transform groundCheck;
 	[SerializeField] private Vector2 groundCheckSize = new Vector2(0.15f, 0.05f); // Más angosta que los pies para no detectar paredes
 	[SerializeField] private LayerMask groundLayer;
+	[Tooltip("Hasta qué distancia bajo los pies el jugador se pega al suelo en las pendientes. Más que eso se cae.")]
+	[SerializeField] private float distanciaPegado = 0.4f;
+	[Tooltip("Si cae más rápido que esto no se pega: las caídas grandes no se frenan antes de tocar el suelo.")]
+	[SerializeField] private float velocidadMaximaPegado = 8f;
 
 	private static readonly WaitForSeconds Parpadeo = new WaitForSeconds(0.1f); // Se reutiliza: evita crear uno nuevo por cada titilada
 	private static readonly int AnimIdle= Animator.StringToHash("Player_idle_anim");
@@ -139,9 +145,10 @@ public class Player_controller : MonoBehaviour
 			isSaltoActivo = false;
 		}
 
-		// 3. Deslizarse con Shift, solo desde el suelo
+		// 3. Deslizarse con Shift, flecha abajo o S, solo desde el suelo
 		bool slidePressed = Time.timeScale > 0f && Keyboard.current != null &&
-						   (Keyboard.current.leftShiftKey.wasPressedThisFrame || Keyboard.current.rightShiftKey.wasPressedThisFrame);
+						   (Keyboard.current.leftShiftKey.wasPressedThisFrame || Keyboard.current.rightShiftKey.wasPressedThisFrame ||
+							Keyboard.current.downArrowKey.wasPressedThisFrame || Keyboard.current.sKey.wasPressedThisFrame);
 
 		if (slidePressed && puedeDeslizar && isGrounded && !isDeslizando)
 		{
@@ -150,12 +157,22 @@ public class Player_controller : MonoBehaviour
 
 		// 4. Control de animaciones
 		ActualizarAnimaciones();
+		animator.speed = animacionActual == AnimRun && velocidadClipCorrer > 0f ? Mathf.Abs(rb.linearVelocity.x) / velocidadClipCorrer : 1f;
 	}
 
 	void FixedUpdate()
 	{
 		// Física: la velocidad se aplica en FixedUpdate según las reglas del proyecto
-		rb.linearVelocity = new Vector2(golpeCoroutine != null ? runSpeed * multiplicadorVelocidadGolpe : runSpeed, rb.linearVelocity.y);
+		float velocidadX = golpeCoroutine != null ? runSpeed * multiplicadorVelocidadGolpe : runSpeed;
+		float velocidadY = rb.linearVelocity.y;
+
+		// En una pendiente la velocidad sigue el suelo: sin esto, al bajar una rampa se despega y flota, y al subir se frena contra ella
+		if (!jumpRequested && !isSaltoActivo && velocidadY > -velocidadMaximaPegado && NormalDelSuelo(out Vector2 normal))
+		{
+			velocidadY = -velocidadX * normal.x / normal.y;
+		}
+
+		rb.linearVelocity = new Vector2(velocidadX, velocidadY);
 
 		if (jumpRequested)
 		{
@@ -176,6 +193,15 @@ public class Player_controller : MonoBehaviour
 		{
 			TerminarDeslizamiento();
 		}
+	}
+
+	// Normal del suelo bajo los pies si está a menos de distanciaPegado y no es una pared (más de ~60° de pendiente)
+	private bool NormalDelSuelo(out Vector2 normal)
+	{
+		const float AlturaRayo = 0.1f; // El rayo arranca un poco arriba de los pies
+		RaycastHit2D golpe = Physics2D.Raycast((Vector2)groundCheck.position + Vector2.up * AlturaRayo, Vector2.down, AlturaRayo + distanciaPegado, groundLayer);
+		normal = golpe.normal;
+		return golpe.collider != null && golpe.normal.y >= 0.5f;
 	}
 
 	private void IniciarDeslizamiento()

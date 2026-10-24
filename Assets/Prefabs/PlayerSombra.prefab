@@ -112,7 +112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9628f2fb21213764498b06f33cdc2330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Scripts::Player_controller
-  runSpeed: 7
+  runSpeed: 10
+  velocidadClipCorrer: 7
   jumpForce: 11
   mantenerSaltoEnDescenso: 1
   velocidadParaCaer: 12
