@@ -2,6 +2,7 @@
     "name": "Scripts",
     "references": [
         "Unity.InputSystem",
-        "Unity.UI"
+        "Unity.UI",
+        "FMODUnity"
     ]
 }

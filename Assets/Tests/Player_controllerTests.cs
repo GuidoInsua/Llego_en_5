@@ -17,11 +17,11 @@ public class Player_controllerTests
 	public void SetUp()
 	{
 		jugador = new GameObject("jugador");
-		jugador.AddComponent<SpriteRenderer>(); // El golpe titila el sprite
+		jugador.AddComponent<SpriteRenderer>(); // El golpe titila el renderer
 		jugador.AddComponent<BoxCollider2D>().size = Vector2.one;
 		jugador.AddComponent<Animator>(); // Sin Animator el jugador se desactiva al validar
 		jugador.SetActive(false); // Inactivo hasta asignar los campos: Awake valida que estén
-		Player_controller controller = jugador.AddComponent<Player_controller>(); // Suma Rigidbody2D y AudioSource
+		Player_controller controller = jugador.AddComponent<Player_controller>(); // Suma Rigidbody2D
 
 		GameObject groundCheck = new GameObject("groundCheck");
 		groundCheck.transform.SetParent(jugador.transform);

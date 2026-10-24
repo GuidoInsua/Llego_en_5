@@ -40,7 +40,7 @@ public class Menu_pausa : MonoBehaviour
 		isPausado = true;
 		canvasPausa.SetActive(true);
 		Time.timeScale = 0f;
-		AudioListener.pause = true; // Corta también los pasos, que suenan en loop
+		AudioListener.pause = true; // Pausa la música y el ambiente de Unity (FMOD no depende de esto: sin tiempo no hay eventos de pasos)
 	}
 
 	// También la llama el botón Continuar
