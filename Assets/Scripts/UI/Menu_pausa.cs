@@ -7,15 +7,20 @@ public class Menu_pausa : MonoBehaviour
 {
 	[Tooltip("Empieza apagado; se prende al pausar.")]
 	[SerializeField] private GameObject canvasPausa;
+	[Tooltip("Los botones de la pausa y el panel de opciones: al pausar se ven los botones.")]
+	[SerializeField] private GameObject botones;
+	[SerializeField] private GameObject panelOpciones;
+	[Tooltip("Si está a la vista (ganaste), Escape no pausa.")]
+	[SerializeField] private GameObject pantallaVictoria;
 	[SerializeField] private string menuSceneName = "Menu"; // Tiene que estar agregada en Build Settings
 
 	private bool isPausado;
 
 	void Awake()
 	{
-		if (canvasPausa == null)
+		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null)
 		{
-			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa.");
+			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones o la pantalla de victoria.");
 			enabled = false;
 		}
 	}
@@ -25,7 +30,7 @@ public class Menu_pausa : MonoBehaviour
 		if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
 		{
 			if (isPausado) Continuar();
-			else Pausar();
+			else if (!pantallaVictoria.activeSelf) Pausar();
 		}
 	}
 
@@ -39,6 +44,8 @@ public class Menu_pausa : MonoBehaviour
 	{
 		isPausado = true;
 		canvasPausa.SetActive(true);
+		botones.SetActive(true);
+		panelOpciones.SetActive(false);
 		Time.timeScale = 0f;
 		AudioListener.pause = true; // Pausa la música y el ambiente de Unity (FMOD no depende de esto: sin tiempo no hay eventos de pasos)
 	}
