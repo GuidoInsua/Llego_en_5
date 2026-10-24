@@ -6,7 +6,7 @@ public class Ground_spawner : MonoBehaviour
 	[Header("Configuración del Suelo")]
 	[SerializeField] private GameObject groundPrefab;
 	[SerializeField] private Transform playerTransform;
-	[SerializeField] private float groundY = -2f;    // Altura fija donde se genera el suelo
+	[SerializeField] private float groundY = -2f;    // Altura donde se genera el suelo; baja con cada desnivel
 
 	[Header("Generación")]
 	[SerializeField] private int initialPieces = 4;
@@ -15,6 +15,14 @@ public class Ground_spawner : MonoBehaviour
 	[Header("Obstáculos")]
 	[SerializeField] private GameObject cajaPrefab; // Pivote abajo: se apoya sobre el suelo
 	[SerializeField, Range(0f, 1f)] private float probabilidadCaja = 0.3f;
+
+	[Header("Desniveles")]
+	[Tooltip("Probabilidad de que un tramo nuevo empiece más abajo, tras un hueco: como saltar de una terraza a otra más baja. En 0 el suelo es siempre parejo.")]
+	[SerializeField, Range(0f, 1f)] private float probabilidadCaida = 0f;
+	[Tooltip("Ancho del hueco (mín, máx). El máximo tiene que ser menor que velocidad con golpe × tiempo de la caída más corta (3,5 × 0,58 s = 2,0): si no, tras un golpe no se llega al tramo de abajo.")]
+	[SerializeField] private Vector2 rangoHueco = new Vector2(1.5f, 2f);
+	[Tooltip("Cuánto más abajo queda el tramo (mín, máx).")]
+	[SerializeField] private Vector2 rangoCaida = new Vector2(5f, 8f);
 
 	// Salen del prefab en Start: así no se desincronizan al retocar el suelo
 	private float pieceWidth;  // Ancho del sprite "Road" por la escala
@@ -30,7 +38,7 @@ public class Ground_spawner : MonoBehaviour
 		Transform road = groundPrefab != null ? groundPrefab.transform.Find("Road") : null; // El collider es un poco más ancho (solape), por eso el ancho sale del sprite
 		if (playerTransform == null || road == null || road.GetComponent<SpriteRenderer>() == null || groundPrefab.GetComponent<BoxCollider2D>() == null)
 		{
-			Debug.LogError("Ground_spawner: falta playerTransform, o el prefab Ground sin hijo Road con SpriteRenderer o sin BoxCollider2D en la raíz.");
+			Debug.LogError("Ground_spawner: falta playerTransform, o el prefab de suelo sin hijo Road con SpriteRenderer o sin BoxCollider2D en la raíz.");
 			enabled = false;
 			return;
 		}
@@ -71,6 +79,13 @@ public class Ground_spawner : MonoBehaviour
 
 	private void SpawnPiece(bool conCaja)
 	{
+		// Los tramos iniciales son parejos: el jugador arranca sobre suelo firme
+		if (conCaja && Random.value < probabilidadCaida)
+		{
+			nextSpawnX += Random.Range(rangoHueco.x, rangoHueco.y);
+			groundY -= Random.Range(rangoCaida.x, rangoCaida.y);
+		}
+
 		Vector3 spawnPos = new Vector3(nextSpawnX, groundY, 0f);
 		GameObject piece = Instantiate(groundPrefab, spawnPos, Quaternion.identity, suelo);
 

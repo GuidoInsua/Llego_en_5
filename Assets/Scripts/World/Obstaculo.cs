@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Obstáculo (barril) que se puede saltar. Al chocar con él titila con transparencia y desaparece
+// Obstáculo que se puede saltar. Al chocar con él titila con transparencia y desaparece
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
 public class Obstaculo : MonoBehaviour
 {

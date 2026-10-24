@@ -85,6 +85,23 @@ public class Ground_spawnerTests
 	}
 
 	[UnityTest]
+	public IEnumerator DesnivelDejaHuecoYBajaElTramo()
+	{
+		Test_utils.SetField(spawner, "probabilidadCaida", 1f);
+		Test_utils.SetField(spawner, "rangoHueco", new Vector2(2f, 2f));
+		Test_utils.SetField(spawner, "rangoCaida", new Vector2(5f, 5f));
+
+		yield return Esperar(2);
+		playerObject.transform.position = new Vector3(50f, 0f, 0f);
+		yield return Esperar(2);
+
+		// Pieza nueva: 80 + hueco de 2, y 5 más abajo que el suelo inicial (-2)
+		Transform nueva = Buscar("piece(Clone)").OrderBy(t => t.position.x).Last();
+		Assert.AreEqual(82f, nueva.position.x, 0.001f);
+		Assert.AreEqual(-7f, nueva.position.y, 0.001f);
+	}
+
+	[UnityTest]
 	public IEnumerator PiezasSeFusionanEnUnSoloCollider()
 	{
 		yield return Esperar(2);
