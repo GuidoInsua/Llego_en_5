@@ -131,3 +131,7 @@ fmod_editor.log
 /Fmod/*/.unsaved/
 /Fmod/*/.user/
 /[Aa]ssets/StreamingAssets.meta
+
+# Escena de recuperación automática de Unity
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta

@@ -207,3 +207,17 @@ _Equipo de 4. Todos hacemos de todo; los roles son una guía: Lucas (diseño y p
 - [Badland](https://gamerant.com/db/video-game/badland/)[cite: 2]
 - [Silhouette Showdown](https://weentermakesgames.itch.io/silhouette-showdown)[cite: 2]
 - [Ninja Arashi 2](https://play.google.com/store/apps/details?id=com.blackpanther.ninjaarashi2&hl=es_CR)[cite: 2]
+
+
+---
+
+## 🛠️ Cómo abrir el proyecto (para el equipo)
+
+1. **Unity 6.6 (6000.6.5f1)** instalado desde Unity Hub (el mismo que el equipo; con otra versión Unity re-importa todo).
+2. Clonar el repo y abrir la carpeta con Unity Hub. La primera vez tarda en importar y baja solo los paquetes (Input System, Cinemachine, 2D, etc., están en `Packages/manifest.json`).
+3. **FMOD para Unity ya viene en el repo** (`Assets/Plugins/FMOD`, con sus DLL y su configuración). No hay que instalar nada ni importar el paquete de FMOD.
+4. **Bancos de audio:** los `.bank` ya compilados están en `Fmod/pasosEventFmod/Build/Desktop/`, y la configuración de FMOD apunta ahí. Si al dar Play no suenan los pasos: menú **FMOD → Refresh Banks** (copia los bancos a `Assets/StreamingAssets/`, que git ignora) y probar de nuevo.
+5. Abrir `Assets/Scenes/Menu.unity` y dar Play (o `Level1` para ir directo al nivel). Comprobar que **Project Settings → Audio → Disable Unity Audio** esté apagado.
+6. **Solo si hay que editar los sonidos:** instalar [FMOD Studio](https://www.fmod.com/download) (misma versión 2.03 que el plugin), abrir `Fmod/pasosEventFmod/pasosEventFmod.fspro`, editar, **Build (F7)** y commitear los bancos nuevos de `Fmod/pasosEventFmod/Build/`.
+
+Si algo no suena: mirar la consola de Unity; si los bancos no están cargados FMOD no da error y simplemente no suena.
