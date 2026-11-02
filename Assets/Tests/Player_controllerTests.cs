@@ -1,3 +1,21 @@
+// ###########################
+// ###############      ######
+// ##############       ######
+// ###############     #######
+// ########         ##########   LLEGÓ EN 5'
+// ######    #        ###   ##   -----------
+// #####   ###         #   ###   Equipo:  Lucas, Rodrigo, Fatima y Guido
+// ##########             ####   Repo:    Llego_en_5
+// ##########      ###########   Materia: TP 2 Desarrollo Consciente 2do Cuatri 2026
+// #  #####         ##########
+// #                  ########
+// ####      #####     #######
+// ################    #######
+// #################   #######
+// ##################  #######
+// ###########################
+// Desc: Prueba la velocidad constante y el golpe del jugador.
+
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -10,6 +28,7 @@ public class Player_controllerTests
 	private const float VelocidadGolpe = 3.5f; // runSpeed * multiplicadorVelocidadGolpe (0.5)
 
 	private GameObject jugador;
+	private GameObject pantallaGameOver;
 	private Rigidbody2D rb;
 	private GameObject caja;
 
@@ -29,6 +48,9 @@ public class Player_controllerTests
 		Test_utils.SetField(controller, "runSpeed", RunSpeed);
 		Test_utils.SetField(controller, "duracionGolpe", 0.5f); // Corta para que el test no dure tanto
 		Test_utils.SetField(controller, "materialDestello", new Material(Shader.Find("Sprites/Default")));
+		pantallaGameOver = new GameObject("gameOver");
+		pantallaGameOver.SetActive(false);
+		Test_utils.SetField(controller, "pantallaGameOver", pantallaGameOver);
 		jugador.SetActive(true);
 
 		rb = jugador.GetComponent<Rigidbody2D>();
@@ -39,6 +61,7 @@ public class Player_controllerTests
 	public void TearDown()
 	{
 		Object.DestroyImmediate(jugador);
+		Object.DestroyImmediate(pantallaGameOver);
 		if (caja != null) Object.DestroyImmediate(caja);
 	}
 
