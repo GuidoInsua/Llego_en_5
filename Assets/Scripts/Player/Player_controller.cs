@@ -1,3 +1,21 @@
+// ###########################
+// ###############      ######
+// ##############       ######
+// ###############     #######
+// ########         ##########   LLEGÓ EN 5'
+// ######    #        ###   ##   -----------
+// #####   ###         #   ###   Equipo:  Lucas, Rodrigo, Fatima y Guido
+// ##########             ####   Repo:    Llego_en_5
+// ##########      ###########   Materia: TP 2 Desarrollo Consciente 2do Cuatri 2026
+// #  #####         ##########
+// #                  ########
+// ####      #####     #######
+// ################    #######
+// #################   #######
+// ##################  #######
+// ###########################
+// Desc: Controla al jugador: correr, saltar, deslizarse, golpes, muerte y animaciones.
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,11 +51,21 @@ public class Player_controller : MonoBehaviour
 
 	[Header("Deslizarse")]
 	[SerializeField] private float duracionDeslizamiento = 1.2f;
+	[Tooltip("Si se aprieta deslizar un instante antes de tocar el suelo, el pedido se guarda este tiempo y se desliza al aterrizar.")]
+	[SerializeField] private float bufferDeslizar = 0.15f;
+	[Tooltip("Cuánto después de empezar a deslizarse ya se puede saltar (unos 3 frames): corta el deslizamiento sin esperar a que termine, pero no permite deslizar y saltar en el mismo instante.")]
+	[SerializeField] private float tiempoMinimoParaSaltar = 0.05f;
 	[SerializeField] private float alturaDeslizando = 0.8f; // Alto de la cápsula mientras se desliza: los pies quedan en el mismo lugar
 
 	[Header("Golpe")]
 	[SerializeField] private float duracionGolpe = 1.5f;
 	[SerializeField] private float multiplicadorVelocidadGolpe = 0.5f;
+
+	[Header("Muerte")]
+	[Tooltip("Chocar de frente contra el suelo (la pared de un tramo más alto): titila y cae por el hueco este tiempo, y después aparece el game over.")]
+	[SerializeField] private float duracionMuerte = 1.5f;
+	[Tooltip("Empieza apagada; se prende al terminar de caer.")]
+	[SerializeField] private GameObject pantallaGameOver;
 
 	[SerializeField] private Material materialDestello; // Pinta el personaje entero de blanco (shader GUI/Text Shader)
 
@@ -67,6 +95,8 @@ public class Player_controller : MonoBehaviour
 	private Vector2 capsulaSizeNormal;
 	private Vector2 capsulaOffsetNormal;
 	private Coroutine golpeCoroutine;
+	private float inicioDeslizamiento;
+	private float ultimoPedidoDeslizar = float.NegativeInfinity;
 	private float finDeslizamiento;
 	private float finAterrizaje;
 	private int animacionActual;
@@ -76,6 +106,7 @@ public class Player_controller : MonoBehaviour
 	private bool isPorAterrizar; // El sensor ve el suelo (no un obstáculo) justo debajo de los pies
 	private bool isSaltoActivo; // Verdadero desde que despega con un salto hasta que vuelve a tocar el suelo
 	private bool isDeslizando;
+	private bool isMuerto;
 	private bool puedeAterrizar; // Solo si el Animator tiene los states de aterrizaje
 	private bool puedeDeslizar; // Solo si hay cápsula y el Animator tiene el clip
 
@@ -85,9 +116,9 @@ public class Player_controller : MonoBehaviour
 		animator = GetComponentInChildren<Animator>();
 		renderizadores = GetComponentsInChildren<Renderer>();
 
-		if (groundCheck == null || materialDestello == null || animator == null || renderizadores.Length == 0)
+		if (groundCheck == null || materialDestello == null || pantallaGameOver == null || animator == null || renderizadores.Length == 0)
 		{
-			Debug.LogError("Player_controller: falta asignar groundCheck o materialDestello, o no hay Animator ni Renderer en el jugador o sus hijos.");
+			Debug.LogError("Player_controller: falta asignar groundCheck, materialDestello o pantallaGameOver, o no hay Animator ni Renderer en el jugador o sus hijos.");
 			enabled = false;
 			return;
 		}
@@ -107,6 +138,9 @@ public class Player_controller : MonoBehaviour
 			capsulaOffsetNormal = capsula.offset;
 		}
 	}
+
+	// Lo escucha Cronometro para avisar que se pierde tiempo
+	public event System.Action Golpeado;
 
 	// La cámara usa esto para saber cuándo el jugador apoyó los pies
 	public bool EstaEnSuelo
@@ -135,7 +169,7 @@ public class Player_controller : MonoBehaviour
 		bool jumpPressed = Time.timeScale > 0f && Keyboard.current != null &&
 						  (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
 
-		if (jumpPressed && isGrounded && !isDeslizando)
+		if (jumpPressed && isGrounded && (!isDeslizando || Time.time >= inicioDeslizamiento + tiempoMinimoParaSaltar))
 		{
 			jumpRequested = true;
 		}
@@ -145,14 +179,17 @@ public class Player_controller : MonoBehaviour
 			isSaltoActivo = false;
 		}
 
-		// 3. Deslizarse con Shift, flecha abajo o S, solo desde el suelo
+		// 3. Deslizarse con Shift, flecha abajo o S, solo desde el suelo (el pedido se guarda `bufferDeslizar` s si se aprieta justo antes de aterrizar)
 		bool slidePressed = Time.timeScale > 0f && Keyboard.current != null &&
 						   (Keyboard.current.leftShiftKey.wasPressedThisFrame || Keyboard.current.rightShiftKey.wasPressedThisFrame ||
 							Keyboard.current.downArrowKey.wasPressedThisFrame || Keyboard.current.sKey.wasPressedThisFrame);
 
-		if (slidePressed && puedeDeslizar && isGrounded && !isDeslizando)
+		if (slidePressed) ultimoPedidoDeslizar = Time.time;
+
+		if (puedeDeslizar && isGrounded && !isDeslizando && Time.time - ultimoPedidoDeslizar <= bufferDeslizar)
 		{
 			slideRequested = true;
+			ultimoPedidoDeslizar = float.NegativeInfinity;
 		}
 
 		// 4. Control de animaciones
@@ -162,6 +199,13 @@ public class Player_controller : MonoBehaviour
 
 	void FixedUpdate()
 	{
+		// Muerto: queda quieto en x y cae por la gravedad
+		if (isMuerto)
+		{
+			rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+			return;
+		}
+
 		// Física: la velocidad se aplica en FixedUpdate según las reglas del proyecto
 		float velocidadX = golpeCoroutine != null ? runSpeed * multiplicadorVelocidadGolpe : runSpeed;
 		float velocidadY = rb.linearVelocity.y;
@@ -176,6 +220,7 @@ public class Player_controller : MonoBehaviour
 
 		if (jumpRequested)
 		{
+			if (isDeslizando) TerminarDeslizamiento(); // Saltar corta el deslizamiento
 			rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 			jumpRequested = false;
 			isSaltoActivo = true;
@@ -208,6 +253,7 @@ public class Player_controller : MonoBehaviour
 	{
 		isDeslizando = true;
 		finAterrizaje = 0f;
+		inicioDeslizamiento = Time.time;
 		finDeslizamiento = Time.time + duracionDeslizamiento;
 
 		// Cápsula más baja con los pies en el mismo lugar
@@ -225,15 +271,62 @@ public class Player_controller : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D collision)
 	{
+		if (isMuerto) return;
+
+		// Chocar de frente contra el suelo: el avance quedaría trabado contra la pared
+		if (EsParedDeSuelo(collision))
+		{
+			StartCoroutine(Morir());
+			return;
+		}
+
 		// Chocar con una caja: la rompe y nos frena un rato
 		if (collision.gameObject.TryGetComponent(out Obstaculo caja))
 		{
 			caja.Romper();
+			Golpeado?.Invoke();
 
 			// Si chocamos otra caja antes de recuperarnos, reiniciamos el efecto
 			if (golpeCoroutine != null) StopCoroutine(golpeCoroutine);
 			golpeCoroutine = StartCoroutine(RecibirGolpe());
 		}
+	}
+
+	// Pared = contacto casi horizontal con la capa de suelo, por delante del jugador (el piso y el techo tienen la normal vertical)
+	private bool EsParedDeSuelo(Collision2D collision)
+	{
+		if ((groundLayer.value & (1 << collision.gameObject.layer)) == 0) return false;
+
+		foreach (ContactPoint2D contacto in collision.contacts)
+		{
+			if (Mathf.Abs(contacto.normal.x) > 0.7f && contacto.point.x > transform.position.x) return true;
+		}
+		return false;
+	}
+
+	private IEnumerator Morir()
+	{
+		isMuerto = true;
+		if (golpeCoroutine != null) StopCoroutine(golpeCoroutine);
+		golpeCoroutine = null;
+		if (isDeslizando) TerminarDeslizamiento();
+
+		// Sin colliders cae por el hueco en vez de apoyarse en el borde
+		foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
+
+		float fin = Time.time + duracionMuerte;
+		bool isBlanco = false;
+		while (Time.time < fin)
+		{
+			isBlanco = !isBlanco;
+			PintarDestello(isBlanco);
+			yield return Parpadeo;
+		}
+
+		PintarDestello(false);
+		pantallaGameOver.SetActive(true);
+		Time.timeScale = 0f;
+		AudioListener.pause = true;
 	}
 
 	private IEnumerator RecibirGolpe()

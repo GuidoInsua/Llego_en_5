@@ -1,3 +1,21 @@
+// ###########################
+// ###############      ######
+// ##############       ######
+// ###############     #######
+// ########         ##########   LLEGÓ EN 5'
+// ######    #        ###   ##   -----------
+// #####   ###         #   ###   Equipo:  Lucas, Rodrigo, Fatima y Guido
+// ##########             ####   Repo:    Llego_en_5
+// ##########      ###########   Materia: TP 2 Desarrollo Consciente 2do Cuatri 2026
+// #  #####         ##########
+// #                  ########
+// ####      #####     #######
+// ################    #######
+// #################   #######
+// ##################  #######
+// ###########################
+// Desc: Pausa con Escape: continuar, opciones, menú y salir.
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -12,15 +30,17 @@ public class Menu_pausa : MonoBehaviour
 	[SerializeField] private GameObject panelOpciones;
 	[Tooltip("Si está a la vista (ganaste), Escape no pausa.")]
 	[SerializeField] private GameObject pantallaVictoria;
+	[Tooltip("Si está a la vista (perdiste), Escape tampoco pausa.")]
+	[SerializeField] private GameObject pantallaGameOver;
 	[SerializeField] private string menuSceneName = "Menu"; // Tiene que estar agregada en Build Settings
 
 	private bool isPausado;
 
 	void Awake()
 	{
-		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null)
+		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null || pantallaGameOver == null)
 		{
-			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones o la pantalla de victoria.");
+			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones la pantalla de victoria o la de game over.");
 			enabled = false;
 		}
 	}
@@ -30,7 +50,7 @@ public class Menu_pausa : MonoBehaviour
 		if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
 		{
 			if (isPausado) Continuar();
-			else if (!pantallaVictoria.activeSelf) Pausar();
+			else if (!pantallaVictoria.activeSelf && !pantallaGameOver.activeSelf) Pausar();
 		}
 	}
 

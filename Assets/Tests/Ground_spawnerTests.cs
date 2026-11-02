@@ -1,3 +1,21 @@
+// ###########################
+// ###############      ######
+// ##############       ######
+// ###############     #######
+// ########         ##########   LLEGÓ EN 5'
+// ######    #        ###   ##   -----------
+// #####   ###         #   ###   Equipo:  Lucas, Rodrigo, Fatima y Guido
+// ##########             ####   Repo:    Llego_en_5
+// ##########      ###########   Materia: TP 2 Desarrollo Consciente 2do Cuatri 2026
+// #  #####         ##########
+// #                  ########
+// ####      #####     #######
+// ################    #######
+// #################   #######
+// ##################  #######
+// ###########################
+// Desc: Prueba la generación de tramos y cajas del suelo.
+
 using System.Collections;
 using System.Linq;
 using NUnit.Framework;
@@ -31,9 +49,13 @@ public class Ground_spawnerTests
 		spawner = spawnerObject.AddComponent<Ground_spawner>();
 		Test_utils.SetField(spawner, "groundPrefab", piecePrefab);
 		Test_utils.SetField(spawner, "playerTransform", playerObject.transform);
-		// Solo tramos planos de 20: así las posiciones salen exactas
-		Test_utils.SetField(spawner, "pesosFormas", new float[] { 1f, 0f, 0f, 0f, 0f });
-		Test_utils.SetField(spawner, "rangoLargoPlano", new Vector2(20f, 20f));
+		// Tramos de 20 y sin hueco: así las posiciones salen exactas
+		Test_utils.SetField(spawner, "largoTramo", new Vector2(20f, 20f));
+		Test_utils.SetField(spawner, "huecoElevacion", 0f);
+		Test_utils.SetField(spawner, "huecoCaida", 0f);
+		Test_utils.SetField(spawner, "probabilidadFlotante", 0f);
+		Test_utils.SetField(spawner, "elevacion", Vector2.zero);
+		Test_utils.SetField(spawner, "caida", Vector2.zero);
 	}
 
 	[TearDown]
@@ -68,7 +90,7 @@ public class Ground_spawnerTests
 	{
 		cajaPrefab = new GameObject("caja");
 		Test_utils.SetField(spawner, "cajaPrefab", cajaPrefab);
-		Test_utils.SetField(spawner, "probabilidadCaja", 1f);
+		Test_utils.SetField(spawner, "cajasPorTramo", new Vector2Int(1, 1));
 
 		yield return Esperar(2);
 		Assert.AreEqual(0, Buscar("caja(Clone)").Length, "las piezas iniciales no llevan caja");
@@ -84,20 +106,21 @@ public class Ground_spawnerTests
 	}
 
 	[UnityTest]
-	public IEnumerator DesnivelDejaHuecoYBajaElTramo()
+	public IEnumerator HuecoFijoYDesnivelRespetaElLimite()
 	{
-		Test_utils.SetField(spawner, "probabilidadCaida", 1f);
-		Test_utils.SetField(spawner, "rangoHueco", new Vector2(2f, 2f));
-		Test_utils.SetField(spawner, "rangoCaida", new Vector2(5f, 5f));
+		Test_utils.SetField(spawner, "huecoElevacion", 2f);
+		Test_utils.SetField(spawner, "huecoCaida", 2f);
+		Test_utils.SetField(spawner, "elevacion", new Vector2(3f, 3f));
+		Test_utils.SetField(spawner, "caida", new Vector2(5f, 5f));
 
 		yield return Esperar(2);
 		playerObject.transform.position = new Vector3(50f, 0f, 0f);
 		yield return Esperar(2);
 
-		// Tramo nuevo: 80 + hueco de 2, y 5 más abajo que el suelo inicial (-1,5)
+		// Tramo nuevo: 80 + hueco de 2, y 3 más arriba o 5 más abajo que el suelo inicial (-1,5)
 		Transform nueva = Buscar("Tramo").OrderBy(t => t.position.x).Last();
 		Assert.AreEqual(82f, nueva.position.x, 0.001f);
-		Assert.AreEqual(-6.5f, nueva.position.y, 0.001f);
+		Assert.That(nueva.position.y, Is.EqualTo(1.5f).Within(0.001f).Or.EqualTo(-6.5f).Within(0.001f));
 	}
 
 	[UnityTest]

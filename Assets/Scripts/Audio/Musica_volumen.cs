@@ -1,3 +1,21 @@
+// ###########################
+// ###############      ######
+// ##############       ######
+// ###############     #######
+// ########         ##########   LLEGÓ EN 5'
+// ######    #        ###   ##   -----------
+// #####   ###         #   ###   Equipo:  Lucas, Rodrigo, Fatima y Guido
+// ##########             ####   Repo:    Llego_en_5
+// ##########      ###########   Materia: TP 2 Desarrollo Consciente 2do Cuatri 2026
+// #  #####         ##########
+// #                  ########
+// ####      #####     #######
+// ################    #######
+// #################   #######
+// ##################  #######
+// ###########################
+// Desc: Aplica el volumen de música de las opciones al AudioSource de la música.
+
 using UnityEngine;
 
 // Aplica el volumen de música elegido en opciones al AudioSource de la música de la escena, también si cambia mientras suena

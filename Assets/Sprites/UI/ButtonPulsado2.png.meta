@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 2f1c952d1f6d87e469a0289fd887b8f0
+guid: ab570ae2f4357cf48afcbc3f7ae1929b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1243432549316259508
-    second: imagenFondoMenu_0
+      213: -3017422965244426413
+    second: ButtonPulsado2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -128,13 +128,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: imagenFondoMenu_0
+      name: ButtonPulsado2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2752
-        height: 1536
+        width: 966
+        height: 214
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,8 +143,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c4198d33fa07ebee0800000000000000
-      internalID: -1243432549316259508
+      spriteID: 3570083dcc5ff16d0800000000000000
+      internalID: -3017422965244426413
       vertices: []
       indices: 
       edges: []
@@ -163,7 +163,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      imagenFondoMenu_0: -1243432549316259508
+      ButtonPulsado2_0: -3017422965244426413
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
