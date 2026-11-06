@@ -106,9 +106,6 @@
 		<property name="pitch">
 			<value>2</value>
 		</property>
-		<property name="playlistMode">
-			<value>3</value>
-		</property>
 		<relationship name="sounds">
 			<destination>{64817681-31d8-4499-9da0-a4e2bf1c2a13}</destination>
 			<destination>{fffa89f6-1470-43a7-8bd3-f53d881826f5}</destination>
