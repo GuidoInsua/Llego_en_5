@@ -24,7 +24,8 @@
 			"Bash(unity command capture_*)",
 			"Bash(unity command find_*)",
 			"Bash(unity command run_tests*)",
-			"Bash(unity command cancel_tests*)"
+			"Bash(unity command cancel_tests*)",
+			"Bash(unity command eval:*)"
 		]
 	}
 }

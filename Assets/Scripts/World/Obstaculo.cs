@@ -39,6 +39,9 @@ public class Obstaculo : MonoBehaviour
 		if (variantes != null && variantes.Length > 0) spriteRenderer.sprite = variantes[Random.Range(0, variantes.Length)];
 	}
 
+	// Verdadero desde el golpe: el hidrante lo usa para no ofrecer el impulso si ya chocaste con él
+	public bool EstaRota => rota;
+
 	public void Romper()
 	{
 		if (rota) return;

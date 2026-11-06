@@ -47,6 +47,12 @@ public class Opciones_audio : MonoBehaviour
 		sliderEfectos.SetValueWithoutNotify(Volumen_audio.Efectos);
 	}
 
+	// Al cerrar el panel se guarda a disco: si el juego se cierra mal, no se pierde el volumen
+	void OnDisable()
+	{
+		PlayerPrefs.Save();
+	}
+
 	private void CambiarVolumenMusica(float valor)
 	{
 		Volumen_audio.Musica = valor;

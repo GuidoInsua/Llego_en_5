@@ -25,6 +25,8 @@ public class Camara_objetivo : MonoBehaviour
 	[SerializeField] private Player_controller jugador;
 	[Tooltip("Cuánto puede caer el jugador por debajo del punto antes de que este lo siga.")]
 	[SerializeField] private float margenAbajo = 1f;
+	[Tooltip("Cuánto puede subir el jugador por encima del punto antes de que este lo siga. Más que lo que sube un salto normal (~2,9), para que los saltos no muevan la cámara; el lanzamiento del hidrante sí.")]
+	[SerializeField] private float margenArriba = 3f;
 	[Tooltip("Segundos que tarda en acomodarse a la altura del suelo nuevo.")]
 	[SerializeField] private float tiempoSuavizado = 0.3f;
 
@@ -54,6 +56,12 @@ public class Camara_objetivo : MonoBehaviour
 		{
 			// Cayendo: el punto baja pegado al jugador para no perderlo
 			alturaActual = alturaJugador + margenAbajo;
+			velocidadAltura = 0f;
+		}
+		else if (alturaJugador > alturaActual + margenArriba)
+		{
+			// Subiendo mucho (lanzamiento): el punto sube pegado al jugador
+			alturaActual = alturaJugador - margenArriba;
 			velocidadAltura = 0f;
 		}
 		else if (jugador.EstaEnSuelo)

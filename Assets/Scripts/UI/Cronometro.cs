@@ -94,7 +94,7 @@ public class Cronometro : MonoBehaviour
 	// mm:ss,d
 	private static string Formatear(float segundos)
 	{
-		int minutos = (int)(segundos / 60f);
-		return minutos.ToString("00") + ":" + (segundos - minutos * 60f).ToString("00.0");
+		int decimas = (int)(segundos * 10f); // Entero: así 59,96 s no se redondea a "60.0"
+		return (decimas / 600).ToString("00") + ":" + (decimas % 600 / 10).ToString("00") + "," + decimas % 10;
 	}
 }
