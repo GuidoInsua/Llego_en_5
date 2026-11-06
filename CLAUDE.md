@@ -174,7 +174,10 @@ Todo script `.cs` nuevo (también los de prueba) empieza con esta cabecera, segu
 ```
 
 ## Commits y Pull Requests
-- **Sin Git LFS:** la cuenta de GitHub tiene el presupuesto de LFS en 0 (no se puede subir ni bajar nada por LFS). Desde nov. 2026 los binarios van en git normal (`.gitattributes` los marca `binary`); los commits viejos siguen con punteros LFS. No volver a poner `lfs` en `.gitattributes`. GitHub rechaza archivos de más de 100 MB. FMOD solo tiene las librerías de Windows (`platforms/win/lib`); para compilar a otra plataforma hay que reinstalar el plugin.
+La guía para el equipo está en `README.md` (secciones *Cómo abrir el proyecto* y *Cómo manejamos el repo*); si cambia algo de esto, actualizar las dos.
+- **Sin Git LFS:** la cuenta de GitHub tiene el presupuesto de LFS en 0 (no se puede subir ni bajar nada por LFS; el push falla con `exceeded its LFS budget`). Desde nov. 2026 los binarios van en git normal (`.gitattributes` los marca `binary`); los commits viejos siguen con punteros LFS (un checkout de ellos no trae los binarios). No volver a poner `lfs` en `.gitattributes` ni usar `git lfs track`.
+- **Tamaño:** GitHub rechaza archivos de más de 100 MB y avisa desde 50 MB (`Player_modelo_run.fbx` tiene 52 MB). Cada versión de un binario queda para siempre en la historia: antes de commitear binarios nuevos, revisar su tamaño y avisar si alguno es grande.
+- **FMOD:** el plugin (`Assets/Plugins/FMOD`) solo tiene las librerías de Windows (`platforms/win/lib`); se borraron las del resto (y `platforms/uwp` entera), pero se dejó el código `platforms/*/src`. El proyecto abre y compila solo en Windows; para otra plataforma hay que importar su `lib` del paquete de FMOD for Unity de la misma versión. El proyecto de FMOD Studio (`Fmod/pasosEventFmod/`) va en el repo con `Build/`; git ignora `.cache/`, `.unsaved/`, `.user/`, `Assets/StreamingAssets/` y `Assets/Plugins/FMOD/Cache/`.
 - Mensajes de commit en castellano, sin líneas `Co-Authored-By` ni mención a Claude o IA.
 - No pushear ni reescribir `main` sin confirmación del equipo.
 
