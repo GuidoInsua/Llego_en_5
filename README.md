@@ -213,11 +213,51 @@ _Equipo de 4. Todos hacemos de todo; los roles son una guía: Lucas (diseño y p
 
 ## 🛠️ Cómo abrir el proyecto (para el equipo)
 
+> **Importante:** el proyecto solo abre bien en **Windows**: FMOD trae solo sus librerías de Windows (ver [Cómo manejamos el repo](#-cómo-manejamos-el-repo-para-el-equipo)).
+
 1. **Unity 6.6 (6000.6.5f1)** instalado desde Unity Hub (el mismo que el equipo; con otra versión Unity re-importa todo).
-2. Clonar el repo y abrir la carpeta con Unity Hub. La primera vez tarda en importar y baja solo los paquetes (Input System, Cinemachine, 2D, etc., están en `Packages/manifest.json`).
-3. **FMOD para Unity ya viene en el repo** (`Assets/Plugins/FMOD`, con sus DLL y su configuración). No hay que instalar nada ni importar el paquete de FMOD.
+2. Clonar el repo (`git clone https://github.com/GuidoInsua/Llego_en_5.git`) y abrir la carpeta con Unity Hub. **No hace falta Git LFS.** La primera vez tarda en importar y baja solo los paquetes (Input System, Cinemachine, 2D, etc., están en `Packages/manifest.json`).
+   - **Si ya tenías el repo clonado de antes:** con `git pull` alcanza. Si algún archivo (`.fbx`, `.png`, `.mp3`, `.dll`) no abre en Unity o pesa unos 130 bytes y adentro dice `version https://git-lfs...`, es un puntero LFS viejo: hacer `git pull` de nuevo y, si sigue, borrar la carpeta y clonar de cero.
+3. **FMOD para Unity ya viene en el repo** (`Assets/Plugins/FMOD`, con sus DLL de Windows y su configuración). No hay que instalar nada ni importar el paquete de FMOD.
 4. **Bancos de audio:** los `.bank` ya compilados están en `Fmod/pasosEventFmod/Build/Desktop/`, y la configuración de FMOD apunta ahí. Si al dar Play no suenan los pasos: menú **FMOD → Refresh Banks** (copia los bancos a `Assets/StreamingAssets/`, que git ignora) y probar de nuevo.
 5. Abrir `Assets/Scenes/Menu.unity` y dar Play (o `Level1` para ir directo al nivel). Comprobar que **Project Settings → Audio → Disable Unity Audio** esté apagado.
 6. **Solo si hay que editar los sonidos:** instalar [FMOD Studio](https://www.fmod.com/download) (misma versión 2.03 que el plugin), abrir `Fmod/pasosEventFmod/pasosEventFmod.fspro`, editar, **Build (F7)** y commitear los bancos nuevos de `Fmod/pasosEventFmod/Build/`.
 
 Si algo no suena: mirar la consola de Unity; si los bancos no están cargados FMOD no da error y simplemente no suena.
+
+---
+
+## 🗂️ Cómo manejamos el repo (para el equipo)
+
+### Sin Git LFS
+
+La cuenta de GitHub tiene el presupuesto de **Git LFS en 0**: no se puede subir ni bajar nada por LFS (el push falla con `This repository exceeded its LFS budget`). Por eso, desde noviembre de 2026, **los binarios (modelos, imágenes, audio, DLL, fuentes) van en git normal**:
+
+- `.gitattributes` marca esos tipos como `binary` (antes decían `lfs`). **No volver a poner `lfs`** ni correr `git lfs track`.
+- No hace falta tener Git LFS instalado. Si lo tenés, no molesta.
+- Los commits anteriores a ese cambio siguen guardando los binarios en LFS: hacer checkout de un commit viejo trae punteros en vez de los archivos. Para trabajar, usar siempre `main` (o ramas que salgan de `main`).
+
+### Cuidar el tamaño
+
+Sin LFS, cada versión de un binario queda para siempre en la historia y todos la bajan al clonar. Entonces:
+
+- **Límite de GitHub:** 100 MB por archivo (rechaza el push). Desde 50 MB avisa. Hoy el más grande es `Player_modelo_run.fbx` (52 MB).
+- No commitear binarios pesados "de prueba" ni muchas versiones del mismo: probar en local y commitear la versión final.
+- Música y sonidos comprimidos (`.mp3`/`.ogg`), no `.wav` largos. Imágenes al tamaño en que se usan.
+- Modelos de Mixamo: bajar solo lo necesario (sin skin en los clips de animación, "In Place").
+- Antes de commitear, mirar qué se agrega: `git status` y, si hay binarios nuevos, su tamaño.
+
+### FMOD
+
+- **Plugin (`Assets/Plugins/FMOD`)**: está entero, pero **solo con las librerías de Windows** (`platforms/win/lib`). Se sacaron las de Mac, Linux, Android, iOS, web, etc. (unos 250 MB que bajaba cada clon). Consecuencia: el proyecto abre y compila solo en Windows. Si alguien necesita Mac u otra plataforma, hay que bajar el paquete de FMOD for Unity de [fmod.com](https://www.fmod.com/download) (la misma versión) e importar solo la carpeta `platforms/<plataforma>/lib`.
+- **Proyecto de FMOD Studio (`Fmod/pasosEventFmod/`)**: va en el repo, fuera de `Assets`. Se commitean el `.fspro`, `Metadata/`, `Assets/` (los `.wav` fuente) y `Build/` (los bancos). Git ignora `.cache/`, `.unsaved/` y `.user/` (son locales de cada uno).
+- **Bancos en Unity**: FMOD los copia de `Fmod/pasosEventFmod/Build/` a `Assets/StreamingAssets/`, que git ignora (FMOD → Refresh Banks).
+- `Assets/Plugins/FMOD/Cache/` también se ignora.
+
+### Commits y ramas
+
+- Mensajes de commit en castellano.
+- No pushear a `main` cosas que rompan la compilación (si Unity abre en Safe Mode, hay un error de compilación).
+- **No hacer `push --force` ni reescribir `main`** sin avisar al equipo.
+- Las escenas (`.unity`) y prefabs se mezclan mal si dos personas los editan a la vez: avisar antes de tocar `Level1` o un prefab compartido.
+- No mover ni renombrar archivos fuera de Unity sin su `.meta` (mejor moverlos desde el Editor).
