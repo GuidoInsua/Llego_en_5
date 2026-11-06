@@ -18,9 +18,8 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
-// Pausa con Escape: congela el juego y muestra continuar, menú principal y salir
+// Pausa con Escape: congela el juego y muestra los botones (que cambian de escena con Cambio_escena)
 public class Menu_pausa : MonoBehaviour
 {
 	[Tooltip("Empieza apagado; se prende al pausar.")]
@@ -32,7 +31,6 @@ public class Menu_pausa : MonoBehaviour
 	[SerializeField] private GameObject pantallaVictoria;
 	[Tooltip("Si está a la vista (perdiste), Escape tampoco pausa.")]
 	[SerializeField] private GameObject pantallaGameOver;
-	[SerializeField] private string menuSceneName = "Menu"; // Tiene que estar agregada en Build Settings
 
 	private bool isPausado;
 
@@ -57,7 +55,7 @@ public class Menu_pausa : MonoBehaviour
 	// Al destruirse (cambio de escena o fin del Play) deja el tiempo y el audio como estaban
 	void OnDestroy()
 	{
-		Reanudar();
+		Estado_juego.Reanudar();
 	}
 
 	private void Pausar()
@@ -66,8 +64,7 @@ public class Menu_pausa : MonoBehaviour
 		canvasPausa.SetActive(true);
 		botones.SetActive(true);
 		panelOpciones.SetActive(false);
-		Time.timeScale = 0f;
-		AudioListener.pause = true; // Pausa la música y el ambiente de Unity (FMOD no depende de esto: sin tiempo no hay eventos de pasos)
+		Estado_juego.Congelar(); // Pausa la música y el ambiente de Unity (FMOD no depende de esto: sin tiempo no hay eventos de pasos)
 	}
 
 	// También la llama el botón Continuar
@@ -75,24 +72,7 @@ public class Menu_pausa : MonoBehaviour
 	{
 		isPausado = false;
 		canvasPausa.SetActive(false);
-		Reanudar();
+		Estado_juego.Reanudar();
 	}
 
-	public void IrAlMenu()
-	{
-		Reanudar();
-		SceneManager.LoadScene(menuSceneName);
-	}
-
-	public void Salir()
-	{
-		// En el Editor Application.Quit no cierra nada; solo funciona en el build
-		Application.Quit();
-	}
-
-	private static void Reanudar()
-	{
-		Time.timeScale = 1f;
-		AudioListener.pause = false;
-	}
 }

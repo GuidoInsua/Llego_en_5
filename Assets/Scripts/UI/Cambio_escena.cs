@@ -25,13 +25,13 @@ public class Cambio_escena : MonoBehaviour
 	// Desde la victoria el tiempo y el audio están congelados: la escena nueva arranca normal
 	public void CargarEscena(string nombre)
 	{
-		Reanudar();
+		Estado_juego.Reanudar();
 		SceneManager.LoadScene(nombre);
 	}
 
 	public void Reiniciar()
 	{
-		Reanudar();
+		Estado_juego.Reanudar();
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 	}
 
@@ -41,9 +41,4 @@ public class Cambio_escena : MonoBehaviour
 		Application.Quit();
 	}
 
-	private static void Reanudar()
-	{
-		Time.timeScale = 1f;
-		AudioListener.pause = false;
-	}
 }

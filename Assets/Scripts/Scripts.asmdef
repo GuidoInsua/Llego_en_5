@@ -4,6 +4,7 @@
         "Unity.InputSystem",
         "Unity.UI",
         "Unity.TextMeshPro",
-        "FMODUnity"
+        "FMODUnity",
+        "Unity.2D.SpriteShape.Runtime"
     ]
 }

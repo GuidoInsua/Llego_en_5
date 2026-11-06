@@ -1504,6 +1504,7 @@ GameObject:
   - component: {fileID: 427505975}
   - component: {fileID: 427505974}
   - component: {fileID: 427505973}
+  - component: {fileID: 1999000001}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -4072,3 +4073,17 @@ SceneRoots:
   - {fileID: 427505975}
   - {fileID: 351039184}
   - {fileID: 1533330121}
+--- !u!114 &1999000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 427505972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64650300d3f74050b0b35e888f6a3fa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Scripts::Resaltado_seleccion
+  colorContorno: {r: 1, g: 1, b: 1, a: 0.45}
+  grosor: {x: 4, y: -4}
