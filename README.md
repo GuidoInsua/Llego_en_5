@@ -211,6 +211,24 @@ _Equipo de 4. Todos hacemos de todo; los roles son una guía: Lucas (diseño y p
 
 ---
 
+## 🎮 Controles (prototipo)
+
+El personaje corre solo. Con el teclado:
+
+| Acción | Teclas |
+|---|---|
+| Saltar | Espacio, W o ↑ (soltarla mientras sube da un salto más bajo) |
+| Deslizarse | Shift, S o ↓ |
+| Usar el hidrante (sale disparado hacia arriba) | E, mientras se toca el chorro de agua |
+| Entrar a la alcantarilla (baja al subterráneo) | Empezar a deslizarse encima de la tapa rosa |
+| Pausa | Escape |
+| Reintentar | R, desde la pausa, la victoria o el game over |
+| Menús | Flechas y Enter (o el mouse) |
+
+El salto perdona un poco: si se aprieta un instante antes de tocar el suelo, salta al aterrizar, y todavía se puede saltar un instante después de dejar un borde.
+
+---
+
 ## 🛠️ Cómo abrir el proyecto (para el equipo)
 
 > **Importante:** el proyecto solo abre bien en **Windows**: FMOD trae solo sus librerías de Windows (ver [Cómo manejamos el repo](#-cómo-manejamos-el-repo-para-el-equipo)).

@@ -28,6 +28,16 @@ public class Player_controller : MonoBehaviour
 	[Tooltip("Velocidad a la que el clip de correr se ve bien a velocidad normal: con más o menos velocidad el clip se acelera o frena en proporción.")]
 	[SerializeField] private float velocidadClipCorrer = 7f;
 	[SerializeField] private float jumpForce = 13f;
+	[Tooltip("Unidades/s² con las que vuelve a la velocidad normal tras un golpe o un puente. Frenar es instantáneo; el lanzamiento del hidrante también.")]
+	[SerializeField] private float aceleracion = 15f;
+
+	[Header("Salto")]
+	[Tooltip("Si se aprieta saltar un instante antes de tocar el suelo, el pedido se guarda este tiempo y salta al aterrizar.")]
+	[SerializeField] private float bufferSalto = 0.12f;
+	[Tooltip("Coyote time: segundos después de dejar el suelo (por un borde) en que todavía se puede saltar.")]
+	[SerializeField] private float tiempoCoyote = 0.08f;
+	[Tooltip("Al soltar la tecla mientras sube, la velocidad vertical se multiplica por esto (salto más bajo). 1 = salto siempre completo.")]
+	[SerializeField, Range(0f, 1f)] private float multiplicadorCorteSalto = 0.5f;
 
 	[Header("Aire")]
 	[SerializeField] private float velocidadParaCaer = 12f; // Velocidad de caída por encima de la de un salto normal (~11): pasa a Fall
@@ -70,6 +80,14 @@ public class Player_controller : MonoBehaviour
 	[SerializeField] private GameObject pantallaGameOver;
 
 	[SerializeField] private Material materialDestello; // Pinta el personaje entero de blanco (shader GUI/Text Shader)
+
+	[Header("Polvo")]
+	[Tooltip("Partículas en los pies (opcional): una ráfaga al aterrizar y al empezar a deslizarse.")]
+	[SerializeField] private ParticleSystem polvo;
+	[SerializeField] private int polvoAterrizaje = 10;
+	[SerializeField] private int polvoDeslizamiento = 8;
+	[Tooltip("Caídas más lentas que esto aterrizan sin polvo (un salto normal llega a ~11).")]
+	[SerializeField] private float velocidadMinimaPolvo = 9f;
 
 	[Header("Detección de Suelo")]
 	[SerializeField] private Transform groundCheck;
@@ -115,6 +133,12 @@ public class Player_controller : MonoBehaviour
 	private float fuerzaPedida; // Velocidad vertical del próximo salto: jumpForce, o la del lanzamiento
 	private float inicioDeslizamiento;
 	private float ultimoPedidoDeslizar = float.NegativeInfinity;
+	private float ultimoPedidoSalto = float.NegativeInfinity;
+	private float ultimoEnSuelo = float.NegativeInfinity;
+	private bool isCorteSaltoPedido; // Soltó la tecla de salto mientras subía: FixedUpdate baja la velocidad
+	private float velocidadActual; // Velocidad horizontal: frena de golpe y acelera de a poco
+	private float velocidadCaida; // La más rápida de esta caída, para el polvo y la cámara al aterrizar
+	private Collider2D ultimoSuelo; // Para buscar Carril_suelo solo al cambiar de suelo
 	private float finDeslizamiento;
 	private float finAterrizaje;
 	private int animacionActual;
@@ -132,7 +156,8 @@ public class Player_controller : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponentInChildren<Animator>();
-		renderizadores = GetComponentsInChildren<Renderer>();
+		// Solo los del modelo (bajo el Animator): las partículas del polvo no titilan
+		renderizadores = animator != null ? animator.GetComponentsInChildren<Renderer>() : new Renderer[0];
 
 		if (groundCheck == null || materialDestello == null || pantallaGameOver == null || animator == null || renderizadores.Length == 0)
 		{
@@ -147,6 +172,7 @@ public class Player_controller : MonoBehaviour
 			materialesNormales[i] = renderizadores[i].sharedMaterial;
 		}
 
+		velocidadActual = runSpeed;
 		capsula = GetComponent<CapsuleCollider2D>();
 		puedeAterrizar = animator.HasState(0, AnimLand) && animator.HasState(0, AnimJumpLand);
 		puedeDeslizar = capsula != null && animator.HasState(0, AnimSlide);
@@ -163,6 +189,8 @@ public class Player_controller : MonoBehaviour
 	// Lo escucha Cronometro para avisar que se pierde tiempo
 	public event System.Action Golpeado;
 	public event System.Action Recolectado;
+	// Al tocar el suelo después de estar en el aire, con la velocidad de caída más alta (positiva). Lo escucha Sacudida_camara
+	public event System.Action<float> Aterrizado;
 
 	// Lo llama cada recolectable al tocar al jugador
 	public void Recolectar() => Recolectado?.Invoke();
@@ -203,6 +231,8 @@ public class Player_controller : MonoBehaviour
 		if (isDeslizando) TerminarDeslizamiento();
 		jumpRequested = false;
 		slideRequested = false;
+		ultimoPedidoSalto = float.NegativeInfinity;
+		ultimoEnSuelo = float.NegativeInfinity; // Sin esto el coyote time dejaría saltar dentro del caño
 		isSaltoActivo = false; // Así la caída es Fall y no JumpUp
 		finAterrizaje = 0f;
 		rb.position = destino;
@@ -241,12 +271,33 @@ public class Player_controller : MonoBehaviour
 	{
 		// 1. Detección de suelo
 		Collider2D suelo = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
+		bool estabaEnSuelo = isGrounded;
 		isGrounded = suelo != null && !isAtravesando; // OverlapBox no respeta el excludeLayers: al cruzar el suelo en el lanzamiento no cuenta como apoyado
 
-		if (isGrounded && suelo.TryGetComponent(out Carril_suelo carrilSuelo) && carrilSuelo.Carril != carrilActual)
+		if (isGrounded)
 		{
-			carrilActual = carrilSuelo.Carril;
-			CarrilCambiado?.Invoke(carrilSuelo.Carril);
+			ultimoEnSuelo = Time.time;
+
+			if (suelo != ultimoSuelo)
+			{
+				ultimoSuelo = suelo;
+				if (suelo.TryGetComponent(out Carril_suelo carrilSuelo) && carrilSuelo.Carril != carrilActual)
+				{
+					carrilActual = carrilSuelo.Carril;
+					CarrilCambiado?.Invoke(carrilSuelo.Carril);
+				}
+			}
+
+			if (!estabaEnSuelo && !isMuerto)
+			{
+				if (velocidadCaida >= velocidadMinimaPolvo) SoltarPolvo(polvoAterrizaje);
+				Aterrizado?.Invoke(velocidadCaida);
+			}
+			velocidadCaida = 0f;
+		}
+		else
+		{
+			velocidadCaida = Mathf.Max(velocidadCaida, -rb.linearVelocity.y);
 		}
 
 		// Sensor de aterrizaje: solo mira la capa Ground, así un obstáculo en el camino no lo activa
@@ -262,14 +313,25 @@ public class Player_controller : MonoBehaviour
 
 		// 2. Salto con el Nuevo Input System (Espacio o tecla W / Flecha arriba)
 		// En pausa (timeScale 0) el input se ignora
-		bool jumpPressed = Time.timeScale > 0f && Keyboard.current != null &&
+		// El pedido se guarda `bufferSalto` s (salta al aterrizar) y vale hasta `tiempoCoyote` s después de dejar un borde, si no saltó
+		bool isTeclado = Time.timeScale > 0f && Keyboard.current != null;
+		bool jumpPressed = isTeclado &&
 						  (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
+		bool jumpReleased = isTeclado &&
+						   (Keyboard.current.spaceKey.wasReleasedThisFrame || Keyboard.current.wKey.wasReleasedThisFrame || Keyboard.current.upArrowKey.wasReleasedThisFrame);
 
-		if (jumpPressed && isGrounded && (!isDeslizando || Time.time >= inicioDeslizamiento + tiempoMinimoParaSaltar))
+		if (jumpPressed) ultimoPedidoSalto = Time.time;
+
+		bool isApoyado = isGrounded || (!isSaltoActivo && !isAtravesando && Time.time - ultimoEnSuelo <= tiempoCoyote);
+		if (isApoyado && Time.time - ultimoPedidoSalto <= bufferSalto && (!isDeslizando || Time.time >= inicioDeslizamiento + tiempoMinimoParaSaltar))
 		{
 			if (!jumpRequested) fuerzaPedida = jumpForce; // Si ya hay un lanzamiento pedido, no se pisa
 			jumpRequested = true;
+			ultimoPedidoSalto = float.NegativeInfinity;
 		}
+
+		// Soltar después del despegue: si se soltó antes (salto guardado en el buffer), el salto es completo
+		if (jumpReleased && isSaltoActivo && !isLanzado) isCorteSaltoPedido = true;
 
 		if (isGrounded && rb.linearVelocity.y <= 0.1f)
 		{
@@ -303,8 +365,11 @@ public class Player_controller : MonoBehaviour
 			return;
 		}
 
-		// Física: la velocidad se aplica en FixedUpdate según las reglas del proyecto
-		float velocidadX = VelocidadHorizontal;
+		// Física: la velocidad se aplica en FixedUpdate según las reglas del proyecto.
+		// Frenar (golpe, puente) y el lanzamiento son instantáneos; volver a la velocidad normal es gradual
+		float objetivo = VelocidadHorizontal;
+		velocidadActual = isLanzado || objetivo < velocidadActual ? objetivo : Mathf.MoveTowards(velocidadActual, objetivo, aceleracion * Time.fixedDeltaTime);
+		float velocidadX = velocidadActual;
 		float velocidadY = rb.linearVelocity.y;
 
 		// En una pendiente la velocidad sigue el suelo: sin esto, al bajar una rampa se despega y flota, y al subir se frena contra ella
@@ -330,6 +395,11 @@ public class Player_controller : MonoBehaviour
 				capsula.excludeLayers = exclusionNormal | groundLayer; // Solo el suelo: los triggers (zonas de tramo, agua) siguen avisando
 			}
 		}
+		else if (isCorteSaltoPedido && isSaltoActivo && !isLanzado && rb.linearVelocity.y > 0f)
+		{
+			rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * multiplicadorCorteSalto);
+		}
+		isCorteSaltoPedido = false;
 
 		// Cayó por un hueco: baja por la pared sin fricción y sigue corriendo al tocar el suelo del carril de abajo
 		if (isCayendoPedido && capsula != null)
@@ -384,11 +454,17 @@ public class Player_controller : MonoBehaviour
 		finAterrizaje = 0f;
 		inicioDeslizamiento = Time.time;
 		finDeslizamiento = Time.time + duracionDeslizamiento;
+		SoltarPolvo(polvoDeslizamiento);
 
 		// Cápsula más baja con los pies en el mismo lugar
 		float diferencia = capsulaSizeNormal.y - alturaDeslizando;
 		capsula.size = new Vector2(capsulaSizeNormal.x, alturaDeslizando);
 		capsula.offset = new Vector2(capsulaOffsetNormal.x, capsulaOffsetNormal.y - diferencia * 0.5f);
+	}
+
+	private void SoltarPolvo(int cantidad)
+	{
+		if (polvo != null) polvo.Emit(cantidad);
 	}
 
 	private void TerminarDeslizamiento()

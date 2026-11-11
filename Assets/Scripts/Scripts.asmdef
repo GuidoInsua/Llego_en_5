@@ -5,6 +5,7 @@
         "Unity.UI",
         "Unity.TextMeshPro",
         "FMODUnity",
-        "Unity.2D.SpriteShape.Runtime"
+        "Unity.2D.SpriteShape.Runtime",
+        "Unity.Cinemachine"
     ]
 }
