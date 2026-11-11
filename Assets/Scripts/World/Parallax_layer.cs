@@ -29,12 +29,13 @@ public class Parallax_layer : MonoBehaviour
 	[Header("Copias")]
 	[SerializeField] private Transform[] copias; // Otras 2 copias de la misma tira (Ctrl+D)
 
-	private float ancho;
+	private SpriteRenderer tira;
 	private float offsetY; // Altura de la capa respecto de la cámara, para que no se mueva al saltar
 
 	void Awake()
 	{
-		if (camara == null || GetComponent<SpriteRenderer>() == null)
+		tira = GetComponent<SpriteRenderer>();
+		if (camara == null || tira == null)
 		{
 			Debug.LogError("Parallax_layer: falta asignar la cámara o el SpriteRenderer.");
 			enabled = false; // Desde Awake también evita OnEnable, que se suscribiría al render sin cámara
@@ -43,8 +44,6 @@ public class Parallax_layer : MonoBehaviour
 
 	void Start()
 	{
-		// Ancho de la tira en unidades del mundo, para repetirla sin cortes
-		ancho = GetComponent<SpriteRenderer>().bounds.size.x;
 		offsetY = transform.position.y - camara.position.y;
 	}
 
@@ -57,6 +56,8 @@ public class Parallax_layer : MonoBehaviour
 		if (cam.transform != camara) return;
 
 		float x = camara.position.x;
+		// Ancho de la tira en unidades del mundo, medido cada vez: Cambio_fondo cambia el sprite y no todos miden lo mismo (Unity recorta el borde transparente)
+		float ancho = tira.bounds.size.x;
 
 		// Cuánto se corre el patrón de la tira respecto de la cámara
 		float corrimiento = Mathf.Repeat(x * (1f - seguirCamara), ancho);

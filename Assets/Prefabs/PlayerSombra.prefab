@@ -115,7 +115,6 @@ MonoBehaviour:
   runSpeed: 10
   velocidadClipCorrer: 7
   jumpForce: 11
-  mantenerSaltoEnDescenso: 1
   velocidadParaCaer: 12
   duracionTransicion: 0.12
   anticipoAterrizaje: 0.12
@@ -124,15 +123,23 @@ MonoBehaviour:
   duracionAterrizajeSalto: 0.4
   duracionAterrizajeCaida: 0.5
   duracionDeslizamiento: 1.2
+  bufferDeslizar: 0.15
+  tiempoMinimoParaSaltar: 0.05
   alturaDeslizando: 0.8
   duracionGolpe: 1.5
   multiplicadorVelocidadGolpe: 0.5
+  multiplicadorVelocidadPuente: 0.7
+  retrasoAterrizajeLanzado: 0.5
+  duracionMuerte: 0.6
+  pantallaGameOver: {fileID: 0}
   materialDestello: {fileID: 2100000, guid: 8eaaf4824b3c61140a43fe8b3778df9e, type: 2}
   groundCheck: {fileID: 2006794399296209086}
   groundCheckSize: {x: 0.3, y: 0.1}
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  distanciaPegado: 0.4
+  velocidadMaximaPegado: 8
 --- !u!1 &7236184790654839109
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,7 +189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7f1a01a9cd70085458a86ed654d268cc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7f1a01a9cd70085458a86ed654d268cc, type: 3}
       propertyPath: m_LocalRotation.w

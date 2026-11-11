@@ -38,6 +38,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: FondoEdificios
+    uniqueID: 2468013584
+    locked: 0
   - name: FondoLejano
     uniqueID: 2468013579
     locked: 0
@@ -49,6 +52,9 @@ TagManager:
     locked: 0
   - name: Suelo
     uniqueID: 2468013581
+    locked: 0
+  - name: Ventanas
+    uniqueID: 2468013583
     locked: 0
   - name: Obstaculos
     uniqueID: 2468013582

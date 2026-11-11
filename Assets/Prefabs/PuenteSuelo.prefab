@@ -230,7 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f140fb5141442a9b13a37dc8d509f5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Scripts::Carril_suelo
-  indice: 1
+  carril: 1
 --- !u!114 &5349488277672297807
 MonoBehaviour:
   m_ObjectHideFlags: 0
