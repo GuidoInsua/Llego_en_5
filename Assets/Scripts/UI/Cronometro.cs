@@ -38,6 +38,7 @@ public class Cronometro : MonoBehaviour
 	private Color colorNormal;
 
 	public string Formato => Formatear(segundos);
+	public float Segundos => segundos;
 
 	void Awake()
 	{
@@ -92,7 +93,7 @@ public class Cronometro : MonoBehaviour
 	}
 
 	// mm:ss,d
-	private static string Formatear(float segundos)
+	public static string Formatear(float segundos)
 	{
 		int decimas = (int)(segundos * 10f); // Entero: así 59,96 s no se redondea a "60.0"
 		return (decimas / 600).ToString("00") + ":" + (decimas % 600 / 10).ToString("00") + "," + decimas % 10;
