@@ -24,7 +24,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Collider2D))]
 public class Chorro_agua : MonoBehaviour
 {
-	[Tooltip("La parte roja del hidrante. Si el jugador ya chocó con ella (o ya no está), el chorro no ofrece el impulso.")]
+	[Tooltip("La parte roja del hidrante. Si el jugador ya chocó con ella, el chorro no ofrece el impulso.")]
 	[SerializeField] private Obstaculo cuerpo;
 
 	[Header("Chorro")]
@@ -69,8 +69,8 @@ public class Chorro_agua : MonoBehaviour
 
 		if (jugador == null) return;
 
-		// Los choques de este paso de física ya se procesaron: si tocó la parte roja (rota o ya destruida), no hay impulso
-		if (cuerpo == null || cuerpo.EstaRota || jugador.EstaMuerto)
+		// Los choques de este paso de física ya se procesaron: si tocó la parte roja, no hay impulso
+		if (cuerpo.EstaRota || jugador.EstaMuerto)
 		{
 			Soltar();
 			return;
@@ -87,7 +87,7 @@ public class Chorro_agua : MonoBehaviour
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (isUsado || cuerpo == null || cuerpo.EstaRota) return;
+		if (isUsado || cuerpo.EstaRota) return;
 
 		Player_controller entrante = other.GetComponentInParent<Player_controller>();
 		if (entrante == null) return;

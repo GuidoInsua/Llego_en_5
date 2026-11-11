@@ -1016,7 +1016,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 351039184}
-  - component: {fileID: 351039183}
+  - component: {fileID: 351039185}
   m_Layer: 0
   m_Name: MenuManager
   m_TagString: Untagged
@@ -1024,21 +1024,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &351039183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 351039182}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7169c246b51d44440a545c9f495b220a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Scripts::Menu_manager
-  startButton: {fileID: 905165131}
-  quitButton: {fileID: 1187386019}
-  gameSceneName: Level1
 --- !u!4 &351039184
 Transform:
   m_ObjectHideFlags: 0
@@ -1054,6 +1039,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &351039185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 351039182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48ab76722ec810b4590336a679f0392d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Scripts::Cambio_escena
 --- !u!1 &367062189
 GameObject:
   m_ObjectHideFlags: 0
@@ -2120,7 +2117,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 905165132}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 351039185}
+        m_TargetAssemblyTypeName: Cambio_escena, Scripts
+        m_MethodName: CargarEscena
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Level1
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &905165132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2330,7 +2339,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1187386020}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 351039185}
+        m_TargetAssemblyTypeName: Cambio_escena, Scripts
+        m_MethodName: Salir
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1187386020
 MonoBehaviour:
   m_ObjectHideFlags: 0

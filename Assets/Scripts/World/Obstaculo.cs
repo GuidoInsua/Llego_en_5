@@ -14,19 +14,16 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Caja que frena al jugador al chocar y desaparece.
+// Desc: Obstáculo que frena al jugador al chocar y titila; se queda en su lugar.
 
 using System.Collections;
 using UnityEngine;
 
-// Obstáculo que se puede saltar. Al chocar con él titila con transparencia y desaparece (o se queda, si es permanente)
+// Obstáculo que se puede saltar. Al chocar con él titila con transparencia y se queda, sin collider: ya se lo chocó
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
 public class Obstaculo : MonoBehaviour
 {
 	[SerializeField] private float duracionRotura = 0.6f;
-	[SerializeField] private Sprite[] variantes; // Mismo barril en distintos colores: cada uno toma uno al azar
-	[Tooltip("Titila pero no desaparece (el hidrante). El collider queda apagado igual: ya se lo chocó.")]
-	[SerializeField] private bool isPermanente;
 
 	private static readonly WaitForSeconds Parpadeo = new WaitForSeconds(0.1f); // Se reutiliza: evita crear uno nuevo por cada titilada
 
@@ -38,7 +35,6 @@ public class Obstaculo : MonoBehaviour
 	{
 		col = GetComponent<Collider2D>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
-		if (variantes != null && variantes.Length > 0) spriteRenderer.sprite = variantes[Random.Range(0, variantes.Length)];
 	}
 
 	// Verdadero desde el golpe: el hidrante lo usa para no ofrecer el impulso si ya chocaste con él
@@ -49,7 +45,7 @@ public class Obstaculo : MonoBehaviour
 		if (rota) return;
 		rota = true;
 
-		col.enabled = false; // Dejamos pasar al jugador mientras la caja se rompe
+		col.enabled = false; // Ya se lo chocó: deja pasar al jugador
 		StartCoroutine(Titilar());
 	}
 
@@ -67,7 +63,6 @@ public class Obstaculo : MonoBehaviour
 			yield return Parpadeo;
 		}
 
-		if (isPermanente) spriteRenderer.color = original;
-		else Destroy(gameObject);
+		spriteRenderer.color = original;
 	}
 }

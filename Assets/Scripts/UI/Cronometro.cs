@@ -37,7 +37,8 @@ public class Cronometro : MonoBehaviour
 	private Coroutine pulso;
 	private Color colorNormal;
 
-	public string Formato => Formatear(segundos);
+	private int decimasMostradas = -1;
+
 	public float Segundos => segundos;
 
 	void Awake()
@@ -84,7 +85,12 @@ public class Cronometro : MonoBehaviour
 		if (isDetenido) return;
 
 		segundos += Time.deltaTime;
-		texto.text = Formato;
+
+		// El texto cambia 10 veces por segundo: armarlo en cada cuadro crea cadenas y rehace la malla sin que se vea nada nuevo
+		int decimas = (int)(segundos * 10f);
+		if (decimas == decimasMostradas) return;
+		decimasMostradas = decimas;
+		texto.text = Formatear(segundos);
 	}
 
 	public void Detener()
