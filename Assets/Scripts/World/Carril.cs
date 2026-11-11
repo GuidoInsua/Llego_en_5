@@ -16,7 +16,7 @@
 // ###########################
 // Desc: Los tres carriles del nivel, de abajo hacia arriba.
 
-// El orden importa: Player_controller compara si un carril es más alto que otro
+// El orden es de abajo hacia arriba; los valores coinciden con el viejo número de Carril_suelo (FormerlySerializedAs)
 public enum Carril
 {
 	Subterraneo = 0,

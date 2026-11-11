@@ -153,4 +153,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Scripts::Obstaculo
   duracionRotura: 0.6
-  variantes: []

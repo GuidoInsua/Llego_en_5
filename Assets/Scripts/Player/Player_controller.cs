@@ -241,7 +241,7 @@ public class Player_controller : MonoBehaviour
 	{
 		// 1. Detección de suelo
 		Collider2D suelo = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
-		isGrounded = suelo != null;
+		isGrounded = suelo != null && !isAtravesando; // OverlapBox no respeta el excludeLayers: al cruzar el suelo en el lanzamiento no cuenta como apoyado
 
 		if (isGrounded && suelo.TryGetComponent(out Carril_suelo carrilSuelo) && carrilSuelo.Carril != carrilActual)
 		{
@@ -451,24 +451,24 @@ public class Player_controller : MonoBehaviour
 		// Sin colliders cae por el hueco en vez de apoyarse en el borde
 		foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
 
-		float fin = Time.time + duracionMuerte;
-		bool isBlanco = false;
-		while (Time.time < fin)
-		{
-			isBlanco = !isBlanco;
-			PintarDestello(isBlanco);
-			yield return Parpadeo;
-		}
-
-		PintarDestello(false);
+		IEnumerator titileo = Titilar(duracionMuerte);
+		while (titileo.MoveNext()) yield return titileo.Current;
 		pantallaGameOver.SetActive(true);
 		Estado_juego.Congelar();
 	}
 
 	private IEnumerator RecibirGolpe()
 	{
-		// Titila alternando el modelo entre normal y blanco hasta que pase el golpe
-		float fin = Time.time + duracionGolpe;
+		IEnumerator titileo = Titilar(duracionGolpe);
+		while (titileo.MoveNext()) yield return titileo.Current;
+		golpeCoroutine = null;
+	}
+
+	// Alterna el modelo entre normal y blanco durante `duracion` y lo deja normal.
+	// Se recorre a mano y no con `yield return Titilar(...)`: así, un StopCoroutine del golpe también corta el titileo
+	private IEnumerator Titilar(float duracion)
+	{
+		float fin = Time.time + duracion;
 		bool isBlanco = false;
 		while (Time.time < fin)
 		{
@@ -478,7 +478,6 @@ public class Player_controller : MonoBehaviour
 		}
 
 		PintarDestello(false);
-		golpeCoroutine = null;
 	}
 
 	// Cambia el material de todas las partes del personaje: el destello blanco o el original de cada una
