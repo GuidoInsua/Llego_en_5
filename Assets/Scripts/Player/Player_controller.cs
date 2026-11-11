@@ -36,8 +36,9 @@ public class Player_controller : MonoBehaviour
 	[SerializeField] private float bufferSalto = 0.12f;
 	[Tooltip("Coyote time: segundos después de dejar el suelo (por un borde) en que todavía se puede saltar.")]
 	[SerializeField] private float tiempoCoyote = 0.08f;
-	[Tooltip("Al soltar la tecla mientras sube, la velocidad vertical se multiplica por esto (salto más bajo). 1 = salto siempre completo.")]
-	[SerializeField, Range(0f, 1f)] private float multiplicadorCorteSalto = 0.5f;
+	[Tooltip("Tres saltos según cuánto se mantiene la tecla: soltarla enseguida da el corto, un poco después el medio, y mantenerla da el largo (jumpForce). Altura de los pies sobre el despegue.")]
+	[SerializeField] private float alturaSaltoCorto = 1.1f;
+	[SerializeField] private float alturaSaltoMedio = 1.7f;
 
 	[Header("Aire")]
 	[SerializeField] private float velocidadParaCaer = 12f; // Velocidad de caída por encima de la de un salto normal (~11): pasa a Fall
@@ -136,6 +137,7 @@ public class Player_controller : MonoBehaviour
 	private float ultimoPedidoSalto = float.NegativeInfinity;
 	private float ultimoEnSuelo = float.NegativeInfinity;
 	private bool isCorteSaltoPedido; // Soltó la tecla de salto mientras subía: FixedUpdate baja la velocidad
+	private float alturaDespegue; // y del jugador al saltar: el corte mide la altura del salto desde acá
 	private float velocidadActual; // Velocidad horizontal: frena de golpe y acelera de a poco
 	private float velocidadCaida; // La más rápida de esta caída, para el polvo y la cámara al aterrizar
 	private Collider2D ultimoSuelo; // Para buscar Carril_suelo solo al cambiar de suelo
@@ -386,6 +388,7 @@ public class Player_controller : MonoBehaviour
 			rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaPedida);
 			jumpRequested = false;
 			isSaltoActivo = true;
+			alturaDespegue = rb.position.y;
 			finAterrizaje = 0f; // Saltar corta el aterrizaje
 
 			if (isLanzamientoPedido)
@@ -397,7 +400,16 @@ public class Player_controller : MonoBehaviour
 		}
 		else if (isCorteSaltoPedido && isSaltoActivo && !isLanzado && rb.linearVelocity.y > 0f)
 		{
-			rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * multiplicadorCorteSalto);
+			// Termina en el primer salto (corto o medio) que todavía no pasó; si ya pasó los dos, sigue el largo.
+			// v² = 2·g·h: la velocidad que hace falta para subir justo lo que falta hasta esa altura
+			float subido = rb.position.y - alturaDespegue;
+			float alturaObjetivo = subido < alturaSaltoCorto ? alturaSaltoCorto : alturaSaltoMedio;
+			if (subido < alturaObjetivo)
+			{
+				float gravedad = Physics2D.gravity.magnitude * rb.gravityScale;
+				float velocidadCorte = Mathf.Sqrt(2f * gravedad * (alturaObjetivo - subido));
+				rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Min(rb.linearVelocity.y, velocidadCorte));
+			}
 		}
 		isCorteSaltoPedido = false;
 
