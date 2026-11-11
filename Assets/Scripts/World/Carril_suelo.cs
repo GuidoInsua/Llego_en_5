@@ -17,16 +17,13 @@
 // Desc: Marca de qué carril es un suelo (0 = el de más abajo), para que el jugador sepa si cayó de un carril o murió.
 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // Va en cada tramo de suelo (el objeto que tiene el collider)
 public class Carril_suelo : MonoBehaviour
 {
-	[SerializeField] private int indice;
+	[FormerlySerializedAs("indice")] // Antes era un número (0, 1, 2): el enum guarda los mismos valores
+	[SerializeField] private Carril carril;
 
-	public int Indice => indice;
-
-	public void Iniciar(int indice)
-	{
-		this.indice = indice;
-	}
+	public Carril Carril => carril;
 }

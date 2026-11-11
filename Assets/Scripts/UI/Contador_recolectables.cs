@@ -29,6 +29,8 @@ public class Contador_recolectables : MonoBehaviour
 
 	private int cantidad;
 
+	public int Cantidad => cantidad;
+
 	void Awake()
 	{
 		if (texto == null || jugador == null)

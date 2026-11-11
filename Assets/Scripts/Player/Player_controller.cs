@@ -63,10 +63,6 @@ public class Player_controller : MonoBehaviour
 	[Tooltip("Velocidad (proporción de la normal) mientras pisa un Puente_suelo.")]
 	[SerializeField] private float multiplicadorVelocidadPuente = 0.7f;
 
-	[Header("Lanzamiento (hidrante)")]
-	[Tooltip("Segundos desde que entra en un tramo de un carril más alto hasta que pasa a la animación de aterrizaje.")]
-	[SerializeField] private float retrasoAterrizajeLanzado = 0.5f;
-
 	[Header("Muerte")]
 	[Tooltip("Chocar de frente contra el suelo (la pared de un tramo más alto): titila y cae por el hueco este tiempo, y después aparece el game over.")]
 	[SerializeField] private float duracionMuerte = 0.6f;
@@ -105,16 +101,12 @@ public class Player_controller : MonoBehaviour
 	private bool isLanzado; // Desde el lanzamiento hasta volver a apoyarse: corre a velocidadLanzado
 	private float velocidadLanzado;
 	private float inicioLanzado;
-	private int carrilLanzamiento; // Carril del que salió disparado
-	private float aterrizajeEn = -1f; // Cuándo pasa a la animación de aterrizaje del lanzamiento (-1: todavía no entró en un tramo de arriba)
 	private bool isAtravesando; // Sube sin chocar con nada hasta el punto más alto
-	private bool isEnTunel; // Bajando por un túnel: se queda deslizándose aunque no toque el suelo, y no responde al salto ni al slide
-	private float alturaSalidaTunel; // Sale al apoyarse en un suelo más bajo que esto
 	private const float DuracionLentitud = 0.1f;
 	private float lentoHasta;
-	private bool isCayendoPedido; // Cayó por un hueco de un carril que no es el de abajo: OnCollisionEnter2D lo pide y FixedUpdate lo aplica
-	public event System.Action<int> CarrilCambiado; // Al pisar un suelo de otro carril (índice del carril)
-	private int carrilActual = -1;
+	private bool isCayendoPedido; // Cayó por un hueco de la calle o los edificios (no del subterráneo): OnCollisionEnter2D lo pide y FixedUpdate lo aplica
+	public event System.Action<Carril> CarrilCambiado; // Al pisar un suelo de otro carril
+	private Carril? carrilActual; // null hasta pisar el primer suelo
 	private bool isCayendo;// Cae pegado a la pared sin fricción hasta volver a tocar el suelo
 	private float inicioCaida;
 	private PhysicsMaterial2D materialNormal;
@@ -175,10 +167,7 @@ public class Player_controller : MonoBehaviour
 	// Lo llama cada recolectable al tocar al jugador
 	public void Recolectar() => Recolectado?.Invoke();
 
-	// Lo escucha Cambio_fondo
-	public event System.Action Lanzado;
-
-	// Lo usa Tunel_suelo para dejar entrar solo al que se desliza
+	// Lo usa Alcantarilla: entra solo el que empieza a deslizarse encima de la tapa
 	public bool EstaDeslizando
 	{
 		get { return isDeslizando; }
@@ -206,36 +195,25 @@ public class Player_controller : MonoBehaviour
 		lentoHasta = Time.time + DuracionLentitud;
 	}
 
-	public bool EstaEnTunel
+	// Lo llama Alcantarilla (desde la física): aparece en `destino`, dentro del caño de salida, y cae desde ahí, a `velocidadCaida` hacia abajo, con la animación de caída
+	public void Teletransportar(Vector2 destino, float velocidadCaida)
 	{
-		get { return isEnTunel; }
-	}
+		if (isMuerto) return;
 
-	// Lo llama Tunel_suelo al entrar deslizándose: queda deslizándose (animación y cápsula baja) aunque no toque el suelo, hasta apoyarse en un suelo
-	// más bajo que `alturaSalida` (el carril de abajo). La física es la normal: choca con todo, menos con la tapa que abre el túnel
-	public void EntrarTunel(float alturaSalida)
-	{
-		if (isMuerto || isEnTunel) return;
-
-		isEnTunel = true;
-		alturaSalidaTunel = alturaSalida;
+		if (isDeslizando) TerminarDeslizamiento();
 		jumpRequested = false;
 		slideRequested = false;
-
-		if (!isDeslizando) IniciarDeslizamiento();
-		finDeslizamiento = float.PositiveInfinity;
+		isSaltoActivo = false; // Así la caída es Fall y no JumpUp
+		finAterrizaje = 0f;
+		rb.position = destino;
+		transform.position = new Vector3(destino.x, destino.y, transform.position.z); // Sin esto, con la interpolación el modelo se ve un cuadro a mitad de camino
+		rb.linearVelocity = new Vector2(rb.linearVelocity.x, -velocidadCaida);
 	}
 
 	// Lo usa el hidrante para fijar la velocidad horizontal del lanzamiento
 	public float VelocidadCarrera
 	{
 		get { return runSpeed; }
-	}
-
-	// Un tramo de un carril más alto avisa que el jugador entró en su zona: si viene lanzado desde un carril más bajo, `retrasoAterrizajeLanzado` s después pasa a la animación de aterrizaje
-	public void EntrarEnTramo(int carril)
-	{
-		if (isLanzado && aterrizajeEn < 0f && carril > carrilLanzamiento) aterrizajeEn = Time.time + retrasoAterrizajeLanzado;
 	}
 
 	// Sale disparado hacia arriba `altura` por encima de donde está y hacia adelante a `velocidadX` hasta apoyarse de nuevo (como un jump pad). Mientras sube atraviesa el suelo:
@@ -248,12 +226,9 @@ public class Player_controller : MonoBehaviour
 		fuerzaPedida = Mathf.Sqrt(2f * gravedad * altura);
 		jumpRequested = true;
 		isLanzamientoPedido = true;
-		carrilLanzamiento = carrilActual;
-		aterrizajeEn = -1f;
 		isLanzado = true;
 		velocidadLanzado = velocidadX;
 		inicioLanzado = Time.time;
-		Lanzado?.Invoke();
 	}
 
 	// La cámara usa esto para saber cuándo el jugador apoyó los pies
@@ -268,10 +243,10 @@ public class Player_controller : MonoBehaviour
 		Collider2D suelo = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
 		isGrounded = suelo != null;
 
-		if (isGrounded && suelo.TryGetComponent(out Carril_suelo carrilSuelo) && carrilSuelo.Indice != carrilActual)
+		if (isGrounded && suelo.TryGetComponent(out Carril_suelo carrilSuelo) && carrilSuelo.Carril != carrilActual)
 		{
-			carrilActual = carrilSuelo.Indice;
-			CarrilCambiado?.Invoke(carrilActual);
+			carrilActual = carrilSuelo.Carril;
+			CarrilCambiado?.Invoke(carrilSuelo.Carril);
 		}
 
 		// Sensor de aterrizaje: solo mira la capa Ground, así un obstáculo en el camino no lo activa
@@ -287,7 +262,7 @@ public class Player_controller : MonoBehaviour
 
 		// 2. Salto con el Nuevo Input System (Espacio o tecla W / Flecha arriba)
 		// En pausa (timeScale 0) el input se ignora
-		bool jumpPressed = Time.timeScale > 0f && !isEnTunel && Keyboard.current != null &&
+		bool jumpPressed = Time.timeScale > 0f && Keyboard.current != null &&
 						  (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
 
 		if (jumpPressed && isGrounded && (!isDeslizando || Time.time >= inicioDeslizamiento + tiempoMinimoParaSaltar))
@@ -302,7 +277,7 @@ public class Player_controller : MonoBehaviour
 		}
 
 		// 3. Deslizarse con Shift, flecha abajo o S, solo desde el suelo (el pedido se guarda `bufferDeslizar` s si se aprieta justo antes de aterrizar)
-		bool slidePressed = Time.timeScale > 0f && !isEnTunel && Keyboard.current != null &&
+		bool slidePressed = Time.timeScale > 0f && Keyboard.current != null &&
 						   (Keyboard.current.leftShiftKey.wasPressedThisFrame || Keyboard.current.rightShiftKey.wasPressedThisFrame ||
 							Keyboard.current.downArrowKey.wasPressedThisFrame || Keyboard.current.sKey.wasPressedThisFrame);
 
@@ -387,15 +362,8 @@ public class Player_controller : MonoBehaviour
 			IniciarDeslizamiento();
 		}
 
-		// Del túnel sale al pasar la altura de la salida: deja de deslizarse y cae (fall, land y run)
-		if (isEnTunel && rb.position.y < alturaSalidaTunel)
-		{
-			isEnTunel = false;
-			if (isDeslizando) TerminarDeslizamiento();
-		}
-
-		// Termina al pasar el tiempo o si se cae del suelo (en el túnel no: se desliza hasta salir)
-		if (isDeslizando && !isEnTunel && (Time.time >= finDeslizamiento || !isGrounded))
+		// Termina al pasar el tiempo o si se cae del suelo
+		if (isDeslizando && (Time.time >= finDeslizamiento || !isGrounded))
 		{
 			TerminarDeslizamiento();
 		}
@@ -437,8 +405,8 @@ public class Player_controller : MonoBehaviour
 		// Chocar de frente contra el suelo: el avance quedaría trabado contra la pared
 		if (EsParedDeSuelo(collision))
 		{
-			// Solo se muere en el carril de abajo: en los otros es caer por el hueco al carril de abajo
-			if (collision.gameObject.TryGetComponent(out Carril_suelo carril) && carril.Indice > 0) isCayendoPedido = true;
+			// Solo se muere en el subterráneo: en la calle o los edificios es caer por el hueco al carril de abajo
+			if (collision.gameObject.TryGetComponent(out Carril_suelo carril) && carril.Carril != Carril.Subterraneo) isCayendoPedido = true;
 			else StartCoroutine(Morir());
 			return;
 		}
@@ -467,7 +435,7 @@ public class Player_controller : MonoBehaviour
 		return false;
 	}
 
-	// Lo llama Zona_muerte al caer por un hueco del carril de abajo
+	// Lo llama Zona_muerte al caer por un hueco del subterráneo
 	public void Matar()
 	{
 		if (!isMuerto) StartCoroutine(Morir());
@@ -530,12 +498,12 @@ public class Player_controller : MonoBehaviour
 			return;
 		}
 
-		// Lanzado por el hidrante: JumpUp todo el vuelo (al subir atraviesa el suelo y isGrounded parpadea). Al entrar en un tramo de arriba, tras un rato pasa al aterrizaje
+		// Lanzado por el hidrante: JumpUp todo el vuelo (al subir atraviesa el suelo y isGrounded parpadea). Ya bajando, el sensor arranca el aterrizaje
+		// como en un salto: antes había un tiempo fijo desde que pasaba por la zona de un tramo de arriba y, si subía de más, aterrizaba en el aire
 		if (isLanzado)
 		{
-			if (aterrizajeEn >= 0f && Time.time >= aterrizajeEn && puedeAterrizar)
+			if (!isAtravesando && isPorAterrizar && puedeAterrizar && Time.time >= finAterrizaje)
 			{
-				aterrizajeEn = -1f;
 				EmpezarAterrizaje();
 			}
 			else if (Time.time >= finAterrizaje)

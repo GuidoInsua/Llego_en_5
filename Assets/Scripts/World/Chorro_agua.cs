@@ -16,12 +16,11 @@
 // ###########################
 // Desc: Chorro de agua del hidrante: sube y baja, y ofrece el impulso con E si el jugador lo toca.
 
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Rectángulo azul (trigger) que crece y se achica en vertical. Si el jugador lo toca sin haber chocado antes con el hidrante,
-// aparece el prompt de la tecla: si la aprieta enseguida sale disparado hacia arriba; si no, sigue corriendo
+// Rectángulo azul (trigger) que crece y se achica en vertical. Mientras el jugador lo toca, y si no chocó con el hidrante,
+// se ve el prompt de la tecla: si la aprieta en ese momento sale disparado hacia arriba (una sola vez); antes o después no hace nada
 [RequireComponent(typeof(Collider2D))]
 public class Chorro_agua : MonoBehaviour
 {
@@ -35,12 +34,11 @@ public class Chorro_agua : MonoBehaviour
 
 	[Header("Impulso")]
 	[SerializeField] private Key tecla = Key.E;
-	[Tooltip("Segundos que tiene el jugador para apretar la tecla desde que toca el agua.")]
-	[SerializeField] private float ventana = 0.8f;
 
 	private Prompt_tecla prompt;
 	private float fase; // Cada hidrante arranca en un punto distinto del ciclo
 	private bool isUsado; // Ofrece el impulso una sola vez
+	private Player_controller jugador; // El que está tocando el agua (null si no hay nadie)
 
 	[Header("Lanzamiento")]
 	[Tooltip("Cuánto sube el jugador por encima del hidrante (hasta el punto más alto). Se ajusta con los tramos de arriba para que caiga bien.")]
@@ -51,7 +49,7 @@ public class Chorro_agua : MonoBehaviour
 
 	void Awake()
 	{
-		prompt = FindFirstObjectByType<Prompt_tecla>();
+		prompt = FindAnyObjectByType<Prompt_tecla>();
 		if (cuerpo == null || prompt == null || periodo <= 0f)
 		{
 			Debug.LogError("Chorro_agua: falta asignar el cuerpo, no hay un Prompt_tecla en la escena o el período no es mayor que 0.");
@@ -68,41 +66,45 @@ public class Chorro_agua : MonoBehaviour
 		Vector3 escala = transform.localScale;
 		escala.y = Mathf.Lerp(alto.x, alto.y, t);
 		transform.localScale = escala;
+
+		if (jugador == null) return;
+
+		// Los choques de este paso de física ya se procesaron: si tocó la parte roja (rota o ya destruida), no hay impulso
+		if (cuerpo == null || cuerpo.EstaRota || jugador.EstaMuerto)
+		{
+			Soltar();
+			return;
+		}
+
+		// En pausa (timeScale 0) el input se ignora
+		if (Time.timeScale > 0f && Keyboard.current != null && Keyboard.current[tecla].wasPressedThisFrame)
+		{
+			jugador.Lanzar(altura, jugador.VelocidadCarrera * multiplicadorVelocidad);
+			isUsado = true;
+			Soltar();
+		}
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (isUsado) return;
+		if (isUsado || cuerpo == null || cuerpo.EstaRota) return;
 
-		Player_controller jugador = other.GetComponentInParent<Player_controller>();
-		if (jugador == null) return;
+		Player_controller entrante = other.GetComponentInParent<Player_controller>();
+		if (entrante == null) return;
 
-		isUsado = true;
-		StartCoroutine(OfrecerImpulso(jugador));
+		jugador = entrante;
+		prompt.Mostrar(); // Si en este mismo paso chocó con la parte roja, Update lo oculta antes de dibujar
 	}
 
-	private IEnumerator OfrecerImpulso(Player_controller jugador)
+	// Sale del agua (o el chorro se achica y deja de tocarlo): ya no hay impulso
+	void OnTriggerExit2D(Collider2D other)
 	{
-		// Se espera un paso de física: si el choque con la parte roja ocurre en el mismo paso que el agua, ya hay que verlo roto
-		yield return new WaitForFixedUpdate();
+		if (jugador != null && other.GetComponentInParent<Player_controller>() == jugador) Soltar();
+	}
 
-		// cuerpo == null: la parte roja ya se rompió y desapareció, o sea que el jugador chocó con ella
-		if (cuerpo == null || cuerpo.EstaRota) yield break;
-
-		prompt.Mostrar();
-
-		float fin = Time.time + ventana;
-		while (Time.time < fin && !jugador.EstaMuerto)
-		{
-			// En pausa (timeScale 0) el input se ignora
-			if (Time.timeScale > 0f && Keyboard.current != null && Keyboard.current[tecla].wasPressedThisFrame)
-			{
-				jugador.Lanzar(altura, jugador.VelocidadCarrera * multiplicadorVelocidad);
-				break;
-			}
-			yield return null;
-		}
-
+	private void Soltar()
+	{
+		jugador = null;
 		prompt.Ocultar();
 	}
 }

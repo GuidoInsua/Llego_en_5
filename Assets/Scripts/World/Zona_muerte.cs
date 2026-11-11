@@ -18,7 +18,7 @@
 
 using UnityEngine;
 
-// Trigger enorme bajo el carril 0: en los otros carriles un hueco lleva al carril de abajo, acá no hay nada que frene la caída
+// Trigger enorme bajo el subterráneo: en la calle y los edificios un hueco lleva al carril de abajo, acá no hay nada que frene la caída
 [RequireComponent(typeof(Collider2D))]
 public class Zona_muerte : MonoBehaviour
 {

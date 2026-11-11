@@ -14,65 +14,78 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Al lanzarse el jugador hacia arriba, saca los edificios y oscurece el cielo.
+// Desc: Cambia el fondo con parallax y el color del cielo según el carril que pisa el jugador.
 
 using System.Collections;
 using UnityEngine;
 
-// Cuando el jugador sale disparado por un hidrante, el fondo de edificios (parallax) desaparece y el cielo pasa a un azul más oscuro
+// Calle y edificios tienen cada uno su par de fondos (lejano y cercano) sobre el cielo original; el subterráneo, sin fondos y con otro cielo.
+// Cambia al pisar el suelo del carril nuevo (CarrilCambiado), no en el aire
 public class Cambio_fondo : MonoBehaviour
 {
 	[SerializeField] private Player_controller jugador;
 	[SerializeField] private Camera camara;
-	[Tooltip("El objeto que agrupa los fondos con parallax: se apaga.")]
+	[Tooltip("El objeto que agrupa los fondos con parallax: se apaga en el subterráneo.")]
 	[SerializeField] private GameObject fondos;
-	[Tooltip("Cielo del carril de arriba (sin edificios).")]
-	[SerializeField] private Color colorCielo = new Color(0.22f, 0.32f, 0.5f, 1f);
-	[Tooltip("Cielo del carril de abajo (sin edificios).")]
+	[Tooltip("Cielo del subterráneo (sin fondos).")]
 	[SerializeField] private Color colorAbajo = new Color(0.2f, 0.45f, 0.25f, 1f);
 	[SerializeField] private float duracion = 1f; // Segundos que tarda el cielo en cambiar de color
 
-	private Color colorMedio; // El de la cámara al empezar: carril del medio, con edificios
+	[Header("Fondos por carril")]
+	[Tooltip("FondoLejano y sus copias.")]
+	[SerializeField] private SpriteRenderer[] lejanos;
+	[Tooltip("FondoCercano y sus copias.")]
+	[SerializeField] private SpriteRenderer[] cercanos;
+	[SerializeField] private Sprite lejanoCalle;
+	[SerializeField] private Sprite cercanoCalle;
+	[SerializeField] private Sprite lejanoEdificios;
+	[SerializeField] private Sprite cercanoEdificios;
+
+	private Color colorOriginal; // El de la cámara al empezar: el de la calle y los edificios
 	private Coroutine cambio;
 
 	void Awake()
 	{
-		if (jugador == null || camara == null || fondos == null)
+		if (jugador == null || camara == null || fondos == null || lejanos.Length == 0 || cercanos.Length == 0 ||
+			lejanoCalle == null || cercanoCalle == null || lejanoEdificios == null || cercanoEdificios == null)
 		{
-			Debug.LogError("Cambio_fondo: falta asignar el jugador, la cámara o los fondos.");
+			Debug.LogError("Cambio_fondo: falta asignar el jugador, la cámara, los fondos o los sprites de cada carril.");
 			enabled = false;
 			return;
 		}
 
-		colorMedio = camara.backgroundColor;
-		jugador.Lanzado += CambiarArriba;
+		colorOriginal = camara.backgroundColor;
 		jugador.CarrilCambiado += Cambiar;
 	}
 
 	void OnDestroy()
 	{
-		if (jugador == null) return;
-		jugador.Lanzado -= CambiarArriba;
-		jugador.CarrilCambiado -= Cambiar;
+		if (jugador != null) jugador.CarrilCambiado -= Cambiar;
 	}
 
-	// El lanzamiento cambia el cielo en pleno vuelo, sin esperar a aterrizar
-	private void CambiarArriba()
+	private void Cambiar(Carril carril)
 	{
-		Aplicar(colorCielo, false);
+		if (carril == Carril.Subterraneo)
+		{
+			Aplicar(colorAbajo, false);
+			return;
+		}
+
+		bool isCalle = carril == Carril.Calle;
+		PonerSprite(lejanos, isCalle ? lejanoCalle : lejanoEdificios);
+		PonerSprite(cercanos, isCalle ? cercanoCalle : cercanoEdificios);
+		Aplicar(colorOriginal, true);
 	}
 
-	// 0 = abajo, el del medio es el original, el resto = arriba
-	private void Cambiar(int carril)
+	// Parallax_layer mide el ancho del sprite en cada cuadro: no hace falta que las imágenes midan lo mismo
+	private static void PonerSprite(SpriteRenderer[] capas, Sprite sprite)
 	{
-		if (carril == 0) Aplicar(colorAbajo, false);
-		else if (carril == 1) Aplicar(colorMedio, true);
-		else Aplicar(colorCielo, false);
+		foreach (SpriteRenderer capa in capas) capa.sprite = sprite;
 	}
 
-	private void Aplicar(Color color, bool conEdificios)
+	private void Aplicar(Color color, bool conFondos)
 	{
-		fondos.SetActive(conEdificios);
+		fondos.SetActive(conFondos);
 		if (cambio != null) StopCoroutine(cambio);
 		cambio = StartCoroutine(CambiarCielo(color));
 	}

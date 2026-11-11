@@ -19,7 +19,7 @@
 using System;
 using UnityEngine;
 
-// Caja verde de prueba: al tocarla el jugador avisa a quien la creó (Meta_victoria)
+// Meta verde al final de un carril: al tocarla el jugador avisa a Meta_victoria
 [RequireComponent(typeof(Collider2D))]
 public class Caja_victoria : MonoBehaviour
 {
