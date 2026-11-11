@@ -217,7 +217,7 @@ El personaje corre solo. Con el teclado:
 
 | Acción | Teclas |
 |---|---|
-| Saltar | Espacio, W o ↑ (soltarla mientras sube da un salto más bajo) |
+| Saltar | Espacio, W o ↑ (tres saltos: un toque da el corto, mantenerla un poco el medio y hasta arriba el largo) |
 | Deslizarse | Shift, S o ↓ |
 | Usar el hidrante (sale disparado hacia arriba) | E, mientras se toca el chorro de agua |
 | Entrar a la alcantarilla (baja al subterráneo) | Empezar a deslizarse encima de la tapa rosa |

@@ -2417,7 +2417,8 @@ MonoBehaviour:
   aceleracion: 15
   bufferSalto: 0.12
   tiempoCoyote: 0.08
-  multiplicadorCorteSalto: 0.5
+  alturaSaltoCorto: 1.1
+  alturaSaltoMedio: 1.7
   velocidadParaCaer: 12
   duracionTransicion: 0.12
   anticipoAterrizaje: 0.12
