@@ -14,7 +14,7 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Pausa con Escape: continuar, opciones, menú y salir.
+// Desc: Pausa con Escape (continuar, opciones, menú y salir) y R para reintentar desde la pausa, la victoria o el game over.
 
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -31,25 +31,33 @@ public class Menu_pausa : MonoBehaviour
 	[SerializeField] private GameObject pantallaVictoria;
 	[Tooltip("Si está a la vista (perdiste), Escape tampoco pausa.")]
 	[SerializeField] private GameObject pantallaGameOver;
+	[Tooltip("Reinicia el nivel con R desde la pausa, la victoria o el game over.")]
+	[SerializeField] private Cambio_escena cambioEscena;
 
 	private bool isPausado;
 
 	void Awake()
 	{
-		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null || pantallaGameOver == null)
+		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null || pantallaGameOver == null || cambioEscena == null)
 		{
-			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones la pantalla de victoria o la de game over.");
+			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones la pantalla de victoria, la de game over o Cambio_escena.");
 			enabled = false;
 		}
 	}
 
 	void Update()
 	{
-		if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+		if (Keyboard.current == null) return;
+
+		bool isTerminado = pantallaVictoria.activeSelf || pantallaGameOver.activeSelf;
+		if (Keyboard.current.escapeKey.wasPressedThisFrame)
 		{
 			if (isPausado) Continuar();
-			else if (!pantallaVictoria.activeSelf && !pantallaGameOver.activeSelf) Pausar();
+			else if (!isTerminado) Pausar();
 		}
+
+		// Reintento inmediato, sin buscar el botón. Jugando no: la R está al lado de la E del hidrante
+		if (Keyboard.current.rKey.wasPressedThisFrame && (isPausado || isTerminado)) cambioEscena.Reiniciar();
 	}
 
 	// Al destruirse (cambio de escena o fin del Play) deja el tiempo y el audio como estaban
