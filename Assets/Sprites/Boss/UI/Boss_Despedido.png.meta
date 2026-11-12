@@ -1,0 +1,483 @@
+fileFormatVersion: 2
+guid: 14137ce93a636e04a80f12e26ca4d083
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9203693271251320407
+    second: Boss_Despedido_0
+  - first:
+      213: -1362239673729779576
+    second: Boss_Despedido_1
+  - first:
+      213: 5029957920959259627
+    second: Boss_Despedido_2
+  - first:
+      213: -4154010293707568775
+    second: Boss_Despedido_3
+  - first:
+      213: -3628032142716987045
+    second: Boss_Despedido_4
+  - first:
+      213: -2569211573136098255
+    second: Boss_Despedido_5
+  - first:
+      213: -7772860111829054043
+    second: Boss_Despedido_6
+  - first:
+      213: 6404205063916698492
+    second: Boss_Despedido_7
+  - first:
+      213: -7913959277986152723
+    second: Boss_Despedido_8
+  - first:
+      213: 627233476124836331
+    second: Boss_Despedido_9
+  - first:
+      213: 8411874266157318978
+    second: Boss_Despedido_10
+  - first:
+      213: -5387150465476524058
+    second: Boss_Despedido_11
+  - first:
+      213: 3125089611592341381
+    second: Boss_Despedido_12
+  - first:
+      213: 3716188501665546421
+    second: Boss_Despedido_13
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Boss_Despedido_0
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 287
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a18969abb9e54080800000000000000
+      internalID: -9203693271251320407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_1
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 103
+        width: 120
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8887464fb3a581de0800000000000000
+      internalID: -1362239673729779576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_2
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 100
+        width: 109
+        height: 233
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be360f944100ec540800000000000000
+      internalID: 5029957920959259627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_3
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 288
+        width: 42
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9798e3295adf956c0800000000000000
+      internalID: -4154010293707568775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_4
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 100
+        width: 109
+        height: 233
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5997a30df3a6adc0800000000000000
+      internalID: -3628032142716987045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_5
+      rect:
+        serializedVersion: 2
+        x: 1159
+        y: 168
+        width: 44
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13c766ebfa3585cd0800000000000000
+      internalID: -2569211573136098255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_6
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 103
+        width: 44
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ad40a129e0412490800000000000000
+      internalID: -7772860111829054043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_7
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 100
+        width: 106
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7b338f139e40e850800000000000000
+      internalID: 6404205063916698492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_8
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 100
+        width: 106
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dee7ab477f7fb2290800000000000000
+      internalID: -7913959277986152723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_9
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 49
+        width: 109
+        height: 229
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be187a7f58164b800800000000000000
+      internalID: 627233476124836331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_10
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 100
+        width: 106
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2438e89b31bfcb470800000000000000
+      internalID: 8411874266157318978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_11
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 103
+        width: 42
+        height: 174
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e701b9a13ffc35b0800000000000000
+      internalID: -5387150465476524058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_12
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 100
+        width: 109
+        height: 179
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 587993eb17c8e5b20800000000000000
+      internalID: 3125089611592341381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Boss_Despedido_13
+      rect:
+        serializedVersion: 2
+        x: 1161
+        y: 103
+        width: 41
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b08a28c0cd829330800000000000000
+      internalID: 3716188501665546421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Boss_Despedido_0: -9203693271251320407
+      Boss_Despedido_1: -1362239673729779576
+      Boss_Despedido_10: 8411874266157318978
+      Boss_Despedido_11: -5387150465476524058
+      Boss_Despedido_12: 3125089611592341381
+      Boss_Despedido_13: 3716188501665546421
+      Boss_Despedido_2: 5029957920959259627
+      Boss_Despedido_3: -4154010293707568775
+      Boss_Despedido_4: -3628032142716987045
+      Boss_Despedido_5: -2569211573136098255
+      Boss_Despedido_6: -7772860111829054043
+      Boss_Despedido_7: 6404205063916698492
+      Boss_Despedido_8: -7913959277986152723
+      Boss_Despedido_9: 627233476124836331
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
