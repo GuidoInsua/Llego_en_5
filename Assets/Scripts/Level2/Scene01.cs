@@ -5,7 +5,7 @@ using UnityEngine;
 public class Scene01 : MonoBehaviour
 {
     public GameObject fadeScreenIn;
-    public Game Object textBox;
+    public GameObject textBox;
     void Start()
     {
         StartCoroutine(EventStarter());
