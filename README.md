@@ -213,16 +213,17 @@ _Equipo de 4. Todos hacemos de todo; los roles son una guía: Lucas (diseño y p
 
 ## 🎮 Controles (prototipo)
 
-El personaje corre solo. Con el teclado:
+El personaje corre solo. Al entrar al nivel el juego espera en pausa mostrando los controles hasta apretar **Empezar**. Con el teclado:
 
 | Acción | Teclas |
 |---|---|
-| Saltar | Espacio, W o ↑ (tres saltos: un toque da el corto, mantenerla un poco el medio y hasta arriba el largo) |
-| Deslizarse | Shift, S o ↓ |
-| Usar el hidrante (sale disparado hacia arriba) | E, mientras se toca el chorro de agua |
-| Entrar a la alcantarilla (baja al subterráneo) | Empezar a deslizarse encima de la tapa rosa |
-| Pausa | Escape |
-| Reintentar | R, desde la pausa, la victoria o el game over |
+| Saltar | W o ↑ (tres saltos: un toque da el corto, mantenerla un poco el medio y hasta arriba el largo) |
+| Barrida (deslizarse) | S o ↓ |
+| Interactuar | E o Espacio |
+| Usar el hidrante (sale disparado hacia arriba) | Interactuar, mientras se toca el chorro de agua |
+| Entrar a la alcantarilla (baja al subterráneo) | Interactuar, encima de la tapa rosa |
+| Menú (pausa) | Escape |
+| Reiniciar | R, en cualquier momento |
 | Menús | Flechas y Enter (o el mouse) |
 
 El salto perdona un poco: si se aprieta un instante antes de tocar el suelo, salta al aterrizar, y todavía se puede saltar un instante después de dejar un borde.

@@ -31,16 +31,18 @@ public class Menu_pausa : MonoBehaviour
 	[SerializeField] private GameObject pantallaVictoria;
 	[Tooltip("Si está a la vista (perdiste), Escape tampoco pausa.")]
 	[SerializeField] private GameObject pantallaGameOver;
-	[Tooltip("Reinicia el nivel con R desde la pausa, la victoria o el game over.")]
+	[Tooltip("Si está a la vista (controles al arrancar o abiertos desde Opciones), Escape no hace nada.")]
+	[SerializeField] private GameObject pantallaInicio;
+	[Tooltip("Reinicia el nivel con R en cualquier momento.")]
 	[SerializeField] private Cambio_escena cambioEscena;
 
 	private bool isPausado;
 
 	void Awake()
 	{
-		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null || pantallaGameOver == null || cambioEscena == null)
+		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null || pantallaGameOver == null || pantallaInicio == null || cambioEscena == null)
 		{
-			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones la pantalla de victoria, la de game over o Cambio_escena.");
+			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones, la pantalla de victoria, la de game over, la de inicio o Cambio_escena.");
 			enabled = false;
 		}
 	}
@@ -50,14 +52,15 @@ public class Menu_pausa : MonoBehaviour
 		if (Keyboard.current == null) return;
 
 		bool isTerminado = pantallaVictoria.activeSelf || pantallaGameOver.activeSelf;
-		if (Keyboard.current.escapeKey.wasPressedThisFrame)
+		// Con los controles a la vista (al arrancar o abiertos desde Opciones de la pausa) Escape no hace nada: se cierran con su botón
+		if (Keyboard.current.escapeKey.wasPressedThisFrame && !pantallaInicio.activeSelf)
 		{
 			if (isPausado) Continuar();
 			else if (!isTerminado) Pausar();
 		}
 
-		// Reintento inmediato, sin buscar el botón. Jugando no: la R está al lado de la E del hidrante
-		if (Keyboard.current.rKey.wasPressedThisFrame && (isPausado || isTerminado)) cambioEscena.Reiniciar();
+		// Reintento inmediato, sin buscar el botón, también jugando
+		if (Keyboard.current.rKey.wasPressedThisFrame) cambioEscena.Reiniciar();
 	}
 
 	// Al destruirse (cambio de escena o fin del Play) deja el tiempo y el audio como estaban

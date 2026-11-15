@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{295168b1-980e-43f2-9ab6-5cca72f49df4}">
+		<property name="name">
+			<value>Pista</value>
+		</property>
+		<relationship name="folder">
+			<destination>{2aefc684-b6ed-4846-b87b-8cfeaf2e77f8}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{cbdf7849-2209-4cd7-9a25-617d44d69bae}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{cbdf7849-2209-4cd7-9a25-617d44d69bae}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>3</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>Menu</value>
+			<value>Nivel</value>
+			<value>Jefe</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

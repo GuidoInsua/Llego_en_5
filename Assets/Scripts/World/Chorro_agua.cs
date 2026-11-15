@@ -17,10 +17,10 @@
 // Desc: Chorro de agua del hidrante: sube y baja, y ofrece el impulso con E si el jugador lo toca.
 
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // Rectángulo azul (trigger) que crece y se achica en vertical. Mientras el jugador lo toca, y si no chocó con el hidrante,
-// se ve el prompt de la tecla: si la aprieta en ese momento sale disparado hacia arriba (una sola vez); antes o después no hace nada
+// si aprieta interactuar (E o Espacio) sale disparado hacia arriba (una sola vez); antes o después no hace nada.
+// La tecla se ve siempre en el prefab (hijo TeclaE)
 [RequireComponent(typeof(Collider2D))]
 public class Chorro_agua : MonoBehaviour
 {
@@ -32,10 +32,6 @@ public class Chorro_agua : MonoBehaviour
 	[SerializeField] private Vector2 alto = new Vector2(1.5f, 4f);
 	[SerializeField] private float periodo = 1.6f; // Segundos de un ciclo completo (sube y baja)
 
-	[Header("Impulso")]
-	[SerializeField] private Key tecla = Key.E;
-
-	private Prompt_tecla prompt;
 	private float fase; // Cada hidrante arranca en un punto distinto del ciclo
 	private bool isUsado; // Ofrece el impulso una sola vez
 	private Player_controller jugador; // El que está tocando el agua (null si no hay nadie)
@@ -49,10 +45,9 @@ public class Chorro_agua : MonoBehaviour
 
 	void Awake()
 	{
-		prompt = FindAnyObjectByType<Prompt_tecla>();
-		if (cuerpo == null || prompt == null || periodo <= 0f)
+		if (cuerpo == null || periodo <= 0f)
 		{
-			Debug.LogError("Chorro_agua: falta asignar el cuerpo, no hay un Prompt_tecla en la escena o el período no es mayor que 0.");
+			Debug.LogError("Chorro_agua: falta asignar el cuerpo o el período no es mayor que 0.");
 			enabled = false;
 			return;
 		}
@@ -76,8 +71,7 @@ public class Chorro_agua : MonoBehaviour
 			return;
 		}
 
-		// En pausa (timeScale 0) el input se ignora
-		if (Time.timeScale > 0f && Keyboard.current != null && Keyboard.current[tecla].wasPressedThisFrame)
+		if (Controles.InteractuarPresionado)
 		{
 			jugador.Lanzar(altura, jugador.VelocidadCarrera * multiplicadorVelocidad);
 			isUsado = true;
@@ -92,8 +86,7 @@ public class Chorro_agua : MonoBehaviour
 		Player_controller entrante = other.GetComponentInParent<Player_controller>();
 		if (entrante == null) return;
 
-		jugador = entrante;
-		prompt.Mostrar(); // Si en este mismo paso chocó con la parte roja, Update lo oculta antes de dibujar
+		jugador = entrante; // Si en este mismo paso chocó con la parte roja, Update lo suelta
 	}
 
 	// Sale del agua (o el chorro se achica y deja de tocarlo): ya no hay impulso
@@ -105,6 +98,5 @@ public class Chorro_agua : MonoBehaviour
 	private void Soltar()
 	{
 		jugador = null;
-		prompt.Ocultar();
 	}
 }

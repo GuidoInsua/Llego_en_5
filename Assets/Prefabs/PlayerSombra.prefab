@@ -2440,6 +2440,42 @@ MonoBehaviour:
   polvoAterrizaje: 10
   polvoDeslizamiento: 8
   velocidadMinimaPolvo: 9
+  sonidoSalto:
+    Guid:
+      Data1: 529457227
+      Data2: 1183416743
+      Data3: -734641738
+      Data4: -166163731
+    Path: event:/SFX_salto
+  sonidoSuperSalto:
+    Guid:
+      Data1: 1831631882
+      Data2: 1090754425
+      Data3: -662772861
+      Data4: 71471791
+    Path: event:/SFX_super_salto
+  sonidoCaida:
+    Guid:
+      Data1: 145505246
+      Data2: 1187932273
+      Data3: -280383870
+      Data4: -2109329125
+    Path: event:/SFX_caida
+  sonidoBarrida:
+    Guid:
+      Data1: 994410864
+      Data2: 1139246827
+      Data3: -1348428381
+      Data4: 2061923231
+    Path: event:/SFX_barrida
+  sonidoRecolectar:
+    Guid:
+      Data1: -1739608017
+      Data2: 1162868944
+      Data3: 720700561
+      Data4: -523891179
+    Path: event:/SFX_pick_up
+  velocidadMinimaSonidoCaida: 4
   groundCheck: {fileID: 2006794399296209086}
   groundCheckSize: {x: 0.3, y: 0.1}
   groundLayer:

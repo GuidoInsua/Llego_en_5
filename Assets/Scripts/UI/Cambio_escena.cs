@@ -32,6 +32,7 @@ public class Cambio_escena : MonoBehaviour
 	public void Reiniciar()
 	{
 		Estado_juego.Reanudar();
+		Pantalla_inicio.SaltearProxima();
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 	}
 

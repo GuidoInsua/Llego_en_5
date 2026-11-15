@@ -14,7 +14,7 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Tiempo de la partida en el HUD, con efecto al recibir un golpe.
+// Desc: Tiempo de la partida en el HUD, con efecto al recibir un golpe o pisar un puente.
 
 using System.Collections;
 using TMPro;
@@ -26,7 +26,7 @@ public class Cronometro : MonoBehaviour
 	[SerializeField] private TMP_Text texto;
 	[SerializeField] private Player_controller jugador;
 
-	[Header("Pulso al golpearse")]
+	[Header("Pulso al golpearse o pisar un puente")]
 	[SerializeField] private float duracionPulso = 0.6f;
 	[SerializeField] private float escalaPulso = 1.3f;
 	[SerializeField] private Color colorPulso = Color.red;
@@ -52,11 +52,14 @@ public class Cronometro : MonoBehaviour
 
 		colorNormal = texto.color;
 		jugador.Golpeado += Pulsar;
+		jugador.Ralentizado += Pulsar;
 	}
 
 	void OnDestroy()
 	{
-		if (jugador != null) jugador.Golpeado -= Pulsar;
+		if (jugador == null) return;
+		jugador.Golpeado -= Pulsar;
+		jugador.Ralentizado -= Pulsar;
 	}
 
 	// Agranda y achica el texto y lo titila en rojo un ratito

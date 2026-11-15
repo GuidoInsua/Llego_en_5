@@ -1,0 +1,5 @@
+repo gitHub: https://github.com/GuidoInsua/Llego_en_5
+
+en los creditos esta la idea general del juego
+
+al iniciar hay instrucciones de controles

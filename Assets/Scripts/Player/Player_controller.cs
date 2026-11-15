@@ -17,6 +17,7 @@
 // Desc: Controla al jugador: correr, saltar, deslizarse, golpes, muerte y animaciones.
 
 using System.Collections;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -89,6 +90,15 @@ public class Player_controller : MonoBehaviour
 	[SerializeField] private int polvoDeslizamiento = 8;
 	[Tooltip("Caídas más lentas que esto aterrizan sin polvo (un salto normal llega a ~11).")]
 	[SerializeField] private float velocidadMinimaPolvo = 9f;
+
+	[Header("Sonidos (FMOD, opcionales)")]
+	[SerializeField] private EventReference sonidoSalto;
+	[SerializeField] private EventReference sonidoSuperSalto; // El lanzamiento del hidrante
+	[SerializeField] private EventReference sonidoCaida; // Al aterrizar
+	[SerializeField] private EventReference sonidoBarrida;
+	[SerializeField] private EventReference sonidoRecolectar; // Al juntar una excusa
+	[Tooltip("Caídas más lentas que esto aterrizan sin sonido: los saltitos de las rampas no suenan (el salto corto llega a ~8).")]
+	[SerializeField] private float velocidadMinimaSonidoCaida = 4f;
 
 	[Header("Detección de Suelo")]
 	[SerializeField] private Transform groundCheck;
@@ -190,17 +200,18 @@ public class Player_controller : MonoBehaviour
 
 	// Lo escucha Cronometro para avisar que se pierde tiempo
 	public event System.Action Golpeado;
-	public event System.Action Recolectado;
+	// Al empezar a pisar un puente (no en cada paso sobre él). Lo escucha Cronometro
+	public event System.Action Ralentizado;
+	// Con la excusa tocada: Contador_recolectables la hace volar al HUD y la destruye
+	public event System.Action<Transform> Recolectado;
 	// Al tocar el suelo después de estar en el aire, con la velocidad de caída más alta (positiva). Lo escucha Sacudida_camara
 	public event System.Action<float> Aterrizado;
 
 	// Lo llama cada recolectable al tocar al jugador
-	public void Recolectar() => Recolectado?.Invoke();
-
-	// Lo usa Alcantarilla: entra solo el que empieza a deslizarse encima de la tapa
-	public bool EstaDeslizando
+	public void Recolectar(Transform excusa)
 	{
-		get { return isDeslizando; }
+		Sonido_fmod.Tocar(sonidoRecolectar);
+		Recolectado?.Invoke(excusa);
 	}
 
 	// Lo usa el hidrante para dejar de ofrecer el impulso si el jugador ya murió
@@ -222,6 +233,7 @@ public class Player_controller : MonoBehaviour
 	// Lo llama Puente_suelo en cada paso de física mientras se lo pisa: la lentitud dura un instante más para no titilar
 	public void Ralentizar()
 	{
+		if (Time.time >= lentoHasta) Ralentizado?.Invoke();
 		lentoHasta = Time.time + DuracionLentitud;
 	}
 
@@ -293,6 +305,7 @@ public class Player_controller : MonoBehaviour
 			if (!estabaEnSuelo && !isMuerto)
 			{
 				if (velocidadCaida >= velocidadMinimaPolvo) SoltarPolvo(polvoAterrizaje);
+				if (velocidadCaida >= velocidadMinimaSonidoCaida) Sonido_fmod.Tocar(sonidoCaida);
 				Aterrizado?.Invoke(velocidadCaida);
 			}
 			velocidadCaida = 0f;
@@ -313,14 +326,14 @@ public class Player_controller : MonoBehaviour
 			isPorAterrizar = Physics2D.BoxCast(groundCheck.position, groundCheckSize, 0f, Vector2.down, distancia, groundLayer);
 		}
 
-		// 2. Salto con el Nuevo Input System (Espacio o tecla W / Flecha arriba)
+		// 2. Salto con el Nuevo Input System (W o flecha arriba; el Espacio es interactuar)
 		// En pausa (timeScale 0) el input se ignora
 		// El pedido se guarda `bufferSalto` s (salta al aterrizar) y vale hasta `tiempoCoyote` s después de dejar un borde, si no saltó
 		bool isTeclado = Time.timeScale > 0f && Keyboard.current != null;
 		bool jumpPressed = isTeclado &&
-						  (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
+						  (Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
 		bool jumpReleased = isTeclado &&
-						   (Keyboard.current.spaceKey.wasReleasedThisFrame || Keyboard.current.wKey.wasReleasedThisFrame || Keyboard.current.upArrowKey.wasReleasedThisFrame);
+						   (Keyboard.current.wKey.wasReleasedThisFrame || Keyboard.current.upArrowKey.wasReleasedThisFrame);
 
 		if (jumpPressed) ultimoPedidoSalto = Time.time;
 
@@ -340,10 +353,9 @@ public class Player_controller : MonoBehaviour
 			isSaltoActivo = false;
 		}
 
-		// 3. Deslizarse con Shift, flecha abajo o S, solo desde el suelo (el pedido se guarda `bufferDeslizar` s si se aprieta justo antes de aterrizar)
+		// 3. Deslizarse (barrida) con S o flecha abajo, solo desde el suelo (el pedido se guarda `bufferDeslizar` s si se aprieta justo antes de aterrizar)
 		bool slidePressed = Time.timeScale > 0f && Keyboard.current != null &&
-						   (Keyboard.current.leftShiftKey.wasPressedThisFrame || Keyboard.current.rightShiftKey.wasPressedThisFrame ||
-							Keyboard.current.downArrowKey.wasPressedThisFrame || Keyboard.current.sKey.wasPressedThisFrame);
+						   (Keyboard.current.downArrowKey.wasPressedThisFrame || Keyboard.current.sKey.wasPressedThisFrame);
 
 		if (slidePressed) ultimoPedidoDeslizar = Time.time;
 
@@ -390,6 +402,7 @@ public class Player_controller : MonoBehaviour
 			isSaltoActivo = true;
 			alturaDespegue = rb.position.y;
 			finAterrizaje = 0f; // Saltar corta el aterrizaje
+			Sonido_fmod.Tocar(isLanzamientoPedido ? sonidoSuperSalto : sonidoSalto);
 
 			if (isLanzamientoPedido)
 			{
@@ -467,6 +480,7 @@ public class Player_controller : MonoBehaviour
 		inicioDeslizamiento = Time.time;
 		finDeslizamiento = Time.time + duracionDeslizamiento;
 		SoltarPolvo(polvoDeslizamiento);
+		Sonido_fmod.Tocar(sonidoBarrida);
 
 		// Cápsula más baja con los pies en el mismo lugar
 		float diferencia = capsulaSizeNormal.y - alturaDeslizando;

@@ -16,7 +16,6 @@
 // ###########################
 // Desc: Suena el evento de FMOD de los pasos desde los eventos de animación.
 
-using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 
@@ -34,14 +33,9 @@ public class Pasos_fmod : MonoBehaviour
 		}
 	}
 
-	// Lo llama el Animation Event del clip. Sin bancos cargados no suena (y no tira error en cada pisada)
+	// Lo llama el Animation Event del clip
 	public void Paso()
 	{
-		if (!enabled || !RuntimeManager.HaveAllBanksLoaded) return;
-
-		EventInstance instancia = RuntimeManager.CreateInstance(eventoPaso);
-		instancia.setVolume(Volumen_audio.Efectos); // FMOD no pasa por AudioSource: aplica el volumen elegido acá
-		instancia.start();
-		instancia.release();
+		if (enabled) Sonido_fmod.Tocar(eventoPaso);
 	}
 }

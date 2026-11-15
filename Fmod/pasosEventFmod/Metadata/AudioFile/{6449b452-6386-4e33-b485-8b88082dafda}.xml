@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{6449b452-6386-4e33-b485-8b88082dafda}">
+		<property name="assetPath">
+			<value>SFX/Barrida.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.78927083333333337</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{8e81f460-81c3-4a0c-baa2-e0db432649ca}</destination>
+		</relationship>
+	</object>
+</objects>

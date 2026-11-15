@@ -14,12 +14,12 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Tapa de alcantarilla: deslizarse justo encima lleva al jugador al caño de salida, en el subterráneo.
+// Desc: Tapa de alcantarilla: con interactuar encima, el jugador sale por el caño de abajo.
 
 using UnityEngine;
 
 // Va en el prefab CalleDobleConTunel, en un trigger sobre la tapa (capa Default: en Ground el sensor de suelo lo tomaría por suelo).
-// Cuenta solo si el deslizamiento empieza con el jugador encima: si ya venía deslizándose al entrar, o lo aprieta después de pasar, no
+// La tecla se ve siempre en el prefab (hijo TeclaE). Mientras el jugador está encima, si aprieta interactuar (E o Espacio) entra y sale por el caño
 public class Alcantarilla : MonoBehaviour
 {
 	[Tooltip("Dónde aparece el jugador: dentro del caño de salida, que se dibuja delante de él.")]
@@ -30,7 +30,6 @@ public class Alcantarilla : MonoBehaviour
 	[SerializeField] private ParticleSystem particulasSalida;
 
 	private Player_controller jugador; // El que está encima de la tapa (null si no hay nadie)
-	private bool isDeslizandoAntes;
 
 	void Awake()
 	{
@@ -41,34 +40,42 @@ public class Alcantarilla : MonoBehaviour
 		}
 	}
 
+	void Update()
+	{
+		if (jugador == null) return;
+
+		if (jugador.EstaMuerto)
+		{
+			Soltar();
+			return;
+		}
+
+		if (Controles.InteractuarPresionado)
+		{
+			particulasSalida.Play();
+			jugador.Teletransportar(puntoSalida.position, velocidadSalida);
+			Soltar();
+		}
+	}
+
 	void OnTriggerEnter2D(Collider2D other)
 	{
+		if (!enabled) return;
+
 		Player_controller entrante = other.GetComponentInParent<Player_controller>();
 		if (entrante == null) return;
 
 		jugador = entrante;
-		isDeslizandoAntes = jugador.EstaDeslizando;
-	}
-
-	// El deslizamiento arranca en el FixedUpdate del jugador; esto corre después, en el mismo paso de física
-	void OnTriggerStay2D(Collider2D other)
-	{
-		if (!enabled || jugador == null) return;
-
-		bool isDeslizando = jugador.EstaDeslizando;
-		if (isDeslizando && !isDeslizandoAntes && !jugador.EstaMuerto)
-		{
-			particulasSalida.Play();
-			jugador.Teletransportar(puntoSalida.position, velocidadSalida);
-			jugador = null;
-			return;
-		}
-		isDeslizandoAntes = isDeslizando;
 	}
 
 	void OnTriggerExit2D(Collider2D other)
 	{
-		if (jugador != null && other.GetComponentInParent<Player_controller>() == jugador) jugador = null;
+		if (jugador != null && other.GetComponentInParent<Player_controller>() == jugador) Soltar();
+	}
+
+	private void Soltar()
+	{
+		jugador = null;
 	}
 
 	void OnDrawGizmosSelected()

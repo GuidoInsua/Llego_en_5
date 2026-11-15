@@ -18,7 +18,7 @@
 
 using UnityEngine;
 
-// Trigger: al tocar al jugador le avisa y desaparece. Pulsa de tamaño y tiene un halo que late
+// Trigger: al tocar al jugador le avisa y se apaga (vuela al HUD y la destruye Contador_recolectables). Pulsa de tamaño y tiene un halo que late
 [RequireComponent(typeof(Collider2D))]
 public class Recolectable : MonoBehaviour
 {
@@ -63,7 +63,9 @@ public class Recolectable : MonoBehaviour
 		Player_controller jugador = other.GetComponentInParent<Player_controller>();
 		if (jugador == null) return;
 
-		jugador.Recolectar();
-		Destroy(gameObject);
+		// Sin collider no se junta dos veces; sin Update deja de pulsar mientras vuela
+		GetComponent<Collider2D>().enabled = false;
+		enabled = false;
+		jugador.Recolectar(transform);
 	}
 }
