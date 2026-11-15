@@ -14,54 +14,47 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Muestra la pantalla de victoria al tocar la meta de cualquier carril, con el tiempo, las excusas y el mejor tiempo.
+// Desc: Al tocar la meta de cualquier carril termina la carrera y muestra la llegada a la oficina, antes de pasar al jefe.
 
 using TMPro;
 using UnityEngine;
 
-// Las metas verdes (una al final de cada carril) están puestas en la escena; al tocar cualquiera se muestra la pantalla de victoria
-// con el tiempo, las excusas juntadas y el mejor tiempo (guardado en PlayerPrefs)
+// Las metas verdes (una al final de cada carril) están puestas en la escena; al tocar cualquiera se guarda el resultado
+// (Resultado_carrera), se congela el juego y se muestra la pantalla de llegada. Su botón Continuar carga Level2 (Cambio_escena)
 public class Meta_victoria : MonoBehaviour
 {
-	private const string ClaveMejorTiempo = "MejorTiempo";
-
 	[SerializeField] private Caja_victoria[] paredes;
 	[SerializeField] private Cronometro cronometro;
 	[SerializeField] private Contador_recolectables contador;
-	[SerializeField] private TMP_Text textoTiempoFinal;
-	[SerializeField] private TMP_Text textoMejorTiempo;
+	[SerializeField] private GameObject pantallaLlegada; // Empieza apagada
+	[SerializeField] private TMP_Text textoTiempo;
 	[SerializeField] private TMP_Text textoExcusas;
-	[SerializeField] private GameObject pantallaVictoria; // Empieza apagada
+
+	private bool isTerminada;
 
 	void Awake()
 	{
 		if (paredes == null || paredes.Length == 0 || System.Array.IndexOf(paredes, null) >= 0 || cronometro == null || contador == null ||
-			textoTiempoFinal == null || textoMejorTiempo == null || textoExcusas == null || pantallaVictoria == null)
+			pantallaLlegada == null || textoTiempo == null || textoExcusas == null)
 		{
-			Debug.LogError("Meta_victoria: faltan las paredes, cronometro, contador, algún texto o pantallaVictoria.");
+			Debug.LogError("Meta_victoria: faltan las paredes, cronometro, contador, pantallaLlegada o algún texto.");
 			enabled = false;
 			return;
 		}
 
-		foreach (Caja_victoria pared in paredes) pared.Iniciar(Ganar);
+		foreach (Caja_victoria pared in paredes) pared.Iniciar(Llegar);
 	}
 
-	private void Ganar()
+	private void Llegar()
 	{
+		if (isTerminada) return; // Otro collider del jugador tocó la meta en el mismo cuadro
+		isTerminada = true;
+
 		cronometro.Detener();
-		float tiempo = cronometro.Segundos;
-
-		bool isRecord = !PlayerPrefs.HasKey(ClaveMejorTiempo) || tiempo < PlayerPrefs.GetFloat(ClaveMejorTiempo);
-		if (isRecord)
-		{
-			PlayerPrefs.SetFloat(ClaveMejorTiempo, tiempo);
-			PlayerPrefs.Save();
-		}
-
-		textoTiempoFinal.text = "Tiempo: " + Cronometro.Formatear(tiempo);
-		textoMejorTiempo.text = "Mejor tiempo: " + Cronometro.Formatear(PlayerPrefs.GetFloat(ClaveMejorTiempo)) + (isRecord ? " (¡nuevo récord!)" : "");
+		Resultado_carrera.Guardar(cronometro.Segundos, contador.Cantidad);
+		textoTiempo.text = "Tiempo: " + Cronometro.Formatear(cronometro.Segundos);
 		textoExcusas.text = "Excusas: " + contador.Cantidad;
-		pantallaVictoria.SetActive(true);
+		pantallaLlegada.SetActive(true);
 		Estado_juego.Congelar();
 	}
 }

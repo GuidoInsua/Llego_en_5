@@ -14,7 +14,7 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Teclas compartidas por varios scripts (interactuar con hidrantes y alcantarillas).
+// Desc: Teclas compartidas por varios scripts (interactuar con hidrantes y alcantarillas, completar el texto del jefe).
 
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,6 +28,16 @@ public static class Controles
 		{
 			Keyboard teclado = Keyboard.current;
 			return Time.timeScale > 0f && teclado != null && (teclado.eKey.wasPressedThisFrame || teclado.spaceKey.wasPressedThisFrame);
+		}
+	}
+
+	// Completa de golpe el texto que se está escribiendo (charla con el jefe)
+	public static bool SaltarTextoPresionado
+	{
+		get
+		{
+			Keyboard teclado = Keyboard.current;
+			return Time.timeScale > 0f && teclado != null && teclado.spaceKey.wasPressedThisFrame;
 		}
 	}
 }

@@ -14,7 +14,7 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Pausa con Escape (continuar, opciones, menú y salir) y R para reintentar desde la pausa, la victoria o el game over.
+// Desc: Pausa con Escape (continuar, opciones, menú y salir) y R para reintentar desde la pausa, la llegada o el game over.
 
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,8 +27,8 @@ public class Menu_pausa : MonoBehaviour
 	[Tooltip("Los botones de la pausa y el panel de opciones: al pausar se ven los botones.")]
 	[SerializeField] private GameObject botones;
 	[SerializeField] private GameObject panelOpciones;
-	[Tooltip("Si está a la vista (ganaste), Escape no pausa.")]
-	[SerializeField] private GameObject pantallaVictoria;
+	[Tooltip("Si está a la vista (llegaste a la oficina), Escape no pausa.")]
+	[SerializeField] private GameObject pantallaLlegada;
 	[Tooltip("Si está a la vista (perdiste), Escape tampoco pausa.")]
 	[SerializeField] private GameObject pantallaGameOver;
 	[Tooltip("Si está a la vista (controles al arrancar o abiertos desde Opciones), Escape no hace nada.")]
@@ -40,9 +40,9 @@ public class Menu_pausa : MonoBehaviour
 
 	void Awake()
 	{
-		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaVictoria == null || pantallaGameOver == null || pantallaInicio == null || cambioEscena == null)
+		if (canvasPausa == null || botones == null || panelOpciones == null || pantallaLlegada == null || pantallaGameOver == null || pantallaInicio == null || cambioEscena == null)
 		{
-			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones, la pantalla de victoria, la de game over, la de inicio o Cambio_escena.");
+			Debug.LogError("Menu_pausa: falta asignar el canvas de pausa, los botones, el panel de opciones, la pantalla de llegada, la de game over, la de inicio o Cambio_escena.");
 			enabled = false;
 		}
 	}
@@ -51,7 +51,7 @@ public class Menu_pausa : MonoBehaviour
 	{
 		if (Keyboard.current == null) return;
 
-		bool isTerminado = pantallaVictoria.activeSelf || pantallaGameOver.activeSelf;
+		bool isTerminado = pantallaLlegada.activeSelf || pantallaGameOver.activeSelf;
 		// Con los controles a la vista (al arrancar o abiertos desde Opciones de la pausa) Escape no hace nada: se cierran con su botón
 		if (Keyboard.current.escapeKey.wasPressedThisFrame && !pantallaInicio.activeSelf)
 		{

@@ -65,6 +65,7 @@
 		<relationship name="modules">
 			<destination>{1682339a-8c35-4174-ac77-f06f54c95984}</destination>
 			<destination>{d7b349f6-60d2-47a7-b3c9-c14a37677d02}</destination>
+			<destination>{99896bc5-d4f8-49c1-b46e-5bcc153d7e93}</destination>
 		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{c6080c9b-3389-4388-adfe-2562efb4c230}</destination>
@@ -79,6 +80,7 @@
 		<relationship name="modules">
 			<destination>{1682339a-8c35-4174-ac77-f06f54c95984}</destination>
 			<destination>{d7b349f6-60d2-47a7-b3c9-c14a37677d02}</destination>
+			<destination>{99896bc5-d4f8-49c1-b46e-5bcc153d7e93}</destination>
 		</relationship>
 		<relationship name="preset">
 			<destination>{cbdf7849-2209-4cd7-9a25-617d44d69bae}</destination>
@@ -129,6 +131,20 @@
 			<destination>{1fed3bbe-8dd9-41bd-9486-c7d889378ade}</destination>
 		</relationship>
 	</object>
+	<object class="SingleSound" id="{99896bc5-d4f8-49c1-b46e-5bcc153d7e93}">
+		<property name="start">
+			<value>2</value>
+		</property>
+		<property name="looping">
+			<value>true</value>
+		</property>
+		<relationship name="modulators">
+			<destination>{0aa765e3-79c1-46c8-9730-c7c4f2270c04}</destination>
+		</relationship>
+		<relationship name="audioFile">
+			<destination>{cf6f236d-457b-44ef-a846-fe9418a04b16}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerGroup" id="{c6080c9b-3389-4388-adfe-2562efb4c230}">
 		<property name="volume">
 			<value>-5.5</value>
@@ -168,6 +184,20 @@
 		</property>
 	</object>
 	<object class="ADSRModulator" id="{42751622-ba07-4004-9e34-28e68820e6b7}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>volume</value>
+		</property>
+		<property name="initialValue">
+			<value>-80</value>
+		</property>
+		<property name="releaseTime">
+			<value>1600</value>
+		</property>
+		<property name="finalValue">
+			<value>-80</value>
+		</property>
+	</object>
+	<object class="ADSRModulator" id="{0aa765e3-79c1-46c8-9730-c7c4f2270c04}">
 		<property name="nameOfPropertyBeingModulated">
 			<value>volume</value>
 		</property>

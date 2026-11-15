@@ -31,9 +31,15 @@ public class Cambio_escena : MonoBehaviour
 
 	public void Reiniciar()
 	{
+		ReiniciarEn(SceneManager.GetActiveScene().name);
+	}
+
+	// Vuelve a jugar sin la pantalla de controles (desde el jefe: ReiniciarEn("Level1"))
+	public void ReiniciarEn(string nombre)
+	{
 		Estado_juego.Reanudar();
 		Pantalla_inicio.SaltearProxima();
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		SceneManager.LoadScene(nombre);
 	}
 
 	public void Salir()

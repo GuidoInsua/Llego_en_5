@@ -225,8 +225,11 @@ El personaje corre solo. Al entrar al nivel el juego espera en pausa mostrando l
 | Menú (pausa) | Escape |
 | Reiniciar | R, en cualquier momento |
 | Menús | Flechas y Enter (o el mouse) |
+| Charla con el jefe: mostrar todo el texto sin esperar | Espacio, mientras se escribe |
 
 El salto perdona un poco: si se aprieta un instante antes de tocar el suelo, salta al aterrizar, y todavía se puede saltar un instante después de dejar un borde.
+
+Al llegar a la oficina se muestran el tiempo y las excusas juntadas, y después el jefe pregunta por qué llegaste tarde. Cada excusa juntada es una opción para contestarle (hasta 6): hay buenas (te perdona), intermedias (a veces) y malas (te despide). Cuanto mejor el tiempo, más chances de que te toquen buenas.
 
 ---
 
@@ -239,7 +242,7 @@ El salto perdona un poco: si se aprieta un instante antes de tocar el suelo, sal
    - **Si ya tenías el repo clonado de antes:** con `git pull` alcanza. Si algún archivo (`.fbx`, `.png`, `.mp3`, `.dll`) no abre en Unity o pesa unos 130 bytes y adentro dice `version https://git-lfs...`, es un puntero LFS viejo: hacer `git pull` de nuevo y, si sigue, borrar la carpeta y clonar de cero.
 3. **FMOD para Unity ya viene en el repo** (`Assets/Plugins/FMOD`, con sus DLL de Windows y su configuración). No hay que instalar nada ni importar el paquete de FMOD.
 4. **Bancos de audio:** los `.bank` ya compilados están en `Fmod/pasosEventFmod/Build/Desktop/`, y la configuración de FMOD apunta ahí. Si al dar Play no suenan los pasos: menú **FMOD → Refresh Banks** (copia los bancos a `Assets/StreamingAssets/`, que git ignora) y probar de nuevo.
-5. Abrir `Assets/Scenes/Menu.unity` y dar Play (o `Level1` para ir directo al nivel). Comprobar que **Project Settings → Audio → Disable Unity Audio** esté apagado.
+5. Abrir `Assets/Scenes/Menu.unity` y dar Play (o `Level1` para ir directo al nivel, o `Level2` para la charla con el jefe). Comprobar que **Project Settings → Audio → Disable Unity Audio** esté apagado.
 6. **Solo si hay que editar los sonidos:** instalar [FMOD Studio](https://www.fmod.com/download) (misma versión 2.03 que el plugin), abrir `Fmod/pasosEventFmod/pasosEventFmod.fspro`, editar, **Build (F7)** y commitear los bancos nuevos de `Fmod/pasosEventFmod/Build/`.
 
 Si algo no suena: mirar la consola de Unity; si los bancos no están cargados FMOD no da error y simplemente no suena.

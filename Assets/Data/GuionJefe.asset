@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d93b2566de0aaae4688d1c121a3d468d, type: 3}
+  m_Name: GuionJefe
+  m_EditorClassIdentifier: Scripts::Guion_jefe
+  saludo: "Llegas tarde, otra vez. Y esta no te la voy a dejar pasar tan f\u00e1cil. As\u00ed que antes de que siquiera intentes sentarte en tu lugar, vas a darme explicaciones claras de qu\u00e9 pas\u00f3 hoy."
+  pregunta: "\u00bfMe puedes explicar exactamente por qu\u00e9 no estabas en tu puesto a la hora de entrada y d\u00f3nde te metiste todo este tiempo?"
+  sinExcusas: "\u00bfNada? \u00bfNi siquiera una excusa? Est\u00e1s despedido."
+  respuestaBuena: "Entiendo la situaci\u00f3n, puedes volver al trabajo."
+  respuestaIntermediaGana: "Mmm... no me convence del todo, pero por esta vez te la dejo pasar. Vuelve a tu puesto."
+  respuestaIntermediaPierde: "Mmm... no, eso no me lo creo. Est\u00e1s despedido."
+  respuestaMala: "\u00bfEn serio esperas que me crea eso? Est\u00e1s despedido."
+  excusas:
+  - texto: "El colectivo se descompuso a mitad de camino y tuve que esperar otro."
+    categoria: 2
+  - texto: "Hubo un accidente en la avenida y el tr\u00e1fico estaba detenido."
+    categoria: 2
+  - texto: "Se cort\u00f3 la luz en mi edificio y el ascensor se qued\u00f3 trabado."
+    categoria: 2
+  - texto: "Mi hermano se sinti\u00f3 mal y tuve que llevarlo al m\u00e9dico."
+    categoria: 2
+  - texto: "Se rompi\u00f3 una tuber\u00eda en mi casa y tuve que esperar al plomero."
+    categoria: 2
+  - texto: "El subte tuvo una falla y estuvo parado casi una hora."
+    categoria: 2
+  - texto: "Mi vecina se descompens\u00f3 y esper\u00e9 hasta que lleg\u00f3 la ambulancia."
+    categoria: 2
+  - texto: "Hab\u00eda una manifestaci\u00f3n y cortaron todas las calles de acceso."
+    categoria: 2
+  - texto: "El tren se detuvo por una revisi\u00f3n de seguridad en las v\u00edas."
+    categoria: 2
+  - texto: "Me chocaron el auto de camino y tuve que hacer la denuncia."
+    categoria: 2
+  - texto: "Me llamaron del banco por un problema urgente con mi cuenta."
+    categoria: 1
+  - texto: "Se me pinch\u00f3 la rueda de la bici y tuve que venir caminando."
+    categoria: 1
+  - texto: "Me qued\u00e9 sin bater\u00eda y no son\u00f3 la alarma."
+    categoria: 1
+  - texto: "El perro de mi mam\u00e1 se escap\u00f3 y pasamos horas busc\u00e1ndolo."
+    categoria: 1
+  - texto: "Tuve una emergencia familiar y no pude avisar a tiempo."
+    categoria: 1
+  - texto: "Se me qued\u00f3 el celular sin bater\u00eda y no pude avisar que ven\u00eda tarde."
+    categoria: 1
+  - texto: "Intent\u00e9 avisarle a un compa\u00f1ero, pero no me respondi\u00f3."
+    categoria: 1
+  - texto: "Le escrib\u00ed un mensaje para avisar, pero no se envi\u00f3 por la mala conexi\u00f3n."
+    categoria: 1
+  - texto: "Fue todo tan r\u00e1pido que no tuve ni un minuto para avisar."
+    categoria: 1
+  - texto: "Me qued\u00e9 atrapado en el medio de una emergencia y no ten\u00eda se\u00f1al."
+    categoria: 1
+  - texto: "Me qued\u00e9 viendo una serie hasta tarde y me dorm\u00ed."
+    categoria: 0
+  - texto: "No ten\u00eda ganas de venir, la verdad."
+    categoria: 0
+  - texto: "Pas\u00e9 a desayunar tranquilo porque pens\u00e9 que no pasaba nada."
+    categoria: 0
+  - texto: "Me distraje jugando videojuegos y perd\u00ed la noci\u00f3n del tiempo."
+    categoria: 0
+  - texto: "Pens\u00e9 que hoy entr\u00e1bamos m\u00e1s tarde y no revis\u00e9 el horario."
+    categoria: 0
+  - texto: "No pens\u00e9 que fuera tan importante llegar a horario."
+    categoria: 0
+  - texto: "Me olvid\u00e9 por completo de que hoy trabajaba."
+    categoria: 0
+  - texto: "Prefiero pedir perd\u00f3n que pedir permiso."
+    categoria: 0
+  - texto: "Me qued\u00e9 charlando con el kiosquero de la esquina."
+    categoria: 0
+  - texto: "Apagu\u00e9 la alarma dormido y segu\u00ed durmiendo."
+    categoria: 0
