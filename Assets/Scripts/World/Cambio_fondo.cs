@@ -60,7 +60,10 @@ public class Cambio_fondo : MonoBehaviour
 
 	void OnDestroy()
 	{
-		if (jugador != null) jugador.CarrilCambiado -= Cambiar;
+		if (jugador != null)
+		{
+			jugador.CarrilCambiado -= Cambiar;
+		}
 	}
 
 	private void Cambiar(Carril carril)
@@ -71,32 +74,49 @@ public class Cambio_fondo : MonoBehaviour
 			return;
 		}
 
-		bool isCalle = carril == Carril.Calle;
-		PonerSprite(lejanos, isCalle ? lejanoCalle : lejanoEdificios);
-		PonerSprite(cercanos, isCalle ? cercanoCalle : cercanoEdificios);
+		if (carril == Carril.Calle)
+		{
+			PonerSprite(lejanos, lejanoCalle);
+			PonerSprite(cercanos, cercanoCalle);
+		}
+		else
+		{
+			PonerSprite(lejanos, lejanoEdificios);
+			PonerSprite(cercanos, cercanoEdificios);
+		}
 		Aplicar(colorOriginal, true);
 	}
 
 	// Parallax_layer mide el ancho del sprite en cada cuadro: no hace falta que las imágenes midan lo mismo
-	private static void PonerSprite(SpriteRenderer[] capas, Sprite sprite)
+	private void PonerSprite(SpriteRenderer[] capas, Sprite sprite)
 	{
-		foreach (SpriteRenderer capa in capas) capa.sprite = sprite;
+		foreach (SpriteRenderer capa in capas)
+		{
+			capa.sprite = sprite;
+		}
 	}
 
 	private void Aplicar(Color color, bool conFondos)
 	{
 		fondos.SetActive(conFondos);
-		if (cambio != null) StopCoroutine(cambio);
+		if (cambio != null)
+		{
+			StopCoroutine(cambio);
+		}
 		cambio = StartCoroutine(CambiarCielo(color));
 	}
 
+	// Pasa el color del cielo de a poco al nuevo, en `duracion` segundos
 	private IEnumerator CambiarCielo(Color colorCielo)
 	{
 		Color inicio = camara.backgroundColor;
-		for (float t = 0f; t < duracion; t += Time.deltaTime)
+		float tiempo = 0f;
+		while (tiempo < duracion)
 		{
-			camara.backgroundColor = Color.Lerp(inicio, colorCielo, t / duracion);
+			float avance = tiempo / duracion;
+			camara.backgroundColor = Color.Lerp(inicio, colorCielo, avance);
 			yield return null;
+			tiempo += Time.deltaTime;
 		}
 
 		camara.backgroundColor = colorCielo;

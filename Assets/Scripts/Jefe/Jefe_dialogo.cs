@@ -22,7 +22,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Por cada excusa juntada en la carrera (Resultado_carrera) se sortea una categoría (Sorteo_excusas, pesada por el tiempo) y
+// Por cada excusa juntada en la carrera (Resultado_carrera) se sortea una categoría (Sorteo_excusas, según el tiempo) y
 // se muestran las mejores, una por botón, con textos de Guion_jefe. La buena convence, la mala no y la intermedia a veces
 public class Jefe_dialogo : MonoBehaviour
 {
@@ -62,23 +62,40 @@ public class Jefe_dialogo : MonoBehaviour
 	[SerializeField] private float pausaAntesDelFinal = 1f;
 
 	private TMP_Text[] textosOpcion;
-	private int opcionElegida;
+	private int opcionElegida; // -1 mientras no se eligió ninguna
 	private bool isSiguientePedido;
 
 	void Awake()
 	{
-		if (guion == null || cuadroDialogo == null || escritura == null || botonSiguiente == null || panelOpciones == null ||
-			botonesOpcion == null || botonesOpcion.Length == 0 || System.Array.IndexOf(botonesOpcion, null) >= 0 ||
+		bool isFaltaAlgo = guion == null || cuadroDialogo == null || escritura == null || botonSiguiente == null || panelOpciones == null ||
 			jefeNormal == null || jefeEnojado == null || pantallaVictoria == null || textoTiempo == null || textoMejorTiempo == null ||
-			textoExcusas == null || pantallaDespedido == null)
+			textoExcusas == null || pantallaDespedido == null;
+
+		if (botonesOpcion == null || botonesOpcion.Length == 0)
+		{
+			isFaltaAlgo = true;
+		}
+		else
+		{
+			foreach (Button boton in botonesOpcion)
+			{
+				if (boton == null)
+				{
+					isFaltaAlgo = true;
+				}
+			}
+		}
+
+		if (isFaltaAlgo)
 		{
 			Debug.LogError("Jefe_dialogo: falta asignar algo del Inspector.");
 			enabled = false;
 			return;
 		}
+
 		if (!guion.AlcanzanExcusas(botonesOpcion.Length))
 		{
-			Debug.LogError($"Jefe_dialogo: el guion necesita al menos {botonesOpcion.Length} excusas de cada categoría (una por botón).");
+			Debug.LogError("Jefe_dialogo: el guion necesita al menos " + botonesOpcion.Length + " excusas de cada categoría (una por botón).");
 			enabled = false;
 			return;
 		}
@@ -86,8 +103,11 @@ public class Jefe_dialogo : MonoBehaviour
 		textosOpcion = new TMP_Text[botonesOpcion.Length];
 		for (int i = 0; i < botonesOpcion.Length; i++)
 		{
-			int indice = i;
 			textosOpcion[i] = botonesOpcion[i].GetComponentInChildren<TMP_Text>();
+
+			// Al apretar el botón se guarda su número. El botón no sabe pasar un número, así que se usa una
+			// función sin nombre (lambda): se acuerda del valor de `indice` de esta vuelta del for
+			int indice = i;
 			botonesOpcion[i].onClick.AddListener(() => opcionElegida = indice);
 		}
 	}
@@ -98,9 +118,13 @@ public class Jefe_dialogo : MonoBehaviour
 		isSiguientePedido = true;
 	}
 
+	// Start puede ser una corrutina: la charla entera va acá, paso a paso
 	IEnumerator Start()
 	{
-		if (!enabled) yield break;
+		if (!enabled)
+		{
+			yield break;
+		}
 
 		List<Guion_jefe.Excusa> opciones = SortearOpciones(Resultado_carrera.Excusas);
 
@@ -108,6 +132,7 @@ public class Jefe_dialogo : MonoBehaviour
 		cuadroDialogo.SetActive(true);
 		yield return Decir(guion.Saludo, true);
 
+		// Sin excusas el jefe te despide sin preguntar
 		if (opciones.Count == 0)
 		{
 			yield return Terminar(false, guion.SinExcusas);
@@ -125,25 +150,52 @@ public class Jefe_dialogo : MonoBehaviour
 	// Una categoría por excusa juntada; quedan las mejores (una por botón), cada una con un texto distinto, en orden mezclado
 	private List<Guion_jefe.Excusa> SortearOpciones(int juntadas)
 	{
-		List<Categoria_excusa> categorias = new List<Categoria_excusa>(juntadas);
+		// 1. Una categoría al azar por cada excusa juntada
+		List<Categoria_excusa> categorias = new List<Categoria_excusa>();
 		for (int i = 0; i < juntadas; i++)
 		{
-			categorias.Add(Sorteo_excusas.SortearCategoria(Resultado_carrera.Tiempo, tiempoEstandar, ajustePorSegundo, Random.value));
+			Categoria_excusa categoria = Sorteo_excusas.SortearCategoria(Resultado_carrera.Tiempo, tiempoEstandar, ajustePorSegundo, Random.value);
+			categorias.Add(categoria);
 		}
-		categorias.Sort((a, b) => (int)b - (int)a);
-		if (categorias.Count > botonesOpcion.Length) categorias.RemoveRange(botonesOpcion.Length, categorias.Count - botonesOpcion.Length);
 
+		// 2. De mejor a peor: Sort las ordena por su número (Mala 0 ... Buena 2) de menor a mayor y Reverse da vuelta la lista
+		categorias.Sort();
+		categorias.Reverse();
+
+		// 3. Se queda con las primeras, una por botón
+		if (categorias.Count > botonesOpcion.Length)
+		{
+			int sobran = categorias.Count - botonesOpcion.Length;
+			categorias.RemoveRange(botonesOpcion.Length, sobran);
+		}
+
+		// 4. Para cada categoría saca del mazo mezclado una excusa de esa categoría (así no se repiten textos)
 		List<Guion_jefe.Excusa> mazo = new List<Guion_jefe.Excusa>(guion.Excusas);
 		Mezclar(mazo);
-		List<Guion_jefe.Excusa> opciones = new List<Guion_jefe.Excusa>(categorias.Count);
+		List<Guion_jefe.Excusa> opciones = new List<Guion_jefe.Excusa>();
 		foreach (Categoria_excusa categoria in categorias)
 		{
-			int indice = mazo.FindIndex(excusa => excusa.Categoria == categoria); // Siempre hay: lo comprueba Awake
+			int indice = BuscarExcusa(mazo, categoria); // Siempre encuentra: lo comprueba Awake
 			opciones.Add(mazo[indice]);
 			mazo.RemoveAt(indice);
 		}
-		Mezclar(opciones); // Que el orden no delate cuál es mejor
+
+		// 5. Se mezclan para que el orden no delate cuál es mejor
+		Mezclar(opciones);
 		return opciones;
+	}
+
+	// Posición de la primera excusa de esa categoría en la lista, o -1 si no hay
+	private int BuscarExcusa(List<Guion_jefe.Excusa> lista, Categoria_excusa categoria)
+	{
+		for (int i = 0; i < lista.Count; i++)
+		{
+			if (lista[i].Categoria == categoria)
+			{
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	// Escribe la frase y, si se pide, espera el botón Siguiente
@@ -152,11 +204,17 @@ public class Jefe_dialogo : MonoBehaviour
 		yield return escritura.Escribir(frase);
 		yield return new WaitForSeconds(pausaAlTerminarFrase);
 
-		if (!isEsperarSiguiente) yield break;
+		if (!isEsperarSiguiente)
+		{
+			yield break;
+		}
 
 		isSiguientePedido = false;
 		botonSiguiente.SetActive(true); // Con Seleccion_inicial: queda marcado para Enter
-		yield return new WaitUntil(() => isSiguientePedido);
+		while (!isSiguientePedido)
+		{
+			yield return null;
+		}
 		botonSiguiente.SetActive(false);
 	}
 
@@ -167,13 +225,19 @@ public class Jefe_dialogo : MonoBehaviour
 		{
 			bool isUsado = i < opciones.Count;
 			botonesOpcion[i].gameObject.SetActive(isUsado);
-			if (isUsado) textosOpcion[i].text = opciones[i].Texto;
+			if (isUsado)
+			{
+				textosOpcion[i].text = opciones[i].Texto;
+			}
 		}
 
 		cuadroDialogo.SetActive(false);
 		opcionElegida = -1;
 		panelOpciones.SetActive(true); // Seleccion_inicial marca la primera
-		yield return new WaitUntil(() => opcionElegida >= 0);
+		while (opcionElegida < 0)
+		{
+			yield return null;
+		}
 		panelOpciones.SetActive(false);
 		cuadroDialogo.SetActive(true);
 	}
@@ -192,18 +256,27 @@ public class Jefe_dialogo : MonoBehaviour
 		}
 
 		bool isRecord = Resultado_carrera.GuardarSiEsRecord();
+		string textoMejor = "Mejor tiempo: " + Cronometro.Formatear(Resultado_carrera.MejorTiempo);
+		if (isRecord)
+		{
+			textoMejor = textoMejor + " (¡nuevo récord!)";
+		}
+
 		textoTiempo.text = "Tiempo: " + Cronometro.Formatear(Resultado_carrera.Tiempo);
-		textoMejorTiempo.text = "Mejor tiempo: " + Cronometro.Formatear(Resultado_carrera.MejorTiempo) + (isRecord ? " (¡nuevo récord!)" : "");
+		textoMejorTiempo.text = textoMejor;
 		textoExcusas.text = "Excusas: " + Resultado_carrera.Excusas;
 		pantallaVictoria.SetActive(true);
 	}
 
-	private static void Mezclar<T>(List<T> lista)
+	// Mezcla la lista al azar: de atrás para adelante, cambia cada elemento por uno al azar de los que tiene antes (o por sí mismo)
+	private void Mezclar(List<Guion_jefe.Excusa> lista)
 	{
 		for (int i = lista.Count - 1; i > 0; i--)
 		{
 			int j = Random.Range(0, i + 1);
-			(lista[i], lista[j]) = (lista[j], lista[i]);
+			Guion_jefe.Excusa guardada = lista[i];
+			lista[i] = lista[j];
+			lista[j] = guardada;
 		}
 	}
 }

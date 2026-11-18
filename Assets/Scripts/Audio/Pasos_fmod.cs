@@ -36,6 +36,10 @@ public class Pasos_fmod : MonoBehaviour
 	// Lo llama el Animation Event del clip
 	public void Paso()
 	{
-		if (enabled) Sonido_fmod.Tocar(eventoPaso);
+		// Los Animation Events llegan aunque el script esté apagado
+		if (enabled)
+		{
+			Sonido_fmod.Tocar(eventoPaso);
+		}
 	}
 }

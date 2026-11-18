@@ -25,5 +25,8 @@ public class Carril_suelo : MonoBehaviour
 	[FormerlySerializedAs("indice")] // Antes era un número (0, 1, 2): el enum guarda los mismos valores
 	[SerializeField] private Carril carril;
 
-	public Carril Carril => carril;
+	public Carril Carril
+	{
+		get { return carril; }
+	}
 }

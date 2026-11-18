@@ -14,7 +14,7 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Moneda blanca que el jugador agarra al tocarla; pulsa y tiene un brillo.
+// Desc: Excusa (globo rosa) que el jugador junta al tocarla; pulsa y tiene un brillo.
 
 using UnityEngine;
 
@@ -53,15 +53,23 @@ public class Recolectable : MonoBehaviour
 
 	void Update()
 	{
+		// El seno va de -1 a 1: el tamaño sube y baja un poco alrededor del original
 		float seno = Mathf.Sin(Time.time * velocidadPulso + fase);
-		transform.localScale = escalaBase * (1f + amplitudPulso * seno);
-		brillo.color = new Color(1f, 1f, 1f, alfaBrillo * (0.6f + 0.4f * seno));
+		float escala = 1f + amplitudPulso * seno;
+		transform.localScale = escalaBase * escala;
+
+		// El halo late al mismo ritmo: su transparencia va del 20% al 100% de alfaBrillo
+		float alfa = alfaBrillo * (0.6f + 0.4f * seno);
+		brillo.color = new Color(1f, 1f, 1f, alfa);
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		Player_controller jugador = other.GetComponentInParent<Player_controller>();
-		if (jugador == null) return;
+		if (jugador == null)
+		{
+			return;
+		}
 
 		// Sin collider no se junta dos veces; sin Update deja de pulsar mientras vuela
 		GetComponent<Collider2D>().enabled = false;

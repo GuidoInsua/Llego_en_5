@@ -1,0 +1,613 @@
+fileFormatVersion: 2
+guid: 7ee37e3ad0327414bb73c2eed000f74a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8187998010969345293
+    second: LLegaste a la oficina_0
+  - first:
+      213: -1471410205749904569
+    second: LLegaste a la oficina_1
+  - first:
+      213: -4108447884953992344
+    second: LLegaste a la oficina_2
+  - first:
+      213: -2339106162172735146
+    second: LLegaste a la oficina_3
+  - first:
+      213: -108971021196876234
+    second: LLegaste a la oficina_4
+  - first:
+      213: 2858404526051590242
+    second: LLegaste a la oficina_5
+  - first:
+      213: -2751662326152870908
+    second: LLegaste a la oficina_6
+  - first:
+      213: -3357258332413271009
+    second: LLegaste a la oficina_7
+  - first:
+      213: -1927463963621153733
+    second: LLegaste a la oficina_8
+  - first:
+      213: 5483353386135056467
+    second: LLegaste a la oficina_9
+  - first:
+      213: 1060177684245979550
+    second: LLegaste a la oficina_10
+  - first:
+      213: 2374230945798671402
+    second: LLegaste a la oficina_11
+  - first:
+      213: 1421733433937190923
+    second: LLegaste a la oficina_12
+  - first:
+      213: 827292783809922316
+    second: LLegaste a la oficina_13
+  - first:
+      213: -7395156621472003713
+    second: LLegaste a la oficina_14
+  - first:
+      213: 2093524467741330906
+    second: LLegaste a la oficina_15
+  - first:
+      213: 4947997218554276943
+    second: LLegaste a la oficina_16
+  - first:
+      213: 1417055899717886899
+    second: LLegaste a la oficina_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LLegaste a la oficina_0
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 494
+        width: 313
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0dce612fcc91a170800000000000000
+      internalID: 8187998010969345293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_1
+      rect:
+        serializedVersion: 2
+        x: 745
+        y: 494
+        width: 313
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74b7467b630849be0800000000000000
+      internalID: -1471410205749904569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_2
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 494
+        width: 318
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 863cc178a6cdbf6c0800000000000000
+      internalID: -4108447884953992344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_3
+      rect:
+        serializedVersion: 2
+        x: 1420
+        y: 494
+        width: 334
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65154cfa653d98fd0800000000000000
+      internalID: -2339106162172735146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_4
+      rect:
+        serializedVersion: 2
+        x: 1765
+        y: 494
+        width: 378
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 636afbefe6bdc7ef0800000000000000
+      internalID: -108971021196876234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_5
+      rect:
+        serializedVersion: 2
+        x: 2128
+        y: 494
+        width: 334
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2608caf95c71ba720800000000000000
+      internalID: 2858404526051590242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_6
+      rect:
+        serializedVersion: 2
+        x: 2475
+        y: 494
+        width: 323
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40445db71b120d9d0800000000000000
+      internalID: -2751662326152870908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_7
+      rect:
+        serializedVersion: 2
+        x: 2823
+        y: 494
+        width: 318
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f14694d855f9861d0800000000000000
+      internalID: -3357258332413271009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_8
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 13
+        width: 378
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b34aefabcb54045e0800000000000000
+      internalID: -1927463963621153733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_9
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 13
+        width: 313
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 350f3864ad8c81c40800000000000000
+      internalID: 5483353386135056467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_10
+      rect:
+        serializedVersion: 2
+        x: 877
+        y: 13
+        width: 378
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e91274c9cf186be00800000000000000
+      internalID: 1060177684245979550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_11
+      rect:
+        serializedVersion: 2
+        x: 1393
+        y: 13
+        width: 334
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2cc11b4776f2f020800000000000000
+      internalID: 2374230945798671402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_12
+      rect:
+        serializedVersion: 2
+        x: 1775
+        y: 13
+        width: 313
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b006f1786030bb310800000000000000
+      internalID: 1421733433937190923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_13
+      rect:
+        serializedVersion: 2
+        x: 2118
+        y: 13
+        width: 148
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c050c3857622b7b00800000000000000
+      internalID: 827292783809922316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_14
+      rect:
+        serializedVersion: 2
+        x: 2314
+        y: 13
+        width: 328
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7988c6eb302f5990800000000000000
+      internalID: -7395156621472003713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_15
+      rect:
+        serializedVersion: 2
+        x: 2675
+        y: 13
+        width: 148
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: add8f445961bd0d10800000000000000
+      internalID: 2093524467741330906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_16
+      rect:
+        serializedVersion: 2
+        x: 2877
+        y: 13
+        width: 335
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4c6c813141daa440800000000000000
+      internalID: 4947997218554276943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LLegaste a la oficina_17
+      rect:
+        serializedVersion: 2
+        x: 3231
+        y: 13
+        width: 378
+        height: 377
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b36e8935d46aa310800000000000000
+      internalID: 1417055899717886899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LLegaste a la oficina_0: 8187998010969345293
+      LLegaste a la oficina_1: -1471410205749904569
+      LLegaste a la oficina_10: 1060177684245979550
+      LLegaste a la oficina_11: 2374230945798671402
+      LLegaste a la oficina_12: 1421733433937190923
+      LLegaste a la oficina_13: 827292783809922316
+      LLegaste a la oficina_14: -7395156621472003713
+      LLegaste a la oficina_15: 2093524467741330906
+      LLegaste a la oficina_16: 4947997218554276943
+      LLegaste a la oficina_17: 1417055899717886899
+      LLegaste a la oficina_2: -4108447884953992344
+      LLegaste a la oficina_3: -2339106162172735146
+      LLegaste a la oficina_4: -108971021196876234
+      LLegaste a la oficina_5: 2858404526051590242
+      LLegaste a la oficina_6: -2751662326152870908
+      LLegaste a la oficina_7: -3357258332413271009
+      LLegaste a la oficina_8: -1927463963621153733
+      LLegaste a la oficina_9: 5483353386135056467
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

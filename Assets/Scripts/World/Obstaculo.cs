@@ -29,7 +29,7 @@ public class Obstaculo : MonoBehaviour
 
 	private Collider2D col;
 	private SpriteRenderer spriteRenderer;
-	private bool rota;
+	private bool isRota;
 
 	void Awake()
 	{
@@ -38,28 +38,45 @@ public class Obstaculo : MonoBehaviour
 	}
 
 	// Verdadero desde el golpe: el hidrante lo usa para no ofrecer el impulso si ya chocaste con él
-	public bool EstaRota => rota;
+	public bool EstaRota
+	{
+		get { return isRota; }
+	}
 
 	public void Romper()
 	{
-		if (rota) return;
-		rota = true;
+		if (isRota)
+		{
+			return;
+		}
+		isRota = true;
 
 		col.enabled = false; // Ya se lo chocó: deja pasar al jugador
 		StartCoroutine(Titilar());
 	}
 
+	// Alterna entre transparente y normal cada 0,1 s, y al final lo deja con su color
 	private IEnumerator Titilar()
 	{
 		Color original = spriteRenderer.color;
 		float fin = Time.time + duracionRotura;
-		bool transparente = false;
+		bool isTransparente = false;
 
 		while (Time.time < fin)
 		{
-			transparente = !transparente;
-			float alpha = transparente ? 0.3f : 1f;
-			spriteRenderer.color = new Color(original.r, original.g, original.b, alpha);
+			isTransparente = !isTransparente;
+
+			float alfa;
+			if (isTransparente)
+			{
+				alfa = 0.3f;
+			}
+			else
+			{
+				alfa = 1f;
+			}
+			spriteRenderer.color = new Color(original.r, original.g, original.b, alfa);
+
 			yield return Parpadeo;
 		}
 

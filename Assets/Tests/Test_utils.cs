@@ -26,7 +26,7 @@ public static class Test_utils
 	public static void SetField(object target, string name, object value)
 	{
 		FieldInfo campo = target.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
-		Assert.IsNotNull(campo, $"{target.GetType().Name} no tiene el campo '{name}'");
+		Assert.IsNotNull(campo, target.GetType().Name + " no tiene el campo '" + name + "'");
 		campo.SetValue(target, value);
 	}
 }

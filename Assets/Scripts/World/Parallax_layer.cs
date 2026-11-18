@@ -24,7 +24,8 @@ public class Parallax_layer : MonoBehaviour
 	[Header("Capa")]
 	[SerializeField] private Transform camara;
 	// 1 = queda fija en pantalla (cielo), 0 = se mueve junto al mundo (edificios cercanos)
-	[SerializeField, Range(0f, 1f)] private float seguirCamara = 0.5f;
+	[Range(0f, 1f)]
+	[SerializeField] private float seguirCamara = 0.5f;
 
 	[Header("Copias")]
 	[SerializeField] private Transform[] copias; // Otras 2 copias de la misma tira (Ctrl+D)
@@ -47,20 +48,34 @@ public class Parallax_layer : MonoBehaviour
 		offsetY = transform.position.y - camara.position.y;
 	}
 
-	void OnEnable() => RenderPipelineManager.beginCameraRendering += Reposicionar;
-	void OnDisable() => RenderPipelineManager.beginCameraRendering -= Reposicionar;
+	// Se reposiciona justo antes de que la cámara dibuje (ver Reposicionar)
+	void OnEnable()
+	{
+		RenderPipelineManager.beginCameraRendering += Reposicionar;
+	}
+
+	void OnDisable()
+	{
+		RenderPipelineManager.beginCameraRendering -= Reposicionar;
+	}
 
 	// Justo antes de dibujar y no en LateUpdate: si corría antes que Cinemachine, leía la cámara del frame anterior y la capa temblaba
 	private void Reposicionar(ScriptableRenderContext contexto, Camera cam)
 	{
-		if (cam.transform != camara) return;
+		// Avisa por cada cámara que dibuja: solo importa la nuestra
+		if (cam.transform != camara)
+		{
+			return;
+		}
 
 		float x = camara.position.x;
 		// Ancho de la tira en unidades del mundo, medido cada vez: Cambio_fondo cambia el sprite y no todos miden lo mismo (Unity recorta el borde transparente)
 		float ancho = tira.bounds.size.x;
 
-		// Cuánto se corre el patrón de la tira respecto de la cámara
-		float corrimiento = Mathf.Repeat(x * (1f - seguirCamara), ancho);
+		// Cuánto se corre el dibujo de la tira respecto de la cámara. Mathf.Repeat lo deja entre 0 y ancho
+		// (como el resto de una división), así las tiras se reacomodan sin fin
+		float distanciaRecorrida = x * (1f - seguirCamara);
+		float corrimiento = Mathf.Repeat(distanciaRecorrida, ancho);
 		float inicioX = x - corrimiento - ancho;
 
 		// Tres tiras seguidas cubren toda la vista mientras el ancho sea mayor o igual a la mitad de la vista
@@ -71,10 +86,10 @@ public class Parallax_layer : MonoBehaviour
 		}
 	}
 
-	private void Posicionar(Transform tira, float posX)
+	private void Posicionar(Transform objeto, float posX)
 	{
 		// Y sigue a la cámara: el fondo no sube ni baja al saltar
-		Vector3 pos = new Vector3(posX, camara.position.y + offsetY, tira.position.z);
-		tira.position = pos;
+		Vector3 pos = new Vector3(posX, camara.position.y + offsetY, objeto.position.z);
+		objeto.position = pos;
 	}
 }

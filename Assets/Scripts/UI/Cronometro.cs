@@ -36,10 +36,12 @@ public class Cronometro : MonoBehaviour
 	private bool isDetenido;
 	private Coroutine pulso;
 	private Color colorNormal;
+	private int decimasMostradas = -1; // Las décimas que muestra el texto ahora
 
-	private int decimasMostradas = -1;
-
-	public float Segundos => segundos;
+	public float Segundos
+	{
+		get { return segundos; }
+	}
 
 	void Awake()
 	{
@@ -57,43 +59,29 @@ public class Cronometro : MonoBehaviour
 
 	void OnDestroy()
 	{
-		if (jugador == null) return;
-		jugador.Golpeado -= Pulsar;
-		jugador.Ralentizado -= Pulsar;
-	}
-
-	// Agranda y achica el texto y lo titila en rojo un ratito
-	private void Pulsar()
-	{
-		if (pulso != null) StopCoroutine(pulso);
-		pulso = StartCoroutine(Pulso());
-	}
-
-	private IEnumerator Pulso()
-	{
-		for (float t = 0f; t < duracionPulso; t += Time.deltaTime)
+		if (jugador != null)
 		{
-			texto.rectTransform.localScale = Vector3.one * (1f + (escalaPulso - 1f) * Mathf.Sin(t / duracionPulso * Mathf.PI));
-			texto.color = (int)(t / intervaloTitileo) % 2 == 0 ? colorPulso : colorNormal;
-			yield return null;
+			jugador.Golpeado -= Pulsar;
+			jugador.Ralentizado -= Pulsar;
 		}
-
-		texto.rectTransform.localScale = Vector3.one;
-		texto.color = colorNormal;
-		pulso = null;
 	}
 
 	void Update()
 	{
-		if (isDetenido) return;
+		if (isDetenido)
+		{
+			return;
+		}
 
 		segundos += Time.deltaTime;
 
-		// El texto cambia 10 veces por segundo: armarlo en cada cuadro crea cadenas y rehace la malla sin que se vea nada nuevo
+		// El texto cambia 10 veces por segundo: solo se rearma cuando cambia la décima
 		int decimas = (int)(segundos * 10f);
-		if (decimas == decimasMostradas) return;
-		decimasMostradas = decimas;
-		texto.text = Formatear(segundos);
+		if (decimas != decimasMostradas)
+		{
+			decimasMostradas = decimas;
+			texto.text = Formatear(segundos);
+		}
 	}
 
 	public void Detener()
@@ -101,10 +89,58 @@ public class Cronometro : MonoBehaviour
 		isDetenido = true;
 	}
 
-	// mm:ss,d
+	// Escribe el tiempo como mm:ss,d (minutos, segundos y décimas)
 	public static string Formatear(float segundos)
 	{
-		int decimas = (int)(segundos * 10f); // Entero: así 59,96 s no se redondea a "60.0"
-		return (decimas / 600).ToString("00") + ":" + (decimas % 600 / 10).ToString("00") + "," + decimas % 10;
+		// Se pasa a un número entero de décimas: así 59,96 s no se redondea a "60,0"
+		int decimasTotales = (int)(segundos * 10f);
+
+		int minutos = decimasTotales / 600; // 600 décimas = 1 minuto
+		int decimasDelMinuto = decimasTotales % 600;
+		int segundosDelMinuto = decimasDelMinuto / 10;
+		int decima = decimasTotales % 10;
+
+		return minutos.ToString("00") + ":" + segundosDelMinuto.ToString("00") + "," + decima;
+	}
+
+	// Agranda y achica el texto y lo titila en rojo un ratito
+	private void Pulsar()
+	{
+		if (pulso != null)
+		{
+			StopCoroutine(pulso);
+		}
+		pulso = StartCoroutine(Pulso());
+	}
+
+	private IEnumerator Pulso()
+	{
+		float tiempo = 0f;
+		while (tiempo < duracionPulso)
+		{
+			// El seno de 0 a PI va de 0 a 1 y vuelve a 0: el texto crece y se achica
+			float avance = tiempo / duracionPulso;
+			float curva = Mathf.Sin(avance * Mathf.PI);
+			float escala = 1f + (escalaPulso - 1f) * curva;
+			texto.rectTransform.localScale = Vector3.one * escala;
+
+			// Cambia de color cada intervaloTitileo segundos: un intervalo rojo, uno normal
+			int numeroDeIntervalo = (int)(tiempo / intervaloTitileo);
+			if (numeroDeIntervalo % 2 == 0)
+			{
+				texto.color = colorPulso;
+			}
+			else
+			{
+				texto.color = colorNormal;
+			}
+
+			yield return null;
+			tiempo += Time.deltaTime;
+		}
+
+		texto.rectTransform.localScale = Vector3.one;
+		texto.color = colorNormal;
+		pulso = null;
 	}
 }

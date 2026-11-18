@@ -49,18 +49,32 @@ public class Menu_pausa : MonoBehaviour
 
 	void Update()
 	{
-		if (Keyboard.current == null) return;
+		if (Keyboard.current == null)
+		{
+			return;
+		}
 
+		// Ya llegó a la oficina o perdió: no se puede pausar
 		bool isTerminado = pantallaLlegada.activeSelf || pantallaGameOver.activeSelf;
+
 		// Con los controles a la vista (al arrancar o abiertos desde Opciones de la pausa) Escape no hace nada: se cierran con su botón
 		if (Keyboard.current.escapeKey.wasPressedThisFrame && !pantallaInicio.activeSelf)
 		{
-			if (isPausado) Continuar();
-			else if (!isTerminado) Pausar();
+			if (isPausado)
+			{
+				Continuar();
+			}
+			else if (!isTerminado)
+			{
+				Pausar();
+			}
 		}
 
 		// Reintento inmediato, sin buscar el botón, también jugando
-		if (Keyboard.current.rKey.wasPressedThisFrame) cambioEscena.Reiniciar();
+		if (Keyboard.current.rKey.wasPressedThisFrame)
+		{
+			cambioEscena.Reiniciar();
+		}
 	}
 
 	// Al destruirse (cambio de escena o fin del Play) deja el tiempo y el audio como estaban
@@ -75,7 +89,7 @@ public class Menu_pausa : MonoBehaviour
 		canvasPausa.SetActive(true);
 		botones.SetActive(true);
 		panelOpciones.SetActive(false);
-		Estado_juego.Congelar(); // Pausa la música y el ambiente de Unity (FMOD no depende de esto: sin tiempo no hay eventos de pasos)
+		Estado_juego.Congelar(); // La música de FMOD sigue sonando; los pasos no, porque sin tiempo la animación no avanza
 	}
 
 	// También la llama el botón Continuar
@@ -85,5 +99,4 @@ public class Menu_pausa : MonoBehaviour
 		canvasPausa.SetActive(false);
 		Estado_juego.Reanudar();
 	}
-
 }

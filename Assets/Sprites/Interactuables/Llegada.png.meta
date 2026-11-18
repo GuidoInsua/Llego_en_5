@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 90ed59abca9809144bb2bb0ede792540
+guid: c29b505a17abe724d8f77f4b5581d1a0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3025422267860207935
-    second: _-35_0
+      213: 3052146690295056580
+    second: Llegada_0
+  - first:
+      213: 4352533880680205807
+    second: Llegada_1
+  - first:
+      213: -8531114113527586217
+    second: LlegadaAtras
+  - first:
+      213: -4823887439530242325
+    second: LlegadaAdelante
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,12 +55,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
-  spritePivot: {x: 0.48050138, y: 0.039772727}
-  spritePixelsToUnits: 219.33333
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 270
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -128,14 +137,36 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: _-35_0
+      name: LlegadaAtras
       rect:
         serializedVersion: 2
         x: 0
-        y: 13
-        width: 346
-        height: 331
-      alignment: 0
+        y: 0
+        width: 507
+        height: 972
+      alignment: 8
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 752eddcd9e46b9980800000000000000
+      internalID: -8531114113527586217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LlegadaAdelante
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 0
+        width: 508
+        height: 972
+      alignment: 6
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
@@ -143,8 +174,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f394d53f5857cf920800000000000000
-      internalID: 3025422267860207935
+      spriteID: beec45a8eeb1e0db0800000000000000
+      internalID: -4823887439530242325
       vertices: []
       indices: 
       edges: []
@@ -153,7 +184,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -163,7 +194,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      _-35_0: 3025422267860207935
+      LlegadaAdelante: -4823887439530242325
+      LlegadaAtras: -8531114113527586217
+      Llegada_0: 3052146690295056580
+      Llegada_1: 4352533880680205807
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

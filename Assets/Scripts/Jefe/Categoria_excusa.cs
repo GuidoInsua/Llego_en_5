@@ -21,5 +21,5 @@ public enum Categoria_excusa
 {
 	Mala = 0,
 	Intermedia = 1,
-	Buena = 2,
+	Buena = 2
 }

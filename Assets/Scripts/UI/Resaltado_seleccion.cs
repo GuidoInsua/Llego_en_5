@@ -29,26 +29,48 @@ public class Resaltado_seleccion : MonoBehaviour
 	private GameObject seleccionado;
 	private Outline contorno;
 
-	// Solo trabaja cuando cambia la selección
 	void Update()
 	{
-		EventSystem sistema = EventSystem.current;
-		GameObject actual = sistema != null ? sistema.currentSelectedGameObject : null;
-		if (actual == seleccionado) return;
+		// Lo que está marcado ahora (puede ser nada)
+		GameObject actual = null;
+		if (EventSystem.current != null)
+		{
+			actual = EventSystem.current.currentSelectedGameObject;
+		}
 
-		if (contorno != null) contorno.enabled = false;
+		// Solo trabaja cuando cambia la selección
+		if (actual == seleccionado)
+		{
+			return;
+		}
+
+		// Le apaga el contorno al que estaba marcado antes
+		if (contorno != null)
+		{
+			contorno.enabled = false;
+		}
 		seleccionado = actual;
 		contorno = null;
 
-		if (actual != null && actual.TryGetComponent(out Selectable control) && control.targetGraphic != null)
+		if (actual == null)
 		{
-			if (!control.targetGraphic.TryGetComponent(out contorno))
-			{
-				contorno = control.targetGraphic.gameObject.AddComponent<Outline>();
-				contorno.effectColor = colorContorno;
-				contorno.effectDistance = grosor;
-			}
-			contorno.enabled = true;
+			return;
 		}
+
+		Selectable control = actual.GetComponent<Selectable>();
+		if (control == null || control.targetGraphic == null)
+		{
+			return;
+		}
+
+		// La primera vez que se marca este control se le agrega el contorno; las siguientes se reutiliza
+		contorno = control.targetGraphic.GetComponent<Outline>();
+		if (contorno == null)
+		{
+			contorno = control.targetGraphic.gameObject.AddComponent<Outline>();
+			contorno.effectColor = colorContorno;
+			contorno.effectDistance = grosor;
+		}
+		contorno.enabled = true;
 	}
 }

@@ -1,0 +1,665 @@
+fileFormatVersion: 2
+guid: add3696fdbfa44742936ecad699e39b1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1109673659363933633
+    second: "-_Ca\xF1eria_0"
+  - first:
+      213: 5462665301397968311
+    second: "-_Ca\xF1eria_1"
+  - first:
+      213: 8511283481628219012
+    second: "-_Ca\xF1eria_2"
+  - first:
+      213: -3042239253955509773
+    second: "-_Ca\xF1eria_3"
+  - first:
+      213: 6309096119026619721
+    second: "-_Ca\xF1eria_4"
+  - first:
+      213: -3675782750358545425
+    second: "-_Ca\xF1eria_5"
+  - first:
+      213: -6562084477766641133
+    second: "-_Ca\xF1eria_6"
+  - first:
+      213: 3272788171413407185
+    second: "-_Ca\xF1eria_7"
+  - first:
+      213: -5143583556688056951
+    second: "-_Ca\xF1eria_8"
+  - first:
+      213: 8920029788045462573
+    second: "-_Ca\xF1eria_9"
+  - first:
+      213: -913626097468316663
+    second: "-_Ca\xF1eria_10"
+  - first:
+      213: -4707602891242569584
+    second: "-_Ca\xF1eria_11"
+  - first:
+      213: -5916634465951127562
+    second: "-_Ca\xF1eria_12"
+  - first:
+      213: 158847936672309970
+    second: "-_Ca\xF1eria_13"
+  - first:
+      213: 2179103056544537104
+    second: "-_Ca\xF1eria_14"
+  - first:
+      213: -7269457175208718882
+    second: "-_Ca\xF1eria_15"
+  - first:
+      213: 2065470507427554491
+    second: "-_Ca\xF1eria_16"
+  - first:
+      213: -8375450561540491302
+    second: "-_Ca\xF1eria_17"
+  - first:
+      213: -1932007941412475148
+    second: "-_Ca\xF1eria_18"
+  - first:
+      213: -8558564867049422969
+    second: "-_Ca\xF1eria_19"
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 9
+  spritePivot: {x: 0.50000006, y: 0}
+  spritePixelsToUnits: 1383.3334
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_0"
+      rect:
+        serializedVersion: 2
+        x: 1878
+        y: 1096
+        width: 331
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cdbefa505a566f00800000000000000
+      internalID: 1109673659363933633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_1"
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 674
+        width: 386
+        height: 383
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b59da036294fcb40800000000000000
+      internalID: 5462665301397968311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_2"
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 797
+        width: 61
+        height: 296
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48699195b372e1670800000000000000
+      internalID: 8511283481628219012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_3"
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 834
+        width: 535
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f18b3a548bc7c5d0800000000000000
+      internalID: -3042239253955509773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_4"
+      rect:
+        serializedVersion: 2
+        x: 1139
+        y: 797
+        width: 62
+        height: 295
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94590644e796e8750800000000000000
+      internalID: 6309096119026619721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_5"
+      rect:
+        serializedVersion: 2
+        x: 1207
+        y: 836
+        width: 535
+        height: 222
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: febde5d401ffcfcc0800000000000000
+      internalID: -3675782750358545425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_6"
+      rect:
+        serializedVersion: 2
+        x: 1749
+        y: 797
+        width: 63
+        height: 295
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31a5d945feacee4a0800000000000000
+      internalID: -6562084477766641133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_7"
+      rect:
+        serializedVersion: 2
+        x: 1821
+        y: 813
+        width: 445
+        height: 274
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d5423e70874b6d20800000000000000
+      internalID: 3272788171413407185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_8"
+      rect:
+        serializedVersion: 2
+        x: 2273
+        y: 797
+        width: 64
+        height: 296
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98d611fc1025e98b0800000000000000
+      internalID: -5143583556688056951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_9"
+      rect:
+        serializedVersion: 2
+        x: 2340
+        y: 835
+        width: 530
+        height: 223
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2c4a56f4df4acb70800000000000000
+      internalID: 8920029788045462573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_10"
+      rect:
+        serializedVersion: 2
+        x: 2879
+        y: 796
+        width: 61
+        height: 297
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 904efdaa7e52253f0800000000000000
+      internalID: -913626097468316663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_11"
+      rect:
+        serializedVersion: 2
+        x: 2949
+        y: 835
+        width: 529
+        height: 222
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09082e3cc1c3baeb0800000000000000
+      internalID: -4707602891242569584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_12"
+      rect:
+        serializedVersion: 2
+        x: 3483
+        y: 797
+        width: 62
+        height: 296
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f766270d44e3eda0800000000000000
+      internalID: -5916634465951127562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_13"
+      rect:
+        serializedVersion: 2
+        x: 3550
+        y: 673
+        width: 388
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d228a65b57543200800000000000000
+      internalID: 158847936672309970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_14"
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 604
+        width: 297
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01a1e4e3faabd3e10800000000000000
+      internalID: 2179103056544537104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_15"
+      rect:
+        serializedVersion: 2
+        x: 3680
+        y: 604
+        width: 292
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edd05c1e633bd1b90800000000000000
+      internalID: -7269457175208718882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_16"
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 438
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb4e341bb760aac10800000000000000
+      internalID: 2065470507427554491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_17"
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 71
+        width: 223
+        height: 523
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad7788dd61c64cb80800000000000000
+      internalID: -8375450561540491302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_18"
+      rect:
+        serializedVersion: 2
+        x: 3610
+        y: 0
+        width: 435
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fe20e473012035e0800000000000000
+      internalID: -1932007941412475148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "-_Ca\xF1eria_19"
+      rect:
+        serializedVersion: 2
+        x: 3716
+        y: 70
+        width: 223
+        height: 524
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78f7160499ed93980800000000000000
+      internalID: -8558564867049422969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      "-_Ca\xF1eria_0": 1109673659363933633
+      "-_Ca\xF1eria_1": 5462665301397968311
+      "-_Ca\xF1eria_10": -913626097468316663
+      "-_Ca\xF1eria_11": -4707602891242569584
+      "-_Ca\xF1eria_12": -5916634465951127562
+      "-_Ca\xF1eria_13": 158847936672309970
+      "-_Ca\xF1eria_14": 2179103056544537104
+      "-_Ca\xF1eria_15": -7269457175208718882
+      "-_Ca\xF1eria_16": 2065470507427554491
+      "-_Ca\xF1eria_17": -8375450561540491302
+      "-_Ca\xF1eria_18": -1932007941412475148
+      "-_Ca\xF1eria_19": -8558564867049422969
+      "-_Ca\xF1eria_2": 8511283481628219012
+      "-_Ca\xF1eria_3": -3042239253955509773
+      "-_Ca\xF1eria_4": 6309096119026619721
+      "-_Ca\xF1eria_5": -3675782750358545425
+      "-_Ca\xF1eria_6": -6562084477766641133
+      "-_Ca\xF1eria_7": 3272788171413407185
+      "-_Ca\xF1eria_8": -5143583556688056951
+      "-_Ca\xF1eria_9": 8920029788045462573
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

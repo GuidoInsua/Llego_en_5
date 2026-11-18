@@ -47,5 +47,4 @@ public class Cambio_escena : MonoBehaviour
 		// En el Editor Application.Quit no cierra nada; solo funciona en el build
 		Application.Quit();
 	}
-
 }

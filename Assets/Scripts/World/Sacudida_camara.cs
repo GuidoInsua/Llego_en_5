@@ -48,19 +48,26 @@ public class Sacudida_camara : MonoBehaviour
 
 	void OnDestroy()
 	{
-		if (jugador == null) return;
-		jugador.Golpeado -= AlGolpear;
-		jugador.Aterrizado -= AlAterrizar;
+		if (jugador != null)
+		{
+			jugador.Golpeado -= AlGolpear;
+			jugador.Aterrizado -= AlAterrizar;
+		}
 	}
 
-	// En diagonal hacia atrás: se lee como un tropezón contra lo que se chocó
+	// En diagonal hacia atrás y abajo: se lee como un tropezón contra lo que se chocó
 	private void AlGolpear()
 	{
-		fuente.GenerateImpulse(new Vector3(-1f, -0.5f, 0f).normalized * fuerzaGolpe);
+		// normalized deja la dirección con largo 1, así la fuerza es exactamente fuerzaGolpe
+		Vector3 direccion = new Vector3(-1f, -0.5f, 0f).normalized;
+		fuente.GenerateImpulse(direccion * fuerzaGolpe);
 	}
 
 	private void AlAterrizar(float velocidadCaida)
 	{
-		if (velocidadCaida >= velocidadCaidaMinima) fuente.GenerateImpulse(Vector3.down * fuerzaAterrizaje);
+		if (velocidadCaida >= velocidadCaidaMinima)
+		{
+			fuente.GenerateImpulse(Vector3.down * fuerzaAterrizaje);
+		}
 	}
 }

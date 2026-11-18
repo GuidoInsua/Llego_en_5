@@ -57,12 +57,20 @@ public class Chorro_agua : MonoBehaviour
 
 	void Update()
 	{
-		float t = (Mathf.Sin((Time.time + fase) / periodo * 2f * Mathf.PI) + 1f) * 0.5f;
+		// Onda que va de 0 a 1 y vuelve, un ciclo completo cada `periodo` segundos.
+		// El seno va de -1 a 1: sumarle 1 y dividir por 2 lo pasa a 0 a 1
+		float angulo = (Time.time + fase) / periodo * 2f * Mathf.PI;
+		float onda = (Mathf.Sin(angulo) + 1f) * 0.5f;
+
+		// alto.x es el alto mínimo y alto.y el máximo
 		Vector3 escala = transform.localScale;
-		escala.y = Mathf.Lerp(alto.x, alto.y, t);
+		escala.y = Mathf.Lerp(alto.x, alto.y, onda);
 		transform.localScale = escala;
 
-		if (jugador == null) return;
+		if (jugador == null)
+		{
+			return;
+		}
 
 		// Los choques de este paso de física ya se procesaron: si tocó la parte roja, no hay impulso
 		if (cuerpo.EstaRota || jugador.EstaMuerto)
@@ -73,7 +81,8 @@ public class Chorro_agua : MonoBehaviour
 
 		if (Controles.InteractuarPresionado)
 		{
-			jugador.Lanzar(altura, jugador.VelocidadCarrera * multiplicadorVelocidad);
+			float velocidadX = jugador.VelocidadCarrera * multiplicadorVelocidad;
+			jugador.Lanzar(altura, velocidadX);
 			isUsado = true;
 			Soltar();
 		}
@@ -81,18 +90,25 @@ public class Chorro_agua : MonoBehaviour
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (isUsado || cuerpo.EstaRota) return;
+		if (isUsado || cuerpo.EstaRota)
+		{
+			return;
+		}
 
 		Player_controller entrante = other.GetComponentInParent<Player_controller>();
-		if (entrante == null) return;
-
-		jugador = entrante; // Si en este mismo paso chocó con la parte roja, Update lo suelta
+		if (entrante != null)
+		{
+			jugador = entrante; // Si en este mismo paso chocó con la parte roja, Update lo suelta
+		}
 	}
 
 	// Sale del agua (o el chorro se achica y deja de tocarlo): ya no hay impulso
 	void OnTriggerExit2D(Collider2D other)
 	{
-		if (jugador != null && other.GetComponentInParent<Player_controller>() == jugador) Soltar();
+		if (jugador != null && other.GetComponentInParent<Player_controller>() == jugador)
+		{
+			Soltar();
+		}
 	}
 
 	private void Soltar()

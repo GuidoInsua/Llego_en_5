@@ -1,0 +1,483 @@
+fileFormatVersion: 2
+guid: 64e11efd06fa1f44ab81e49421a180e4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5623301913347184439
+    second: -_Ladrillos_0
+  - first:
+      213: 3354562188930110380
+    second: -_Ladrillos_1
+  - first:
+      213: 8939772085395969803
+    second: -_Ladrillos_2
+  - first:
+      213: -5001373514515413204
+    second: -_Ladrillos_3
+  - first:
+      213: -6000157836102516793
+    second: -_Ladrillos_4
+  - first:
+      213: 223495722995611413
+    second: -_Ladrillos_5
+  - first:
+      213: -175932736446819562
+    second: -_Ladrillos_6
+  - first:
+      213: -7887235449362430316
+    second: -_Ladrillos_7
+  - first:
+      213: 760226102526788859
+    second: -_Ladrillos_8
+  - first:
+      213: 3867571653111919525
+    second: -_Ladrillos_9
+  - first:
+      213: 3133632817112817918
+    second: -_Ladrillos_10
+  - first:
+      213: -5727833800366280362
+    second: -_Ladrillos_11
+  - first:
+      213: -9110401766646477511
+    second: -_Ladrillos_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 9
+  spritePivot: {x: 0.50637066, y: 0.00086206896}
+  spritePixelsToUnits: 1159
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: -_Ladrillos_0
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 220
+        width: 1152
+        height: 940
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c8aa2e04b406f1b0800000000000000
+      internalID: -5623301913347184439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_1
+      rect:
+        serializedVersion: 2
+        x: 1428
+        y: 597
+        width: 628
+        height: 443
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca3d220a98ccd8e20800000000000000
+      internalID: 3354562188930110380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_2
+      rect:
+        serializedVersion: 2
+        x: 1268
+        y: 408
+        width: 427
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b07daf2c853701c70800000000000000
+      internalID: 8939772085395969803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_3
+      rect:
+        serializedVersion: 2
+        x: 1680
+        y: 0
+        width: 862
+        height: 492
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c270346794d879ab0800000000000000
+      internalID: -5001373514515413204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_4
+      rect:
+        serializedVersion: 2
+        x: 1716
+        y: 408
+        width: 323
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cf35defc382bbca0800000000000000
+      internalID: -6000157836102516793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_5
+      rect:
+        serializedVersion: 2
+        x: 868
+        y: 219
+        width: 363
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 517f8f90d240a1300800000000000000
+      internalID: 223495722995611413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_6
+      rect:
+        serializedVersion: 2
+        x: 1245
+        y: 226
+        width: 205
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61399bbbb16fe8df0800000000000000
+      internalID: -175932736446819562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_7
+      rect:
+        serializedVersion: 2
+        x: 1461
+        y: 220
+        width: 362
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49642eca529ea8290800000000000000
+      internalID: -7887235449362430316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_8
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 43
+        width: 243
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf4c616cc9ddc8a00800000000000000
+      internalID: 760226102526788859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_9
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 43
+        width: 362
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a33b1f5def5ca530800000000000000
+      internalID: 3867571653111919525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_10
+      rect:
+        serializedVersion: 2
+        x: 781
+        y: 43
+        width: 242
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef02488c176ec7b20800000000000000
+      internalID: 3133632817112817918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_11
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 43
+        width: 362
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65131b48185a280b0800000000000000
+      internalID: -5727833800366280362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: -_Ladrillos_12
+      rect:
+        serializedVersion: 2
+        x: 1420
+        y: 42
+        width: 242
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93d02f9bcd9519180800000000000000
+      internalID: -9110401766646477511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      -_Ladrillos_0: -5623301913347184439
+      -_Ladrillos_1: 3354562188930110380
+      -_Ladrillos_10: 3133632817112817918
+      -_Ladrillos_11: -5727833800366280362
+      -_Ladrillos_12: -9110401766646477511
+      -_Ladrillos_2: 8939772085395969803
+      -_Ladrillos_3: -5001373514515413204
+      -_Ladrillos_4: -6000157836102516793
+      -_Ladrillos_5: 223495722995611413
+      -_Ladrillos_6: -175932736446819562
+      -_Ladrillos_7: -7887235449362430316
+      -_Ladrillos_8: 760226102526788859
+      -_Ladrillos_9: 3867571653111919525
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

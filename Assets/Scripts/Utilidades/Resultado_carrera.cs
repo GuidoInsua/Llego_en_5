@@ -23,31 +23,48 @@ public static class Resultado_carrera
 {
 	private const string ClaveMejorTiempo = "MejorTiempo";
 
-	public static float Tiempo { get; private set; }
-	public static int Excusas { get; private set; }
-	public static float MejorTiempo => PlayerPrefs.GetFloat(ClaveMejorTiempo);
+	// Static: se mantienen al cambiar de escena
+	private static float tiempo;
+	private static int excusas;
 
-	// Fast Enter Play Mode no limpia los estáticos
+	public static float Tiempo
+	{
+		get { return tiempo; }
+	}
+
+	public static int Excusas
+	{
+		get { return excusas; }
+	}
+
+	// El mejor tiempo queda guardado en disco (PlayerPrefs), también al cerrar el juego
+	public static float MejorTiempo
+	{
+		get { return PlayerPrefs.GetFloat(ClaveMejorTiempo); }
+	}
+
+	// Fast Enter Play Mode no limpia los estáticos: esto los vuelve a 0 en cada Play
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 	private static void Limpiar()
 	{
-		Tiempo = 0f;
-		Excusas = 0;
+		tiempo = 0f;
+		excusas = 0;
 	}
 
-	public static void Guardar(float tiempo, int excusas)
+	public static void Guardar(float tiempoCarrera, int excusasJuntadas)
 	{
-		Tiempo = tiempo;
-		Excusas = excusas;
+		tiempo = tiempoCarrera;
+		excusas = excusasJuntadas;
 	}
 
 	// El récord cuenta solo si el jefe te deja volver al trabajo. Devuelve si lo es
 	public static bool GuardarSiEsRecord()
 	{
-		bool isRecord = !PlayerPrefs.HasKey(ClaveMejorTiempo) || Tiempo < MejorTiempo;
+		// Es récord si todavía no había ninguno guardado, o si este tiempo es menor
+		bool isRecord = !PlayerPrefs.HasKey(ClaveMejorTiempo) || tiempo < MejorTiempo;
 		if (isRecord)
 		{
-			PlayerPrefs.SetFloat(ClaveMejorTiempo, Tiempo);
+			PlayerPrefs.SetFloat(ClaveMejorTiempo, tiempo);
 			PlayerPrefs.Save();
 		}
 		return isRecord;

@@ -25,7 +25,10 @@ public static class Sonido_fmod
 	// Sin evento asignado o sin bancos cargados no suena (y no tira error en cada llamada)
 	public static void Tocar(EventReference evento)
 	{
-		if (evento.IsNull || !RuntimeManager.HaveAllBanksLoaded) return;
+		if (evento.IsNull || !RuntimeManager.HaveAllBanksLoaded)
+		{
+			return;
+		}
 
 		EventInstance instancia = RuntimeManager.CreateInstance(evento);
 		instancia.setVolume(Volumen_audio.Efectos); // FMOD no pasa por AudioSource: aplica el volumen elegido acá

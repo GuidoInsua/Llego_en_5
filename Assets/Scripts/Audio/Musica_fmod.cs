@@ -35,7 +35,7 @@ public class Musica_fmod : MonoBehaviour
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 	private static void Reiniciar()
 	{
-		instancia = default;
+		instancia = new EventInstance(); // Vacía: isValid() da falso y Start crea una nueva
 	}
 
 	void Awake()
@@ -65,15 +65,25 @@ public class Musica_fmod : MonoBehaviour
 
 	void Start()
 	{
+		// La primera escena crea la música; las demás usan la misma
 		bool isNueva = !instancia.isValid();
-		if (isNueva) instancia = RuntimeManager.CreateInstance(eventoMusica);
+		if (isNueva)
+		{
+			instancia = RuntimeManager.CreateInstance(eventoMusica);
+		}
 
 		// Antes de start: si la escena no es el menú, arranca directo en su pista
-		if (instancia.setParameterByNameWithLabel(Parametro, pista) != FMOD.RESULT.OK)
-			Debug.LogWarning($"Musica_fmod: el evento no tiene el parámetro {Parametro} con la etiqueta «{pista}».");
+		FMOD.RESULT resultado = instancia.setParameterByNameWithLabel(Parametro, pista);
+		if (resultado != FMOD.RESULT.OK)
+		{
+			Debug.LogWarning("Musica_fmod: el evento no tiene el parámetro " + Parametro + " con la etiqueta «" + pista + "».");
+		}
 
 		AplicarVolumen();
-		if (isNueva) instancia.start();
+		if (isNueva)
+		{
+			instancia.start();
+		}
 	}
 
 	private void AplicarVolumen()

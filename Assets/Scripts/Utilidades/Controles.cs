@@ -27,7 +27,11 @@ public static class Controles
 		get
 		{
 			Keyboard teclado = Keyboard.current;
-			return Time.timeScale > 0f && teclado != null && (teclado.eKey.wasPressedThisFrame || teclado.spaceKey.wasPressedThisFrame);
+			if (Time.timeScale <= 0f || teclado == null)
+			{
+				return false;
+			}
+			return teclado.eKey.wasPressedThisFrame || teclado.spaceKey.wasPressedThisFrame;
 		}
 	}
 
@@ -37,7 +41,11 @@ public static class Controles
 		get
 		{
 			Keyboard teclado = Keyboard.current;
-			return Time.timeScale > 0f && teclado != null && teclado.spaceKey.wasPressedThisFrame;
+			if (Time.timeScale <= 0f || teclado == null)
+			{
+				return false;
+			}
+			return teclado.spaceKey.wasPressedThisFrame;
 		}
 	}
 }

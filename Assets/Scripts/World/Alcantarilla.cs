@@ -42,7 +42,10 @@ public class Alcantarilla : MonoBehaviour
 
 	void Update()
 	{
-		if (jugador == null) return;
+		if (jugador == null)
+		{
+			return;
+		}
 
 		if (jugador.EstaMuerto)
 		{
@@ -60,17 +63,25 @@ public class Alcantarilla : MonoBehaviour
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (!enabled) return;
+		// Los triggers avisan aunque el script esté apagado
+		if (!enabled)
+		{
+			return;
+		}
 
 		Player_controller entrante = other.GetComponentInParent<Player_controller>();
-		if (entrante == null) return;
-
-		jugador = entrante;
+		if (entrante != null)
+		{
+			jugador = entrante;
+		}
 	}
 
 	void OnTriggerExit2D(Collider2D other)
 	{
-		if (jugador != null && other.GetComponentInParent<Player_controller>() == jugador) Soltar();
+		if (jugador != null && other.GetComponentInParent<Player_controller>() == jugador)
+		{
+			Soltar();
+		}
 	}
 
 	private void Soltar()
@@ -78,9 +89,13 @@ public class Alcantarilla : MonoBehaviour
 		jugador = null;
 	}
 
+	// Línea hasta el punto de salida, solo en el Editor con el objeto seleccionado
 	void OnDrawGizmosSelected()
 	{
-		if (puntoSalida == null) return;
+		if (puntoSalida == null)
+		{
+			return;
+		}
 
 		Gizmos.color = Color.magenta;
 		Gizmos.DrawLine(transform.position, puntoSalida.position);

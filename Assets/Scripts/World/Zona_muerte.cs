@@ -25,6 +25,9 @@ public class Zona_muerte : MonoBehaviour
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		Player_controller jugador = other.GetComponentInParent<Player_controller>();
-		if (jugador != null) jugador.Matar();
+		if (jugador != null)
+		{
+			jugador.Matar();
+		}
 	}
 }

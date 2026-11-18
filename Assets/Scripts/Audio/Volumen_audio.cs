@@ -32,8 +32,12 @@ public static class Volumen_audio
 		get { return PlayerPrefs.GetFloat(ClaveMusica, 1f); }
 		set
 		{
+			// Clamp01 lo deja entre 0 y 1
 			PlayerPrefs.SetFloat(ClaveMusica, Mathf.Clamp01(value));
-			MusicaCambiada?.Invoke();
+			if (MusicaCambiada != null)
+			{
+				MusicaCambiada();
+			}
 		}
 	}
 

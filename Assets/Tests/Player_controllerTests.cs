@@ -37,7 +37,8 @@ public class Player_controllerTests
 	{
 		jugador = new GameObject("jugador");
 		jugador.AddComponent<SpriteRenderer>(); // El golpe titila el renderer
-		jugador.AddComponent<BoxCollider2D>().size = Vector2.one;
+		BoxCollider2D colliderJugador = jugador.AddComponent<BoxCollider2D>();
+		colliderJugador.size = Vector2.one;
 		jugador.AddComponent<Animator>(); // Sin Animator el jugador se desactiva al validar
 		jugador.SetActive(false); // Inactivo hasta asignar los campos: Awake valida que estén
 		Player_controller controller = jugador.AddComponent<Player_controller>(); // Suma Rigidbody2D
@@ -62,7 +63,10 @@ public class Player_controllerTests
 	{
 		Object.DestroyImmediate(jugador);
 		Object.DestroyImmediate(pantallaGameOver);
-		if (caja != null) Object.DestroyImmediate(caja);
+		if (caja != null)
+		{
+			Object.DestroyImmediate(caja);
+		}
 	}
 
 	[UnityTest]
@@ -86,15 +90,21 @@ public class Player_controllerTests
 		Physics2D.SyncTransforms(); // AutoSyncTransforms está apagado: sincroniza la posición recién asignada
 
 		float limite = Time.time + 2f;
-		while (cajaCol.enabled && Time.time < limite) yield return null;
-		Assert.IsFalse(cajaCol.enabled, $"chocar con la caja la rompe (jugador en x={jugador.transform.position.x}, caja bounds={cajaCol.bounds})");
+		while (cajaCol.enabled && Time.time < limite)
+		{
+			yield return null;
+		}
+		Assert.IsFalse(cajaCol.enabled, "chocar con la caja la rompe (jugador en x=" + jugador.transform.position.x + ", caja bounds=" + cajaCol.bounds + ")");
 
 		yield return new WaitForFixedUpdate();
 		yield return new WaitForFixedUpdate();
 		Assert.AreEqual(VelocidadGolpe, rb.linearVelocity.x, 0.01f, "durante el golpe corre más lento");
 
 		limite = Time.time + 3f; // Espera a que pase duracionGolpe (0.5 s), no un tiempo fijo
-		while (!Mathf.Approximately(rb.linearVelocity.x, RunSpeed) && Time.time < limite) yield return new WaitForFixedUpdate();
+		while (!Mathf.Approximately(rb.linearVelocity.x, RunSpeed) && Time.time < limite)
+		{
+			yield return new WaitForFixedUpdate();
+		}
 		Assert.AreEqual(RunSpeed, rb.linearVelocity.x, 0.01f, "después del golpe vuelve a la velocidad normal");
 	}
 }

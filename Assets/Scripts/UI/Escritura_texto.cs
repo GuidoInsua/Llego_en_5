@@ -20,7 +20,8 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-// Va en el TMP del texto. Usa maxVisibleCharacters: el texto completo ya está puesto y no cambia de lugar al escribirse
+// Va en el TMP del texto. Pone el texto completo y va mostrando más letras con maxVisibleCharacters:
+// así las letras no cambian de lugar mientras se escribe
 [RequireComponent(typeof(TMP_Text))]
 public class Escritura_texto : MonoBehaviour
 {
@@ -38,11 +39,28 @@ public class Escritura_texto : MonoBehaviour
 		texto.text = frase;
 		texto.maxVisibleCharacters = 0;
 
-		for (float t = 0f; texto.maxVisibleCharacters < frase.Length; t += Time.deltaTime)
+		float tiempo = 0f;
+		while (texto.maxVisibleCharacters < frase.Length)
 		{
 			// Primero espera un cuadro: la tecla que cerró la frase anterior no tiene que saltear esta
 			yield return null;
-			texto.maxVisibleCharacters = Controles.SaltarTextoPresionado ? frase.Length : Mathf.Min(frase.Length, (int)(t / segundosPorLetra));
+
+			if (Controles.SaltarTextoPresionado)
+			{
+				// Espacio: muestra la frase entera
+				texto.maxVisibleCharacters = frase.Length;
+			}
+			else
+			{
+				int letras = (int)(tiempo / segundosPorLetra);
+				if (letras > frase.Length)
+				{
+					letras = frase.Length;
+				}
+				texto.maxVisibleCharacters = letras;
+			}
+
+			tiempo += Time.deltaTime;
 		}
 	}
 }

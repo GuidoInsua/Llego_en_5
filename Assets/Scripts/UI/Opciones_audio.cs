@@ -41,7 +41,10 @@ public class Opciones_audio : MonoBehaviour
 	// Cada vez que se abre muestra lo guardado
 	void OnEnable()
 	{
-		if (!enabled) return;
+		if (!enabled)
+		{
+			return;
+		}
 
 		sliderMusica.SetValueWithoutNotify(Volumen_audio.Musica);
 		sliderEfectos.SetValueWithoutNotify(Volumen_audio.Efectos);

@@ -16,25 +16,25 @@
 // ###########################
 // Desc: Caja de la meta: avisa a Meta_victoria cuando el jugador la toca.
 
-using System;
 using UnityEngine;
 
-// Meta verde al final de un carril: al tocarla el jugador avisa a Meta_victoria
+// Meta (arco de llegada) al final de un carril: al tocarla el jugador avisa a Meta_victoria
 [RequireComponent(typeof(Collider2D))]
 public class Caja_victoria : MonoBehaviour
 {
-	private Action alTocar;
+	private Meta_victoria meta; // La pone Meta_victoria al arrancar
 
-	public void Iniciar(Action alTocar)
+	public void Iniciar(Meta_victoria meta)
 	{
-		this.alTocar = alTocar;
+		this.meta = meta;
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.GetComponentInParent<Player_controller>() != null)
+		bool isJugador = other.GetComponentInParent<Player_controller>() != null;
+		if (isJugador && meta != null)
 		{
-			alTocar?.Invoke();
+			meta.Llegar();
 		}
 	}
 }

@@ -25,9 +25,18 @@ public class Puente_suelo : MonoBehaviour
 {
 	private Player_controller jugador;
 
+	// Se llama en cada paso de física mientras algo está apoyado sobre el puente
 	void OnCollisionStay2D(Collision2D collision)
 	{
-		if (jugador == null) jugador = collision.gameObject.GetComponentInParent<Player_controller>();
-		if (jugador != null) jugador.Ralentizar();
+		// Busca el jugador una sola vez y lo guarda
+		if (jugador == null)
+		{
+			jugador = collision.gameObject.GetComponentInParent<Player_controller>();
+		}
+
+		if (jugador != null)
+		{
+			jugador.Ralentizar();
+		}
 	}
 }

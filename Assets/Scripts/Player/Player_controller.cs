@@ -21,7 +21,8 @@ using FMODUnity;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody2D))] // El Animator y los renderers pueden estar en un hijo (modelo 3D)
+// El Animator y los renderers pueden estar en un hijo (el modelo 3D)
+[RequireComponent(typeof(Rigidbody2D))]
 public class Player_controller : MonoBehaviour
 {
 	[Header("Movimiento")]
@@ -109,8 +110,8 @@ public class Player_controller : MonoBehaviour
 	[Tooltip("Si cae más rápido que esto no se pega: las caídas grandes no se frenan antes de tocar el suelo.")]
 	[SerializeField] private float velocidadMaximaPegado = 8f;
 
-	private static readonly WaitForSeconds Parpadeo = new WaitForSeconds(0.1f); // Se reutiliza: evita crear uno nuevo por cada titilada
-	private static readonly int AnimIdle= Animator.StringToHash("Player_idle_anim");
+	// Nombres de los states del Animator: tienen que ser iguales a los de PlayerSombra.controller
+	private static readonly int AnimIdle = Animator.StringToHash("Player_idle_anim");
 	private static readonly int AnimRun = Animator.StringToHash("Player_run_anim");
 	private static readonly int AnimJumpUp = Animator.StringToHash("Player_jumpUp_anim");
 	private static readonly int AnimFall = Animator.StringToHash("Player_fall_anim");
@@ -118,6 +119,21 @@ public class Player_controller : MonoBehaviour
 	private static readonly int AnimLand = Animator.StringToHash("Player_land_anim");
 	private static readonly int AnimJumpLand = Animator.StringToHash("Player_jumpLand_anim");
 
+	// Espera entre titiladas. Se crea una sola vez y se reutiliza, para no crear una nueva cada vez
+	private static readonly WaitForSeconds Parpadeo = new WaitForSeconds(0.1f);
+	// La lentitud del puente dura un poco más que el último paso sobre él, para que no titile
+	private const float DuracionLentitud = 0.1f;
+	// El rayo que busca la pendiente arranca un poco arriba de los pies
+	private const float AlturaRayo = 0.1f;
+
+	// Avisos para otros scripts
+	public event System.Action Golpeado; // Al chocar un obstáculo. Lo escuchan Cronometro y Sacudida_camara
+	public event System.Action Ralentizado; // Al empezar a pisar un puente (no en cada paso). Lo escucha Cronometro
+	public event System.Action<Transform> Recolectado; // Con la excusa tocada. Lo escucha Contador_recolectables
+	public event System.Action<float> Aterrizado; // Al tocar el suelo, con la velocidad de caída más alta. Lo escucha Sacudida_camara
+	public event System.Action<Carril> CarrilCambiado; // Al pisar el suelo de otro carril. Lo escucha Cambio_fondo
+
+	// Componentes
 	private Rigidbody2D rb;
 	private Animator animator;
 	private Renderer[] renderizadores;
@@ -125,51 +141,93 @@ public class Player_controller : MonoBehaviour
 	private CapsuleCollider2D capsula;
 	private Vector2 capsulaSizeNormal;
 	private Vector2 capsulaOffsetNormal;
-	private Coroutine golpeCoroutine;
+	private PhysicsMaterial2D materialNormal;
+	private PhysicsMaterial2D materialSinFriccion; // Sin esto, empujando contra la pared se queda pegado en vez de caer
+	private LayerMask exclusionNormal;
+	private bool puedeAterrizar; // Solo si el Animator tiene los states de aterrizaje
+	private bool puedeDeslizar; // Solo si hay cápsula y el Animator tiene el clip
+
+	// Suelo
+	private bool isGrounded;
+	private Collider2D ultimoSuelo; // Para buscar Carril_suelo solo cuando cambia el suelo
+	private bool hasCarril; // Falso hasta pisar el primer suelo
+	private Carril carrilActual;
+	private bool isPorAterrizar; // El sensor ve el suelo (no un obstáculo) justo debajo de los pies
+	private float velocidadCaida; // La más rápida de esta caída, para el polvo, el sonido y la cámara al aterrizar
+
+	// Velocidad horizontal
+	private float velocidadActual; // Frena de golpe y acelera de a poco
+	private float lentoHasta; // Hasta qué momento va lento por el puente
+	private Coroutine golpeCoroutine; // No es null mientras dura el golpe
+
+	// Salto
+	private bool jumpRequested; // Update lo pide y FixedUpdate lo aplica
+	private float fuerzaPedida; // Velocidad hacia arriba del próximo salto: jumpForce, o la del lanzamiento
+	private bool isSaltoActivo; // Desde que despega con un salto hasta que vuelve a tocar el suelo
+	private bool isCorteSaltoPedido; // Soltó la tecla mientras subía: FixedUpdate baja la velocidad
+	private float alturaDespegue; // Altura del jugador al saltar: el corte mide desde acá
+	// Cuándo se pidió el último salto y cuándo estuvo en el suelo por última vez (para el buffer y el coyote time).
+	// Arrancan en "hace muchísimo tiempo": al empezar no hay ningún pedido guardado
+	private float ultimoPedidoSalto = float.NegativeInfinity;
+	private float ultimoEnSuelo = float.NegativeInfinity;
+
+	// Lanzamiento del hidrante
 	private bool isLanzamientoPedido; // Lanzar() lo pide y FixedUpdate lo aplica
 	private bool isLanzado; // Desde el lanzamiento hasta volver a apoyarse: corre a velocidadLanzado
 	private float velocidadLanzado;
 	private float inicioLanzado;
-	private bool isAtravesando; // Sube sin chocar con nada hasta el punto más alto
-	private const float DuracionLentitud = 0.1f;
-	private float lentoHasta;
-	private bool isCayendoPedido; // Cayó por un hueco de la calle o los edificios (no del subterráneo): OnCollisionEnter2D lo pide y FixedUpdate lo aplica
-	public event System.Action<Carril> CarrilCambiado; // Al pisar un suelo de otro carril
-	private Carril? carrilActual; // null hasta pisar el primer suelo
-	private bool isCayendo;// Cae pegado a la pared sin fricción hasta volver a tocar el suelo
+	private bool isAtravesando; // Sube atravesando el suelo hasta el punto más alto
+
+	// Caída por un hueco de la calle o los edificios
+	private bool isCayendoPedido; // OnCollisionEnter2D lo pide y FixedUpdate lo aplica
+	private bool isCayendo; // Cae pegado a la pared sin fricción hasta volver a tocar el suelo
 	private float inicioCaida;
-	private PhysicsMaterial2D materialNormal;
-	private PhysicsMaterial2D materialSinFriccion; // Sin esto, empujando contra la pared (la x es constante) se queda pegado en vez de caer
-	private LayerMask exclusionNormal;
-	private float fuerzaPedida; // Velocidad vertical del próximo salto: jumpForce, o la del lanzamiento
-	private float inicioDeslizamiento;
-	private float ultimoPedidoDeslizar = float.NegativeInfinity;
-	private float ultimoPedidoSalto = float.NegativeInfinity;
-	private float ultimoEnSuelo = float.NegativeInfinity;
-	private bool isCorteSaltoPedido; // Soltó la tecla de salto mientras subía: FixedUpdate baja la velocidad
-	private float alturaDespegue; // y del jugador al saltar: el corte mide la altura del salto desde acá
-	private float velocidadActual; // Velocidad horizontal: frena de golpe y acelera de a poco
-	private float velocidadCaida; // La más rápida de esta caída, para el polvo y la cámara al aterrizar
-	private Collider2D ultimoSuelo; // Para buscar Carril_suelo solo al cambiar de suelo
-	private float finDeslizamiento;
-	private float finAterrizaje;
-	private int animacionActual;
-	private bool isGrounded;
-	private bool jumpRequested;
+
+	// Deslizarse
 	private bool slideRequested;
-	private bool isPorAterrizar; // El sensor ve el suelo (no un obstáculo) justo debajo de los pies
-	private bool isSaltoActivo; // Verdadero desde que despega con un salto hasta que vuelve a tocar el suelo
 	private bool isDeslizando;
+	private float inicioDeslizamiento;
+	private float finDeslizamiento;
+	private float ultimoPedidoDeslizar = float.NegativeInfinity;
+
+	// Animación
+	private int animacionActual;
+	private float finAterrizaje; // Hasta cuándo se deja terminar el clip de aterrizaje
+
 	private bool isMuerto;
-	private bool puedeAterrizar; // Solo si el Animator tiene los states de aterrizaje
-	private bool puedeDeslizar; // Solo si hay cápsula y el Animator tiene el clip
+
+	// Lo usan el hidrante y la alcantarilla para no hacer nada si el jugador ya murió
+	public bool EstaMuerto
+	{
+		get { return isMuerto; }
+	}
+
+	// Lo usa el hidrante para calcular la velocidad horizontal del lanzamiento
+	public float VelocidadCarrera
+	{
+		get { return runSpeed; }
+	}
+
+	// La cámara lo usa para saber cuándo el jugador apoyó los pies
+	public bool EstaEnSuelo
+	{
+		get { return isGrounded; }
+	}
 
 	void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponentInChildren<Animator>();
-		// Solo los del modelo (bajo el Animator): las partículas del polvo no titilan
-		renderizadores = animator != null ? animator.GetComponentsInChildren<Renderer>() : new Renderer[0];
+
+		// Solo los renderers del modelo (los que están bajo el Animator): las partículas del polvo no titilan
+		if (animator != null)
+		{
+			renderizadores = animator.GetComponentsInChildren<Renderer>();
+		}
+		else
+		{
+			renderizadores = new Renderer[0];
+		}
 
 		if (groundCheck == null || materialDestello == null || pantallaGameOver == null || animator == null || renderizadores.Length == 0)
 		{
@@ -178,6 +236,7 @@ public class Player_controller : MonoBehaviour
 			return;
 		}
 
+		// Guarda el material de cada parte del modelo, para devolverlo después del destello blanco
 		materialesNormales = new Material[renderizadores.Length];
 		for (int i = 0; i < renderizadores.Length; i++)
 		{
@@ -188,105 +247,40 @@ public class Player_controller : MonoBehaviour
 		capsula = GetComponent<CapsuleCollider2D>();
 		puedeAterrizar = animator.HasState(0, AnimLand) && animator.HasState(0, AnimJumpLand);
 		puedeDeslizar = capsula != null && animator.HasState(0, AnimSlide);
+
 		if (capsula != null)
 		{
 			capsulaSizeNormal = capsula.size;
 			capsulaOffsetNormal = capsula.offset;
 			exclusionNormal = capsula.excludeLayers;
 			materialNormal = capsula.sharedMaterial;
-			materialSinFriccion = new PhysicsMaterial2D("SinFriccion") { friction = 0f, bounciness = 0f };
+
+			materialSinFriccion = new PhysicsMaterial2D("SinFriccion");
+			materialSinFriccion.friction = 0f;
+			materialSinFriccion.bounciness = 0f;
 		}
 	}
 
-	// Lo escucha Cronometro para avisar que se pierde tiempo
-	public event System.Action Golpeado;
-	// Al empezar a pisar un puente (no en cada paso sobre él). Lo escucha Cronometro
-	public event System.Action Ralentizado;
-	// Con la excusa tocada: Contador_recolectables la hace volar al HUD y la destruye
-	public event System.Action<Transform> Recolectado;
-	// Al tocar el suelo después de estar en el aire, con la velocidad de caída más alta (positiva). Lo escucha Sacudida_camara
-	public event System.Action<float> Aterrizado;
-
-	// Lo llama cada recolectable al tocar al jugador
-	public void Recolectar(Transform excusa)
-	{
-		Sonido_fmod.Tocar(sonidoRecolectar);
-		Recolectado?.Invoke(excusa);
-	}
-
-	// Lo usa el hidrante para dejar de ofrecer el impulso si el jugador ya murió
-	public bool EstaMuerto
-	{
-		get { return isMuerto; }
-	}
-
-	private float VelocidadHorizontal
-	{
-		get
-		{
-			if (isLanzado) return velocidadLanzado;
-			float velocidad = golpeCoroutine != null ? runSpeed * multiplicadorVelocidadGolpe : runSpeed;
-			return Time.time < lentoHasta ? velocidad * multiplicadorVelocidadPuente : velocidad;
-		}
-	}
-
-	// Lo llama Puente_suelo en cada paso de física mientras se lo pisa: la lentitud dura un instante más para no titilar
-	public void Ralentizar()
-	{
-		if (Time.time >= lentoHasta) Ralentizado?.Invoke();
-		lentoHasta = Time.time + DuracionLentitud;
-	}
-
-	// Lo llama Alcantarilla (desde la física): aparece en `destino`, dentro del caño de salida, y cae desde ahí, a `velocidadCaida` hacia abajo, con la animación de caída
-	public void Teletransportar(Vector2 destino, float velocidadCaida)
-	{
-		if (isMuerto) return;
-
-		if (isDeslizando) TerminarDeslizamiento();
-		jumpRequested = false;
-		slideRequested = false;
-		ultimoPedidoSalto = float.NegativeInfinity;
-		ultimoEnSuelo = float.NegativeInfinity; // Sin esto el coyote time dejaría saltar dentro del caño
-		isSaltoActivo = false; // Así la caída es Fall y no JumpUp
-		finAterrizaje = 0f;
-		rb.position = destino;
-		transform.position = new Vector3(destino.x, destino.y, transform.position.z); // Sin esto, con la interpolación el modelo se ve un cuadro a mitad de camino
-		rb.linearVelocity = new Vector2(rb.linearVelocity.x, -velocidadCaida);
-	}
-
-	// Lo usa el hidrante para fijar la velocidad horizontal del lanzamiento
-	public float VelocidadCarrera
-	{
-		get { return runSpeed; }
-	}
-
-	// Sale disparado hacia arriba `altura` por encima de donde está y hacia adelante a `velocidadX` hasta apoyarse de nuevo (como un jump pad). Mientras sube atraviesa el suelo:
-	// así no se choca con el carril de arriba; al llegar al punto más alto vuelve a ser sólido y cae sobre ese suelo. Es un salto con otra fuerza
-	public void Lanzar(float altura, float velocidadX)
-	{
-		if (isMuerto || capsula == null || altura <= 0f) return;
-
-		float gravedad = Physics2D.gravity.magnitude * rb.gravityScale;
-		fuerzaPedida = Mathf.Sqrt(2f * gravedad * altura);
-		jumpRequested = true;
-		isLanzamientoPedido = true;
-		isLanzado = true;
-		velocidadLanzado = velocidadX;
-		inicioLanzado = Time.time;
-	}
-
-	// La cámara usa esto para saber cuándo el jugador apoyó los pies
-	public bool EstaEnSuelo
-	{
-		get { return isGrounded; }
-	}
+	// ---------- Update: input, suelo y animaciones ----------
 
 	void Update()
 	{
-		// 1. Detección de suelo
+		DetectarSuelo();
+		RevisarSensorAterrizaje();
+		LeerSalto();
+		LeerDeslizamiento();
+		ActualizarAnimaciones();
+		AjustarVelocidadDelClip();
+	}
+
+	// Se fija si está pisando el suelo. Al aterrizar suelta el polvo, el sonido y avisa
+	private void DetectarSuelo()
+	{
 		Collider2D suelo = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
 		bool estabaEnSuelo = isGrounded;
-		isGrounded = suelo != null && !isAtravesando; // OverlapBox no respeta el excludeLayers: al cruzar el suelo en el lanzamiento no cuenta como apoyado
+
+		// Mientras atraviesa el suelo en el lanzamiento no cuenta como apoyado (OverlapBox no respeta el excludeLayers de la cápsula)
+		isGrounded = suelo != null && !isAtravesando;
 
 		if (isGrounded)
 		{
@@ -295,80 +289,171 @@ public class Player_controller : MonoBehaviour
 			if (suelo != ultimoSuelo)
 			{
 				ultimoSuelo = suelo;
-				if (suelo.TryGetComponent(out Carril_suelo carrilSuelo) && carrilSuelo.Carril != carrilActual)
-				{
-					carrilActual = carrilSuelo.Carril;
-					CarrilCambiado?.Invoke(carrilSuelo.Carril);
-				}
+				RevisarCambioDeCarril(suelo);
 			}
 
 			if (!estabaEnSuelo && !isMuerto)
 			{
-				if (velocidadCaida >= velocidadMinimaPolvo) SoltarPolvo(polvoAterrizaje);
-				if (velocidadCaida >= velocidadMinimaSonidoCaida) Sonido_fmod.Tocar(sonidoCaida);
-				Aterrizado?.Invoke(velocidadCaida);
+				EfectosDeAterrizaje();
 			}
 			velocidadCaida = 0f;
 		}
 		else
 		{
+			// Guarda la velocidad de caída más alta (al caer la velocidad y es negativa)
 			velocidadCaida = Mathf.Max(velocidadCaida, -rb.linearVelocity.y);
 		}
+	}
 
-		// Sensor de aterrizaje: solo mira la capa Ground, así un obstáculo en el camino no lo activa
-		isPorAterrizar = false;
-		if (!isGrounded && rb.linearVelocity.y < -0.5f)
+	// Si el suelo nuevo es de otro carril, avisa (Cambio_fondo cambia el fondo)
+	private void RevisarCambioDeCarril(Collider2D suelo)
+	{
+		Carril_suelo carrilSuelo = suelo.GetComponent<Carril_suelo>();
+		if (carrilSuelo == null)
 		{
-			// Distancia que recorre cayendo en el tiempo de anticipo, con la aceleración de la gravedad
-			float gravedad = Physics2D.gravity.magnitude * rb.gravityScale;
-			float caida = -rb.linearVelocity.y * anticipoAterrizaje + 0.5f * gravedad * anticipoAterrizaje * anticipoAterrizaje;
-			float distancia = Mathf.Max(distanciaMinimaAterrizaje, caida);
-			isPorAterrizar = Physics2D.BoxCast(groundCheck.position, groundCheckSize, 0f, Vector2.down, distancia, groundLayer);
+			return;
 		}
 
-		// 2. Salto con el Nuevo Input System (W o flecha arriba; el Espacio es interactuar)
-		// En pausa (timeScale 0) el input se ignora
-		// El pedido se guarda `bufferSalto` s (salta al aterrizar) y vale hasta `tiempoCoyote` s después de dejar un borde, si no saltó
-		bool isTeclado = Time.timeScale > 0f && Keyboard.current != null;
-		bool jumpPressed = isTeclado &&
-						  (Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
-		bool jumpReleased = isTeclado &&
-						   (Keyboard.current.wKey.wasReleasedThisFrame || Keyboard.current.upArrowKey.wasReleasedThisFrame);
-
-		if (jumpPressed) ultimoPedidoSalto = Time.time;
-
-		bool isApoyado = isGrounded || (!isSaltoActivo && !isAtravesando && Time.time - ultimoEnSuelo <= tiempoCoyote);
-		if (isApoyado && Time.time - ultimoPedidoSalto <= bufferSalto && (!isDeslizando || Time.time >= inicioDeslizamiento + tiempoMinimoParaSaltar))
+		if (!hasCarril || carrilSuelo.Carril != carrilActual)
 		{
-			if (!jumpRequested) fuerzaPedida = jumpForce; // Si ya hay un lanzamiento pedido, no se pisa
+			hasCarril = true;
+			carrilActual = carrilSuelo.Carril;
+			if (CarrilCambiado != null)
+			{
+				CarrilCambiado(carrilActual);
+			}
+		}
+	}
+
+	private void EfectosDeAterrizaje()
+	{
+		if (velocidadCaida >= velocidadMinimaPolvo)
+		{
+			SoltarPolvo(polvoAterrizaje);
+		}
+		if (velocidadCaida >= velocidadMinimaSonidoCaida)
+		{
+			Sonido_fmod.Tocar(sonidoCaida);
+		}
+		if (Aterrizado != null)
+		{
+			Aterrizado(velocidadCaida);
+		}
+	}
+
+	// Sensor de aterrizaje: mientras cae, mira si el suelo está justo debajo de los pies.
+	// Solo mira la capa Ground, así un obstáculo en el camino no lo activa
+	private void RevisarSensorAterrizaje()
+	{
+		isPorAterrizar = false;
+
+		bool isBajando = !isGrounded && rb.linearVelocity.y < -0.5f;
+		if (!isBajando)
+		{
+			return;
+		}
+
+		// Cuánto va a caer en los próximos `anticipoAterrizaje` segundos: distancia = v·t + ½·g·t²
+		float tiempo = anticipoAterrizaje;
+		float velocidadBajada = -rb.linearVelocity.y;
+		float distanciaPorVelocidad = velocidadBajada * tiempo;
+		float distanciaPorGravedad = 0.5f * CalcularGravedad() * tiempo * tiempo;
+		float distancia = distanciaPorVelocidad + distanciaPorGravedad;
+
+		// Como mínimo mira distanciaMinimaAterrizaje
+		distancia = Mathf.Max(distanciaMinimaAterrizaje, distancia);
+
+		RaycastHit2D golpe = Physics2D.BoxCast(groundCheck.position, groundCheckSize, 0f, Vector2.down, distancia, groundLayer);
+		isPorAterrizar = golpe.collider != null;
+	}
+
+	// Salto con W o flecha arriba (el Espacio es interactuar). En pausa (timeScale 0) se ignora
+	private void LeerSalto()
+	{
+		bool jumpPressed = false;
+		bool jumpReleased = false;
+		Keyboard teclado = Keyboard.current;
+		if (Time.timeScale > 0f && teclado != null)
+		{
+			jumpPressed = teclado.wKey.wasPressedThisFrame || teclado.upArrowKey.wasPressedThisFrame;
+			jumpReleased = teclado.wKey.wasReleasedThisFrame || teclado.upArrowKey.wasReleasedThisFrame;
+		}
+
+		// El pedido se guarda un ratito (buffer): si se apretó justo antes de tocar el suelo, salta al aterrizar
+		if (jumpPressed)
+		{
+			ultimoPedidoSalto = Time.time;
+		}
+
+		// Puede saltar si está en el suelo, o si dejó un borde hace muy poco sin saltar (coyote time)
+		bool isCoyote = !isSaltoActivo && !isAtravesando && Time.time - ultimoEnSuelo <= tiempoCoyote;
+		bool isApoyado = isGrounded || isCoyote;
+		bool isPedidoVigente = Time.time - ultimoPedidoSalto <= bufferSalto;
+		// Recién empezó a deslizarse: todavía no puede saltar
+		bool isDeslizandoHacePoco = isDeslizando && Time.time < inicioDeslizamiento + tiempoMinimoParaSaltar;
+
+		if (isApoyado && isPedidoVigente && !isDeslizandoHacePoco)
+		{
+			// Si ya hay un lanzamiento del hidrante pedido, no se pisa su fuerza
+			if (!jumpRequested)
+			{
+				fuerzaPedida = jumpForce;
+			}
 			jumpRequested = true;
 			ultimoPedidoSalto = float.NegativeInfinity;
 		}
 
-		// Soltar después del despegue: si se soltó antes (salto guardado en el buffer), el salto es completo
-		if (jumpReleased && isSaltoActivo && !isLanzado) isCorteSaltoPedido = true;
+		// Soltar la tecla mientras sube corta el salto. Si se soltó antes de despegar (salto guardado en el buffer), el salto es completo
+		if (jumpReleased && isSaltoActivo && !isLanzado)
+		{
+			isCorteSaltoPedido = true;
+		}
 
+		// En el suelo y sin subir: el salto terminó
 		if (isGrounded && rb.linearVelocity.y <= 0.1f)
 		{
 			isSaltoActivo = false;
 		}
+	}
 
-		// 3. Deslizarse (barrida) con S o flecha abajo, solo desde el suelo (el pedido se guarda `bufferDeslizar` s si se aprieta justo antes de aterrizar)
-		bool slidePressed = Time.timeScale > 0f && Keyboard.current != null &&
-						   (Keyboard.current.downArrowKey.wasPressedThisFrame || Keyboard.current.sKey.wasPressedThisFrame);
+	// Deslizarse (barrida) con S o flecha abajo, solo desde el suelo.
+	// Si se aprieta justo antes de aterrizar, el pedido se guarda `bufferDeslizar` segundos
+	private void LeerDeslizamiento()
+	{
+		bool slidePressed = false;
+		Keyboard teclado = Keyboard.current;
+		if (Time.timeScale > 0f && teclado != null)
+		{
+			slidePressed = teclado.downArrowKey.wasPressedThisFrame || teclado.sKey.wasPressedThisFrame;
+		}
 
-		if (slidePressed) ultimoPedidoDeslizar = Time.time;
+		if (slidePressed)
+		{
+			ultimoPedidoDeslizar = Time.time;
+		}
 
-		if (puedeDeslizar && isGrounded && !isDeslizando && Time.time - ultimoPedidoDeslizar <= bufferDeslizar)
+		bool isPedidoVigente = Time.time - ultimoPedidoDeslizar <= bufferDeslizar;
+		if (puedeDeslizar && isGrounded && !isDeslizando && isPedidoVigente)
 		{
 			slideRequested = true;
 			ultimoPedidoDeslizar = float.NegativeInfinity;
 		}
-
-		// 4. Control de animaciones
-		ActualizarAnimaciones();
-		animator.speed = animacionActual == AnimRun && velocidadClipCorrer > 0f ? Mathf.Abs(rb.linearVelocity.x) / velocidadClipCorrer : 1f;
 	}
+
+	// El clip de correr va más rápido o más lento según la velocidad; los demás, a velocidad normal
+	private void AjustarVelocidadDelClip()
+	{
+		if (animacionActual == AnimRun && velocidadClipCorrer > 0f)
+		{
+			animator.speed = Mathf.Abs(rb.linearVelocity.x) / velocidadClipCorrer;
+		}
+		else
+		{
+			animator.speed = 1f;
+		}
+	}
+
+	// ---------- FixedUpdate: física ----------
 
 	void FixedUpdate()
 	{
@@ -379,54 +464,152 @@ public class Player_controller : MonoBehaviour
 			return;
 		}
 
-		// Física: la velocidad se aplica en FixedUpdate según las reglas del proyecto.
-		// Frenar (golpe, puente) y el lanzamiento son instantáneos; volver a la velocidad normal es gradual
-		float objetivo = VelocidadHorizontal;
-		velocidadActual = isLanzado || objetivo < velocidadActual ? objetivo : Mathf.MoveTowards(velocidadActual, objetivo, aceleracion * Time.fixedDeltaTime);
+		MoverHaciaAdelante();
+		AplicarSalto();
+		ActualizarCaidaPorHueco();
+		ActualizarLanzamiento();
+		ActualizarDeslizamiento();
+	}
+
+	// Velocidad horizontal y, en las rampas, la vertical que sigue al suelo
+	private void MoverHaciaAdelante()
+	{
+		// Frenar (golpe, puente) y el lanzamiento son instantáneos; volver a la velocidad normal es de a poco
+		float objetivo = CalcularVelocidadObjetivo();
+		if (isLanzado || objetivo < velocidadActual)
+		{
+			velocidadActual = objetivo;
+		}
+		else
+		{
+			velocidadActual = Mathf.MoveTowards(velocidadActual, objetivo, aceleracion * Time.fixedDeltaTime);
+		}
+
 		float velocidadX = velocidadActual;
 		float velocidadY = rb.linearVelocity.y;
 
-		// En una pendiente la velocidad sigue el suelo: sin esto, al bajar una rampa se despega y flota, y al subir se frena contra ella
-		if (!jumpRequested && !isSaltoActivo && velocidadY > -velocidadMaximaPegado && NormalDelSuelo(out Vector2 normal))
+		// En una pendiente la velocidad sigue al suelo: sin esto, al bajar una rampa se despega y flota
+		bool puedePegarse = !jumpRequested && !isSaltoActivo && velocidadY > -velocidadMaximaPegado;
+		if (puedePegarse)
 		{
-			velocidadY = -velocidadX * normal.x / normal.y;
+			RaycastHit2D rayo = RayoHaciaElSuelo();
+			// Una normal con y menor a 0,5 es una pared (más de ~60°): ahí no se pega
+			if (rayo.collider != null && rayo.normal.y >= 0.5f)
+			{
+				// Para ir paralelo a la rampa, la velocidad tiene que ser perpendicular a la normal del suelo
+				velocidadY = -velocidadX * rayo.normal.x / rayo.normal.y;
+			}
 		}
 
 		rb.linearVelocity = new Vector2(velocidadX, velocidadY);
+	}
 
+	// La velocidad a la que quiere ir: la de correr, más lenta si está golpeado o en un puente, o la del lanzamiento
+	private float CalcularVelocidadObjetivo()
+	{
+		if (isLanzado)
+		{
+			return velocidadLanzado;
+		}
+
+		float velocidad = runSpeed;
+		if (golpeCoroutine != null)
+		{
+			velocidad = velocidad * multiplicadorVelocidadGolpe;
+		}
+		if (Time.time < lentoHasta)
+		{
+			velocidad = velocidad * multiplicadorVelocidadPuente;
+		}
+		return velocidad;
+	}
+
+	// Rayo hacia abajo que arranca un poco arriba de los pies y llega hasta distanciaPegado por debajo
+	private RaycastHit2D RayoHaciaElSuelo()
+	{
+		Vector2 inicio = new Vector2(groundCheck.position.x, groundCheck.position.y + AlturaRayo);
+		float largo = AlturaRayo + distanciaPegado;
+		return Physics2D.Raycast(inicio, Vector2.down, largo, groundLayer);
+	}
+
+	private void AplicarSalto()
+	{
 		if (jumpRequested)
 		{
-			if (isDeslizando) TerminarDeslizamiento(); // Saltar corta el deslizamiento
-			rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaPedida);
-			jumpRequested = false;
-			isSaltoActivo = true;
-			alturaDespegue = rb.position.y;
-			finAterrizaje = 0f; // Saltar corta el aterrizaje
-			Sonido_fmod.Tocar(isLanzamientoPedido ? sonidoSuperSalto : sonidoSalto);
-
-			if (isLanzamientoPedido)
-			{
-				isLanzamientoPedido = false;
-				isAtravesando = true;
-				capsula.excludeLayers = exclusionNormal | groundLayer; // Solo el suelo: los triggers (zonas de tramo, agua) siguen avisando
-			}
+			Saltar();
 		}
 		else if (isCorteSaltoPedido && isSaltoActivo && !isLanzado && rb.linearVelocity.y > 0f)
 		{
-			// Termina en el primer salto (corto o medio) que todavía no pasó; si ya pasó los dos, sigue el largo.
-			// v² = 2·g·h: la velocidad que hace falta para subir justo lo que falta hasta esa altura
-			float subido = rb.position.y - alturaDespegue;
-			float alturaObjetivo = subido < alturaSaltoCorto ? alturaSaltoCorto : alturaSaltoMedio;
-			if (subido < alturaObjetivo)
-			{
-				float gravedad = Physics2D.gravity.magnitude * rb.gravityScale;
-				float velocidadCorte = Mathf.Sqrt(2f * gravedad * (alturaObjetivo - subido));
-				rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Min(rb.linearVelocity.y, velocidadCorte));
-			}
+			CortarSalto();
 		}
 		isCorteSaltoPedido = false;
+	}
 
-		// Cayó por un hueco: baja por la pared sin fricción y sigue corriendo al tocar el suelo del carril de abajo
+	private void Saltar()
+	{
+		// Saltar corta el deslizamiento y el aterrizaje
+		if (isDeslizando)
+		{
+			TerminarDeslizamiento();
+		}
+		finAterrizaje = 0f;
+
+		rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaPedida);
+		jumpRequested = false;
+		isSaltoActivo = true;
+		alturaDespegue = rb.position.y;
+
+		if (isLanzamientoPedido)
+		{
+			Sonido_fmod.Tocar(sonidoSuperSalto);
+			isLanzamientoPedido = false;
+
+			// Mientras sube atraviesa el suelo: le suma la capa del suelo a las que la cápsula ignora ("|" junta las dos máscaras).
+			// Los triggers (como el agua) siguen avisando
+			isAtravesando = true;
+			capsula.excludeLayers = exclusionNormal | groundLayer;
+		}
+		else
+		{
+			Sonido_fmod.Tocar(sonidoSalto);
+		}
+	}
+
+	// Soltó la tecla mientras subía: el salto termina en la primera altura (corta o media) que todavía no pasó.
+	// Si ya pasó las dos, sigue el salto largo
+	private void CortarSalto()
+	{
+		float subido = rb.position.y - alturaDespegue;
+
+		float alturaObjetivo;
+		if (subido < alturaSaltoCorto)
+		{
+			alturaObjetivo = alturaSaltoCorto;
+		}
+		else
+		{
+			alturaObjetivo = alturaSaltoMedio;
+		}
+
+		if (subido >= alturaObjetivo)
+		{
+			return;
+		}
+
+		// Física: para subir una altura h hace falta una velocidad v = raíz(2·g·h)
+		float alturaQueFalta = alturaObjetivo - subido;
+		float velocidadNecesaria = Mathf.Sqrt(2f * CalcularGravedad() * alturaQueFalta);
+
+		// Solo frena: si ya va más lento, lo deja
+		if (rb.linearVelocity.y > velocidadNecesaria)
+		{
+			rb.linearVelocity = new Vector2(rb.linearVelocity.x, velocidadNecesaria);
+		}
+	}
+
+	// Cayó por un hueco: baja por la pared sin fricción y sigue corriendo al tocar el suelo del carril de abajo
+	private void ActualizarCaidaPorHueco()
+	{
 		if (isCayendoPedido && capsula != null)
 		{
 			isCayendoPedido = false;
@@ -435,22 +618,32 @@ public class Player_controller : MonoBehaviour
 			capsula.sharedMaterial = materialSinFriccion;
 		}
 
-		if (isCayendo && isGrounded && Time.time > inicioCaida + 0.2f) // El isGrounded de antes de caer puede seguir en verdadero un instante
+		// Los primeros 0,2 s no cuentan: el isGrounded de antes de caer puede seguir en verdadero un instante
+		if (isCayendo && isGrounded && Time.time > inicioCaida + 0.2f)
 		{
 			isCayendo = false;
 			capsula.sharedMaterial = materialNormal;
 		}
+	}
 
-		// En el punto más alto del lanzamiento vuelve a chocar con todo
+	private void ActualizarLanzamiento()
+	{
+		// En el punto más alto del lanzamiento vuelve a chocar con el suelo
 		if (isAtravesando && rb.linearVelocity.y <= 0f)
 		{
 			isAtravesando = false;
 			capsula.excludeLayers = exclusionNormal;
 		}
 
-		// El 0,3 s evita cortarlo antes del despegue, cuando todavía está apoyado
-		if (isLanzado && !isAtravesando && isGrounded && Time.time > inicioLanzado + 0.3f) isLanzado = false;
+		// Termina al apoyarse. Los primeros 0,3 s no cuentan: antes de despegar todavía está apoyado
+		if (isLanzado && !isAtravesando && isGrounded && Time.time > inicioLanzado + 0.3f)
+		{
+			isLanzado = false;
+		}
+	}
 
+	private void ActualizarDeslizamiento()
+	{
 		if (slideRequested)
 		{
 			slideRequested = false;
@@ -464,15 +657,6 @@ public class Player_controller : MonoBehaviour
 		}
 	}
 
-	// Normal del suelo bajo los pies si está a menos de distanciaPegado y no es una pared (más de ~60° de pendiente)
-	private bool NormalDelSuelo(out Vector2 normal)
-	{
-		const float AlturaRayo = 0.1f; // El rayo arranca un poco arriba de los pies
-		RaycastHit2D golpe = Physics2D.Raycast((Vector2)groundCheck.position + Vector2.up * AlturaRayo, Vector2.down, AlturaRayo + distanciaPegado, groundLayer);
-		normal = golpe.normal;
-		return golpe.collider != null && golpe.normal.y >= 0.5f;
-	}
-
 	private void IniciarDeslizamiento()
 	{
 		isDeslizando = true;
@@ -482,15 +666,10 @@ public class Player_controller : MonoBehaviour
 		SoltarPolvo(polvoDeslizamiento);
 		Sonido_fmod.Tocar(sonidoBarrida);
 
-		// Cápsula más baja con los pies en el mismo lugar
+		// Cápsula más baja. El centro baja la mitad de lo que se achicó, así los pies quedan en el mismo lugar
 		float diferencia = capsulaSizeNormal.y - alturaDeslizando;
 		capsula.size = new Vector2(capsulaSizeNormal.x, alturaDeslizando);
 		capsula.offset = new Vector2(capsulaOffsetNormal.x, capsulaOffsetNormal.y - diferencia * 0.5f);
-	}
-
-	private void SoltarPolvo(int cantidad)
-	{
-		if (polvo != null) polvo.Emit(cantidad);
 	}
 
 	private void TerminarDeslizamiento()
@@ -500,27 +679,135 @@ public class Player_controller : MonoBehaviour
 		capsula.offset = capsulaOffsetNormal;
 	}
 
-	void OnCollisionEnter2D(Collision2D collision)
+	private void SoltarPolvo(int cantidad)
 	{
-		if (isMuerto) return;
-
-		// Chocar de frente contra el suelo: el avance quedaría trabado contra la pared
-		if (EsParedDeSuelo(collision))
+		if (polvo != null)
 		{
-			// Solo se muere en el subterráneo: en la calle o los edificios es caer por el hueco al carril de abajo
-			if (collision.gameObject.TryGetComponent(out Carril_suelo carril) && carril.Carril != Carril.Subterraneo) isCayendoPedido = true;
-			else StartCoroutine(Morir());
+			polvo.Emit(cantidad);
+		}
+	}
+
+	// Gravedad que afecta al jugador: la del proyecto por su gravityScale
+	private float CalcularGravedad()
+	{
+		return Physics2D.gravity.magnitude * rb.gravityScale;
+	}
+
+	// ---------- Lo que llaman otros scripts ----------
+
+	// Lo llama cada recolectable al tocar al jugador
+	public void Recolectar(Transform excusa)
+	{
+		Sonido_fmod.Tocar(sonidoRecolectar);
+		if (Recolectado != null)
+		{
+			Recolectado(excusa);
+		}
+	}
+
+	// Lo llama Puente_suelo en cada paso de física mientras se lo pisa
+	public void Ralentizar()
+	{
+		// Recién empieza a pisar el puente: avisa (el cronómetro titila)
+		if (Time.time >= lentoHasta && Ralentizado != null)
+		{
+			Ralentizado();
+		}
+		lentoHasta = Time.time + DuracionLentitud;
+	}
+
+	// Lo llama Alcantarilla: aparece en `destino` (dentro del caño de salida) y cae desde ahí a `velocidadCaida` hacia abajo
+	public void Teletransportar(Vector2 destino, float velocidadCaida)
+	{
+		if (isMuerto)
+		{
 			return;
 		}
 
-		// Chocar con una caja: la rompe y nos frena un rato
-		if (collision.gameObject.TryGetComponent(out Obstaculo caja))
+		if (isDeslizando)
 		{
-			caja.Romper();
-			Golpeado?.Invoke();
+			TerminarDeslizamiento();
+		}
+		jumpRequested = false;
+		slideRequested = false;
+		ultimoPedidoSalto = float.NegativeInfinity;
+		ultimoEnSuelo = float.NegativeInfinity; // Sin esto, el coyote time dejaría saltar dentro del caño
+		isSaltoActivo = false; // Así la caída se ve con el clip Fall y no con JumpUp
+		finAterrizaje = 0f;
 
-			// Si chocamos otra caja antes de recuperarnos, reiniciamos el efecto
-			if (golpeCoroutine != null) StopCoroutine(golpeCoroutine);
+		rb.position = destino;
+		// Sin esto, por la interpolación, el modelo se ve un cuadro a mitad de camino
+		transform.position = new Vector3(destino.x, destino.y, transform.position.z);
+		rb.linearVelocity = new Vector2(rb.linearVelocity.x, -velocidadCaida);
+	}
+
+	// Lo llama el hidrante. Sale disparado `altura` hacia arriba y hacia adelante a `velocidadX` hasta apoyarse de nuevo.
+	// Mientras sube atraviesa el suelo, así no choca con el carril de arriba; en el punto más alto vuelve a ser sólido y cae sobre él
+	public void Lanzar(float altura, float velocidadX)
+	{
+		if (isMuerto || capsula == null || altura <= 0f)
+		{
+			return;
+		}
+
+		// v = raíz(2·g·h): la velocidad hacia arriba con la que llega justo a esa altura
+		fuerzaPedida = Mathf.Sqrt(2f * CalcularGravedad() * altura);
+		jumpRequested = true;
+		isLanzamientoPedido = true;
+		isLanzado = true;
+		velocidadLanzado = velocidadX;
+		inicioLanzado = Time.time;
+	}
+
+	// Lo llama Zona_muerte al caer por un hueco del subterráneo
+	public void Matar()
+	{
+		if (!isMuerto)
+		{
+			StartCoroutine(Morir());
+		}
+	}
+
+	// ---------- Choques, golpe y muerte ----------
+
+	void OnCollisionEnter2D(Collision2D collision)
+	{
+		if (isMuerto)
+		{
+			return;
+		}
+
+		// Chocó de frente contra la pared de un tramo de suelo más alto
+		if (EsParedDeSuelo(collision))
+		{
+			// En la calle y los edificios cae por el hueco al carril de abajo; en el subterráneo se muere
+			Carril_suelo carrilSuelo = collision.gameObject.GetComponent<Carril_suelo>();
+			if (carrilSuelo != null && carrilSuelo.Carril != Carril.Subterraneo)
+			{
+				isCayendoPedido = true;
+			}
+			else
+			{
+				StartCoroutine(Morir());
+			}
+			return;
+		}
+
+		// Chocó con un obstáculo: lo rompe y nos frena un rato
+		Obstaculo obstaculo = collision.gameObject.GetComponent<Obstaculo>();
+		if (obstaculo != null)
+		{
+			obstaculo.Romper();
+			if (Golpeado != null)
+			{
+				Golpeado();
+			}
+
+			// Si chocamos otro antes de recuperarnos, el golpe vuelve a empezar
+			if (golpeCoroutine != null)
+			{
+				StopCoroutine(golpeCoroutine);
+			}
 			golpeCoroutine = StartCoroutine(RecibirGolpe());
 		}
 	}
@@ -528,49 +815,30 @@ public class Player_controller : MonoBehaviour
 	// Pared = contacto casi horizontal con la capa de suelo, por delante del jugador (el piso y el techo tienen la normal vertical)
 	private bool EsParedDeSuelo(Collision2D collision)
 	{
-		if ((groundLayer.value & (1 << collision.gameObject.layer)) == 0) return false;
+		// groundLayer es una máscara: cada capa es un bit. Se fija si está prendido el bit de la capa del objeto
+		int bitDeLaCapa = 1 << collision.gameObject.layer;
+		bool isCapaDeSuelo = (groundLayer.value & bitDeLaCapa) != 0;
+		if (!isCapaDeSuelo)
+		{
+			return false;
+		}
 
 		foreach (ContactPoint2D contacto in collision.contacts)
 		{
-			if (Mathf.Abs(contacto.normal.x) > 0.7f && contacto.point.x > transform.position.x) return true;
+			bool isNormalHorizontal = Mathf.Abs(contacto.normal.x) > 0.7f;
+			bool isAdelante = contacto.point.x > transform.position.x;
+			if (isNormalHorizontal && isAdelante)
+			{
+				return true;
+			}
 		}
 		return false;
 	}
 
-	// Lo llama Zona_muerte al caer por un hueco del subterráneo
-	public void Matar()
-	{
-		if (!isMuerto) StartCoroutine(Morir());
-	}
-
-	private IEnumerator Morir()
-	{
-		isMuerto = true;
-		if (golpeCoroutine != null) StopCoroutine(golpeCoroutine);
-		golpeCoroutine = null;
-		if (isDeslizando) TerminarDeslizamiento();
-
-		// Sin colliders cae por el hueco en vez de apoyarse en el borde
-		foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
-
-		IEnumerator titileo = Titilar(duracionMuerte);
-		while (titileo.MoveNext()) yield return titileo.Current;
-		pantallaGameOver.SetActive(true);
-		Estado_juego.Congelar();
-	}
-
+	// Mientras dura esta corrutina el jugador va más lento (golpeCoroutine no es null) y titila
 	private IEnumerator RecibirGolpe()
 	{
-		IEnumerator titileo = Titilar(duracionGolpe);
-		while (titileo.MoveNext()) yield return titileo.Current;
-		golpeCoroutine = null;
-	}
-
-	// Alterna el modelo entre normal y blanco durante `duracion` y lo deja normal.
-	// Se recorre a mano y no con `yield return Titilar(...)`: así, un StopCoroutine del golpe también corta el titileo
-	private IEnumerator Titilar(float duracion)
-	{
-		float fin = Time.time + duracion;
+		float fin = Time.time + duracionGolpe;
 		bool isBlanco = false;
 		while (Time.time < fin)
 		{
@@ -580,6 +848,44 @@ public class Player_controller : MonoBehaviour
 		}
 
 		PintarDestello(false);
+		golpeCoroutine = null;
+	}
+
+	private IEnumerator Morir()
+	{
+		isMuerto = true;
+
+		// Corta el golpe si estaba en curso (y con él su titileo)
+		if (golpeCoroutine != null)
+		{
+			StopCoroutine(golpeCoroutine);
+			golpeCoroutine = null;
+		}
+		if (isDeslizando)
+		{
+			TerminarDeslizamiento();
+		}
+
+		// Sin colliders cae por el hueco en vez de apoyarse en el borde
+		Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
+		foreach (Collider2D colisionador in colliders)
+		{
+			colisionador.enabled = false;
+		}
+
+		// Titila mientras cae
+		float fin = Time.time + duracionMuerte;
+		bool isBlanco = false;
+		while (Time.time < fin)
+		{
+			isBlanco = !isBlanco;
+			PintarDestello(isBlanco);
+			yield return Parpadeo;
+		}
+		PintarDestello(false);
+
+		pantallaGameOver.SetActive(true);
+		Estado_juego.Congelar();
 	}
 
 	// Cambia el material de todas las partes del personaje: el destello blanco o el original de cada una
@@ -587,76 +893,111 @@ public class Player_controller : MonoBehaviour
 	{
 		for (int i = 0; i < renderizadores.Length; i++)
 		{
-			renderizadores[i].sharedMaterial = isBlanco ? materialDestello : materialesNormales[i];
+			if (isBlanco)
+			{
+				renderizadores[i].sharedMaterial = materialDestello;
+			}
+			else
+			{
+				renderizadores[i].sharedMaterial = materialesNormales[i];
+			}
 		}
 	}
 
+	// ---------- Animaciones ----------
+
+	// El código elige qué clip se ve; el Animator solo lo reproduce
 	private void ActualizarAnimaciones()
 	{
+		// Deslizarse tiene prioridad sobre todo
 		if (isDeslizando)
 		{
 			CambiarAnimacion(AnimSlide);
 			return;
 		}
 
-		// Lanzado por el hidrante: JumpUp todo el vuelo (al subir atraviesa el suelo y isGrounded parpadea). Ya bajando, el sensor arranca el aterrizaje
-		// como en un salto: antes había un tiempo fijo desde que pasaba por la zona de un tramo de arriba y, si subía de más, aterrizaba en el aire
+		// Lanzado por el hidrante: JumpUp todo el vuelo (al atravesar el suelo isGrounded va y viene).
+		// Ya bajando, cuando el sensor ve el suelo, arranca el aterrizaje como en un salto
 		if (isLanzado)
 		{
-			if (!isAtravesando && isPorAterrizar && puedeAterrizar && Time.time >= finAterrizaje)
+			if (Time.time >= finAterrizaje)
 			{
-				EmpezarAterrizaje();
-			}
-			else if (Time.time >= finAterrizaje)
-			{
-				CambiarAnimacion(AnimJumpUp);
+				if (!isAtravesando && isPorAterrizar && puedeAterrizar)
+				{
+					EmpezarAterrizaje();
+				}
+				else
+				{
+					CambiarAnimacion(AnimJumpUp);
+				}
 			}
 
-			if (isAtravesando || !isGrounded || Time.time < finAterrizaje) return;
+			// Sigue en el aire o terminando de aterrizar: no hace nada más
+			if (isAtravesando || !isGrounded || Time.time < finAterrizaje)
+			{
+				return;
+			}
 		}
 
-		if (!isGrounded)
+		if (isGrounded)
 		{
-			// El clip de aterrizaje ya arrancó antes de tocar el suelo: se deja terminar, salvo que vuelva a subir
-			if (Time.time < finAterrizaje && rb.linearVelocity.y <= 0.1f)
-			{
-				return;
-			}
-
-			// Por tocar el suelo: aterrizaje del salto si venía en JumpUp, o de la caída si venía en Fall
-			if (isPorAterrizar && puedeAterrizar)
-			{
-				EmpezarAterrizaje();
-				return;
-			}
-
-			// Sin saltar (se cayó de un borde) o cayendo rápido: Fall. Si no, JumpUp sigue de punta a punta
-			bool isCaidaLarga = !isSaltoActivo || rb.linearVelocity.y < -velocidadParaCaer;
-			CambiarAnimacion(isCaidaLarga ? AnimFall : AnimJumpUp);
+			AnimarEnElSuelo();
 		}
 		else
 		{
-			// Aterrizaje en curso (arrancó antes de tocar el suelo): se deja terminar antes de volver a correr
-			if (Time.time < finAterrizaje)
-			{
-				return;
-			}
+			AnimarEnElAire();
+		}
+	}
 
-			// Tocó el suelo sin que el sensor lo viera a tiempo: aterrizaje igual
-			if (puedeAterrizar && (animacionActual == AnimFall || animacionActual == AnimJumpUp))
-			{
-				EmpezarAterrizaje();
-				return;
-			}
+	private void AnimarEnElAire()
+	{
+		// El clip de aterrizaje ya arrancó antes de tocar el suelo: se deja terminar, salvo que vuelva a subir
+		if (Time.time < finAterrizaje && rb.linearVelocity.y <= 0.1f)
+		{
+			return;
+		}
 
-			if (Mathf.Abs(rb.linearVelocity.x) > 0.1f)
-			{
-				CambiarAnimacion(AnimRun);
-			}
-			else
-			{
-				CambiarAnimacion(AnimIdle);
-			}
+		// Está por tocar el suelo: aterrizaje del salto si venía en JumpUp, o de la caída si venía en Fall
+		if (isPorAterrizar && puedeAterrizar)
+		{
+			EmpezarAterrizaje();
+			return;
+		}
+
+		// Se cayó de un borde sin saltar, o cae muy rápido: Fall. Si no, JumpUp de punta a punta del salto
+		bool isCaidaLarga = !isSaltoActivo || rb.linearVelocity.y < -velocidadParaCaer;
+		if (isCaidaLarga)
+		{
+			CambiarAnimacion(AnimFall);
+		}
+		else
+		{
+			CambiarAnimacion(AnimJumpUp);
+		}
+	}
+
+	private void AnimarEnElSuelo()
+	{
+		// Aterrizaje en curso (arrancó antes de tocar el suelo): se deja terminar antes de volver a correr
+		if (Time.time < finAterrizaje)
+		{
+			return;
+		}
+
+		// Tocó el suelo sin que el sensor lo viera a tiempo: aterrizaje igual
+		if (puedeAterrizar && (animacionActual == AnimFall || animacionActual == AnimJumpUp))
+		{
+			EmpezarAterrizaje();
+			return;
+		}
+
+		if (Mathf.Abs(rb.linearVelocity.x) > 0.1f)
+		{
+			CambiarAnimacion(AnimRun);
+		}
+		else
+		{
+			CambiarAnimacion(AnimIdle);
 		}
 	}
 
@@ -674,10 +1015,13 @@ public class Player_controller : MonoBehaviour
 		}
 	}
 
-	// inicioSegundos: desde qué segundo del clip arranca (solo con mezcla)
+	// inicioSegundos: desde qué segundo del clip arranca (solo con mezcla). Si no se pasa, arranca desde el principio
 	private void CambiarAnimacion(int nuevoHash, float inicioSegundos = 0f)
 	{
-		if (animacionActual == nuevoHash) return;
+		if (animacionActual == nuevoHash)
+		{
+			return;
+		}
 
 		animacionActual = nuevoHash;
 		if (duracionTransicion > 0f)

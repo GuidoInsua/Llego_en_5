@@ -55,8 +55,12 @@ public class Pantalla_inicio : MonoBehaviour
 		}
 
 		textoEmpezar = textoBoton.text;
-		if (!isAlArrancar) return;
+		if (!isAlArrancar)
+		{
+			return;
+		}
 
+		// Viene de reiniciar: se saltea los controles una vez
 		if (isReinicio)
 		{
 			isReinicio = false;

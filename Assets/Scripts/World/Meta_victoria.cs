@@ -34,20 +34,45 @@ public class Meta_victoria : MonoBehaviour
 
 	void Awake()
 	{
-		if (paredes == null || paredes.Length == 0 || System.Array.IndexOf(paredes, null) >= 0 || cronometro == null || contador == null ||
-			pantallaLlegada == null || textoTiempo == null || textoExcusas == null)
+		bool isFaltaAlgo = cronometro == null || contador == null || pantallaLlegada == null || textoTiempo == null || textoExcusas == null;
+
+		if (paredes == null || paredes.Length == 0)
+		{
+			isFaltaAlgo = true;
+		}
+		else
+		{
+			foreach (Caja_victoria pared in paredes)
+			{
+				if (pared == null)
+				{
+					isFaltaAlgo = true;
+				}
+			}
+		}
+
+		if (isFaltaAlgo)
 		{
 			Debug.LogError("Meta_victoria: faltan las paredes, cronometro, contador, pantallaLlegada o algún texto.");
 			enabled = false;
 			return;
 		}
 
-		foreach (Caja_victoria pared in paredes) pared.Iniciar(Llegar);
+		// Cada meta se guarda esta Meta_victoria para avisarle cuando el jugador la toque
+		foreach (Caja_victoria pared in paredes)
+		{
+			pared.Iniciar(this);
+		}
 	}
 
-	private void Llegar()
+	// Lo llama Caja_victoria al tocarla el jugador
+	public void Llegar()
 	{
-		if (isTerminada) return; // Otro collider del jugador tocó la meta en el mismo cuadro
+		// Otro collider del jugador ya tocó la meta en el mismo cuadro
+		if (isTerminada)
+		{
+			return;
+		}
 		isTerminada = true;
 
 		cronometro.Detener();
