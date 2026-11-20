@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{a0c9a26f-d08a-4825-b6e7-1b281a2fcc67}">
+		<property name="assetPath">
+			<value>Ambiente/sonidoAmbienteSubSuelo.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>104.20351473922902</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{8e81f460-81c3-4a0c-baa2-e0db432649ca}</destination>
+		</relationship>
+	</object>
+</objects>

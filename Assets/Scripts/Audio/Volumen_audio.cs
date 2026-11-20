@@ -23,9 +23,11 @@ public static class Volumen_audio
 {
 	private const string ClaveMusica = "VolumenMusica";
 	private const string ClaveEfectos = "VolumenEfectos";
+	private const string ClaveAmbiente = "VolumenAmbiente";
 
 	// Quien se suscribe se baja en OnDisable (Fast Enter Play Mode no limpia los estáticos)
 	public static event System.Action MusicaCambiada;
+	public static event System.Action AmbienteCambiada;
 
 	public static float Musica
 	{
@@ -45,5 +47,19 @@ public static class Volumen_audio
 	{
 		get { return PlayerPrefs.GetFloat(ClaveEfectos, 1f); }
 		set { PlayerPrefs.SetFloat(ClaveEfectos, Mathf.Clamp01(value)); }
+	}
+
+	// Lo de que suene más bajo que la música va en el mixer de FMOD (bus Ambiente), no acá
+	public static float Ambiente
+	{
+		get { return PlayerPrefs.GetFloat(ClaveAmbiente, 1f); }
+		set
+		{
+			PlayerPrefs.SetFloat(ClaveAmbiente, Mathf.Clamp01(value));
+			if (AmbienteCambiada != null)
+			{
+				AmbienteCambiada();
+			}
+		}
 	}
 }
