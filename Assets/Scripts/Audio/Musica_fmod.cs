@@ -20,7 +20,7 @@ using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 
-// Uno por escena. Hay una sola instancia del evento para todo el juego: al cambiar de escena solo cambia el
+// Uno por escena.  Hay una sola instancia del evento para todo el juego: al cambiar de escena solo cambia el
 // parámetro Pista y FMOD hace la transición (y reintentar el nivel no corta la música)
 public class Musica_fmod : MonoBehaviour
 {
