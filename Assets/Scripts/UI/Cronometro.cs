@@ -14,7 +14,7 @@
 // #################   #######
 // ##################  #######
 // ###########################
-// Desc: Tiempo de la partida en el HUD, con efecto al recibir un golpe o pisar un puente.
+// Desc: Tiempo de la partida en el HUD: suma segundos con cada golpe y hace un efecto al golpearse o pisar un puente.
 
 using System.Collections;
 using TMPro;
@@ -25,6 +25,8 @@ public class Cronometro : MonoBehaviour
 {
 	[SerializeField] private TMP_Text texto;
 	[SerializeField] private Player_controller jugador;
+	[Tooltip("Segundos que se suman al tiempo con cada golpe contra un obstáculo.")]
+	[SerializeField] private float segundosPorGolpe = 5f;
 
 	[Header("Pulso al golpearse o pisar un puente")]
 	[SerializeField] private float duracionPulso = 0.6f;
@@ -53,7 +55,7 @@ public class Cronometro : MonoBehaviour
 		}
 
 		colorNormal = texto.color;
-		jugador.Golpeado += Pulsar;
+		jugador.Golpeado += SumarGolpe;
 		jugador.Ralentizado += Pulsar;
 	}
 
@@ -61,7 +63,7 @@ public class Cronometro : MonoBehaviour
 	{
 		if (jugador != null)
 		{
-			jugador.Golpeado -= Pulsar;
+			jugador.Golpeado -= SumarGolpe;
 			jugador.Ralentizado -= Pulsar;
 		}
 	}
@@ -101,6 +103,13 @@ public class Cronometro : MonoBehaviour
 		int decima = decimasTotales % 10;
 
 		return minutos.ToString("00") + ":" + segundosDelMinuto.ToString("00") + "," + decima;
+	}
+
+	// Frenar solo no castiga lo suficiente: el golpe también suma tiempo
+	private void SumarGolpe()
+	{
+		segundos += segundosPorGolpe;
+		Pulsar();
 	}
 
 	// Agranda y achica el texto y lo titila en rojo un ratito

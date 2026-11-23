@@ -27,6 +27,7 @@ public static class Volumen_audio
 
 	// Quien se suscribe se baja en OnDisable (Fast Enter Play Mode no limpia los estáticos)
 	public static event System.Action MusicaCambiada;
+	public static event System.Action EfectosCambiada; // Solo la escuchan los efectos en loop (los sueltos leen el volumen al sonar)
 	public static event System.Action AmbienteCambiada;
 
 	public static float Musica
@@ -46,7 +47,14 @@ public static class Volumen_audio
 	public static float Efectos
 	{
 		get { return PlayerPrefs.GetFloat(ClaveEfectos, 1f); }
-		set { PlayerPrefs.SetFloat(ClaveEfectos, Mathf.Clamp01(value)); }
+		set
+		{
+			PlayerPrefs.SetFloat(ClaveEfectos, Mathf.Clamp01(value));
+			if (EfectosCambiada != null)
+			{
+				EfectosCambiada();
+			}
+		}
 	}
 
 	// Lo de que suene más bajo que la música va en el mixer de FMOD (bus Ambiente), no acá

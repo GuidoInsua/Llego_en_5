@@ -98,6 +98,7 @@ public class Player_controller : MonoBehaviour
 	[SerializeField] private EventReference sonidoCaida; // Al aterrizar
 	[SerializeField] private EventReference sonidoBarrida;
 	[SerializeField] private EventReference sonidoRecolectar; // Al juntar una excusa
+	[SerializeField] private EventReference sonidoGolpe; // Al chocar un obstáculo
 	[Tooltip("Caídas más lentas que esto aterrizan sin sonido: los saltitos de las rampas no suenan (el salto corto llega a ~8).")]
 	[SerializeField] private float velocidadMinimaSonidoCaida = 4f;
 
@@ -798,6 +799,7 @@ public class Player_controller : MonoBehaviour
 		if (obstaculo != null)
 		{
 			obstaculo.Romper();
+			Sonido_fmod.Tocar(sonidoGolpe);
 			if (Golpeado != null)
 			{
 				Golpeado();

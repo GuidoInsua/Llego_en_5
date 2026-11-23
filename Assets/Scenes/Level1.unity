@@ -3409,7 +3409,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1498852973188069755, guid: 255626fbbd5b23349a35a9497c34af5d, type: 3}
   m_PrefabInstance: {fileID: 239350220}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1826024929}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9628f2fb21213764498b06f33cdc2330, type: 3}
@@ -11028,6 +11028,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Scripts::Cronometro
   texto: {fileID: 1047717692}
   jugador: {fileID: 239350222}
+  segundosPorGolpe: 5
   duracionPulso: 0.6
   escalaPulso: 1.3
   colorPulso: {r: 1, g: 0, b: 0, a: 1}
@@ -16466,7 +16467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioListener
   nonRigidbodyVelocity: 0
-  attenuationObject: {fileID: 0}
+  attenuationObject: {fileID: 1826024929}
 --- !u!81 &1339098795
 AudioListener:
   m_ObjectHideFlags: 0
@@ -20893,6 +20894,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1492029719521910588, guid: b1630d3fc802b0a42883b8c1c01188b9, type: 3}
   m_PrefabInstance: {fileID: 1815893744}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1826024929 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6058956588234241526, guid: 255626fbbd5b23349a35a9497c34af5d, type: 3}
+  m_PrefabInstance: {fileID: 239350220}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1839953570
 PrefabInstance:

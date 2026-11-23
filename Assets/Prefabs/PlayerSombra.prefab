@@ -2475,6 +2475,13 @@ MonoBehaviour:
       Data3: 720700561
       Data4: -523891179
     Path: event:/SFX_pick_up
+  sonidoGolpe:
+    Guid:
+      Data1: -690291654
+      Data2: 1128133038
+      Data3: -403804519
+      Data4: 1794954012
+    Path: event:/SFX_golpe
   velocidadMinimaSonidoCaida: 4
   groundCheck: {fileID: 2006794399296209086}
   groundCheckSize: {x: 0.3, y: 0.1}
